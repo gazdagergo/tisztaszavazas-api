@@ -41,14 +41,17 @@ def main():
 		for item in utcaList:
 			szkUtca = getUtcaNev(item).replace('Cím::  ', '')
 			szkHazszamok = getHazszamok(item).replace('Tartomány típusa::  ', '')
+			print(szkUtca.strip())
+			print(szkHazszamok.strip())
 
-			with open(outputFile,'a') as fd:
+""" 			with open(outputFile,'a') as fd:
 				fd.write("\n")
 				fd.write(szkUtca)
 				fd.write("\t")
 				fd.write(szkHazszamok)
 				fd.write("\t")
-				fd.write(inputFile.replace('.html', '').split('/')[-1])
+				fd.write(inputFile.replace('.html', '').split('/')[-1]) """
+
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """
