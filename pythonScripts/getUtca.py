@@ -4,6 +4,7 @@
 
 from bs4 import BeautifulSoup
 import sys
+import json
 
 
 def main(inputFile):
@@ -31,11 +32,15 @@ def main(inputFile):
 	for item in utcaList:
 		szkUtca = getUtcaNev(item).replace('Cím::  ', '')
 		szkHazszamok = getHazszamok(item).replace('Tartomány típusa::  ', '')
-		print(szkUtca.strip())
-		print(szkHazszamok.strip())
+		result = {
+			"szkUtca": szkUtca.strip(),
+			"szkHazszamok": szkHazszamok.strip()
+		}
+	
+		print(json.dumps(result))
 
 for line in sys.stdin:
-	main(line.replace('\n', ''))
+	main(json.loads(line)['filename'])
 
 """ if __name__ == "__main__":
 	main()	 """

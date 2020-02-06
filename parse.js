@@ -2,7 +2,7 @@
 import { PythonShell } from 'python-shell';
 
 var options = {
-  mode: 'text',
+  mode: 'json',
   pythonPath: 'python3',
   pythonOptions: ['-u'],
   scriptPath: './pythonScripts/',
@@ -14,9 +14,10 @@ let pyShell = new PythonShell('getUtca.py', options)
 
 pyShell.on('message', message => {
   console.log(message)
+  console.log('.....')
 })
 
-pyShell.send('./htmls/M01_T002_S021.html')
+pyShell.send({ filename: "./htmls/M01_T002_S021.html" })
 }
 
 /* export default () => PythonShell.run('getUtca.py', options, function (err, results) {
