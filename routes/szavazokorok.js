@@ -11,11 +11,12 @@ const router = express.Router()
 
 router.get('/:SzavazokorId?', async (req, res) => {
   const {
-    // params: { SzavazokorId },    
-    query
+    params: { SzavazokorId },    
+    query: { megyeKod, telepulesKod, szavkorSorszam }
   } = req;
   try {
-  const url = generateVhuUrl()
+  const url = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam)
+  console.log(url)
   const html = await scrape(url)
   const szData = await parse(html)
   res.json(szData)
