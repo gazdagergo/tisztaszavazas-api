@@ -1,11 +1,10 @@
 import express from 'express';
 import szkRoute from './routes/szavazokorok';
+import scrapeRoute from './routes/scrape';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
-import parse from './parse'
-import scrape from './scrape';
 
 dotenv.config()
 const app =  express();
@@ -16,11 +15,12 @@ const corsOptions = {
 };
 
 // Middlewares
-app.use(bodyParser.json())
+app.use(bodyParser.json({limit: '50mb'}))
 app.use(cors(corsOptions));
 
 // Routes
 app.use('/szavazokorok', szkRoute)
+app.use('/scrape', scrapeRoute)
 
 
 // Connect to DB

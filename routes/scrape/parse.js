@@ -1,6 +1,4 @@
-//import PythonShell from 'python-shell';
 import { PythonShell } from 'python-shell';
-import scrape from './scrape';
 
 var options = {
   mode: 'json',

@@ -1,9 +1,6 @@
 import express from 'express';
 import Szavazokor from '../schemas/Szavazokor';
 import dotenv from 'dotenv';
-import scrape from '../scrape';
-import parse from '../parse';
-import generateVhuUrl from '../functions/generateVhuUrl';
 
 dotenv.config();
 
@@ -12,36 +9,33 @@ const router = express.Router()
 router.get('/:SzavazokorId?', async (req, res) => {
   const {
     params: { SzavazokorId },    
-    query: { megyeKod, telepulesKod, szavkorSorszam }
+    query:  { megyeKod, telepulesKod, szavkorSorszam }
   } = req;
-  try {
-  const url = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam)
-  console.log(url)
-  const html = await scrape(url)
-  const szData = await parse(html)
-  res.json(szData)
-  } catch(error){
-    console.log(error)
-    res.status(500)
-    res.json({ error: error.message })
-  }
 
-/*
   try {
-    const result = SzavazokorId
-      ? await Szavazokor.findById(SzavazokorId) 
-      : await Szavazokor.find(query)
-   
+    let result;
+    if (SzavazokorId) {
+      result = await Szavazokor.findById(SzavazokorId)
+    } else {
+      result = await Szavazokor.find({
+        szavkorSorszam: +szavkorSorszam,
+        'telepules.telepulesKod': +telepulesKod,
+        'telepules.megyeKod': +megyeKod
+      })
+      result = result.map(szk => ({
+        ...szk['_doc'],
+        scrapeUrl: `${process.env.BASE_URL}/scrape/${szk['_doc']['_id']}`
+      }))
+    }
     res.status(result ? 200 : 400)
     res.json(result || 'Szavazokor not found')
   } catch(error) {
     res.json({ error: error.message })
-  } */
+  }
 })
 
 router.post('/', async (req, res) => {
   let { body } = req;
-  console.log(body)
 
   body = Array.isArray(body) ? body : [ body ];
 
