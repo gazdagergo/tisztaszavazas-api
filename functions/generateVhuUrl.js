@@ -1,0 +1,3 @@
+export default () => {
+	return 'https://www.valasztas.hu/szavazokorok_onk2019?p_p_id=onkszavazokorieredmenyek_WAR_nvinvrportlet&p_p_lifecycle=1&p_p_state=maximized&p_p_mode=view&_onkszavazokorieredmenyek_WAR_nvinvrportlet_tabId=tab2&_onkszavazokorieredmenyek_WAR_nvinvrportlet_telepulesKod=018&_onkszavazokorieredmenyek_WAR_nvinvrportlet_megyeKod=09&_onkszavazokorieredmenyek_WAR_nvinvrportlet_vlId=294&_onkszavazokorieredmenyek_WAR_nvinvrportlet_vltId=687&_onkszavazokorieredmenyek_WAR_nvinvrportlet_szavkorSorszam=14'
+}

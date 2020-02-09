@@ -1,6 +1,9 @@
 import express from 'express';
 import Szavazokor from '../schemas/Szavazokor';
 import dotenv from 'dotenv';
+import scrape from '../scrape';
+import parse from '../parse';
+import generateVhuUrl from '../functions/generateVhuUrl';
 
 dotenv.config();
 
@@ -8,10 +11,21 @@ const router = express.Router()
 
 router.get('/:SzavazokorId?', async (req, res) => {
   const {
-    params: { SzavazokorId },    
+    // params: { SzavazokorId },    
     query
   } = req;
+  try {
+  const url = generateVhuUrl()
+  const html = await scrape(url)
+  const szData = await parse(html)
+  res.json(szData)
+  } catch(error){
+    console.log(error)
+    res.status(500)
+    res.json({ error: error.message })
+  }
 
+/*
   try {
     const result = SzavazokorId
       ? await Szavazokor.findById(SzavazokorId) 
@@ -21,7 +35,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
     res.json(result || 'Szavazokor not found')
   } catch(error) {
     res.json({ error: error.message })
-  }
+  } */
 })
 
 router.post('/', async (req, res) => {
