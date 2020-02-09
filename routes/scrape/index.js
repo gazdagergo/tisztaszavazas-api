@@ -11,20 +11,25 @@ const router = express.Router()
 
 router.get('/:SzavazokorId?', async (req, res) => {
   const {
-    query
+    params: { SzavazokorId }
   } = req;
 
-try {
-    const  { megyeKod, telepulesKod, szavkorSorszam } = query;
+  try {
+    const szkData = await Szavazokor.findById(SzavazokorId)
+    const { szavkorSorszam,
+      telepules: {
+        telepulesKod,
+        megyeKod
+      }
+    } = szkData;
     const url = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam)
-    console.log(url)
     const html = await getHtml(url)
-    const szData = await parse(html)
-    res.json(szData)
-  } catch(error){
+    const { kozteruletek } = await parse(html)
+    res.json({...szkData['_doc'], kozteruletek})
+  } catch (error) {
     console.log(error)
     res.status(500)
-    res.json({ error: error.message })
+    res.json({ error: error.message })    
   }
 })
 

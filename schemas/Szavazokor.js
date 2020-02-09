@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 const SzavazokorSchema = mongoose.Schema({
-  kod: String,
   kozteruletek: Array,
   szavkorSorszam: Number,
   telepules: {
