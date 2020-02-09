@@ -7,10 +7,10 @@ import sys
 import json
 
 
-def main(inputFile):
+def main(html):
 	""" Main entry point of the app """
 	
-	soup = BeautifulSoup(open(inputFile), "html.parser")
+	soup = BeautifulSoup(html, "html.parser")
 
 	utcaList = soup.findAll("div", {"class": "nvi-search-list"})[0] \
 	.findAll("div", {"class": "nvi-custom-table"})[0] \
@@ -40,7 +40,7 @@ def main(inputFile):
 		print(json.dumps(result))
 
 for line in sys.stdin:
-	main(json.loads(line)['filename'])
+	main(json.loads(line)['html'])
 
 """ if __name__ == "__main__":
 	main()	 """

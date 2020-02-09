@@ -5,6 +5,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 import parse from './parse'
+import scrape from './scrape';
 
 dotenv.config()
 const app =  express();
@@ -35,4 +36,5 @@ app.listen(port, () => {
 })
 
 // start scrape
+// scrape()
 parse()
