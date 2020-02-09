@@ -1,1 +1,1 @@
-# Home Device Data
+# Szavazokorok

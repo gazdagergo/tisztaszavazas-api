@@ -1,8 +1,5 @@
 import express from 'express';
-import devicesRoute from './routes/devices';
-import actionsRoute from './routes/actions';
-import homeRoute from './routes/home';
-import iftttTestRoute from './routes/ifttttest';
+import szkRoute from './routes/szavazokorok';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
@@ -22,17 +19,14 @@ app.use(bodyParser.json())
 app.use(cors(corsOptions));
 
 // Routes
-app.use('/devices', devicesRoute)
-app.use('/actions', actionsRoute)
-app.use('/ifttt', iftttTestRoute)
-app.use('/', homeRoute)
+app.use('/szavazokorok', szkRoute)
 
 
 // Connect to DB
-/* mongoose.connect(process.env.MONGODB_URI, {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true
 },
-() => console.log('connected to DB')) */
+() => console.log('connected to DB'))
 
 // Listen
 var port = process.env.PORT || 1337;
