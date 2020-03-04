@@ -6,12 +6,7 @@ from bs4 import BeautifulSoup
 import sys
 import json
 
-
-def main(html):
-	""" Main entry point of the app """
-	
-	soup = BeautifulSoup(html, "html.parser")
-
+def getUtca(soup):
 	utcaList = soup.findAll("div", {"class": "nvi-search-list"})[0] \
 	.findAll("div", {"class": "nvi-custom-table"})[0] \
 	.findAll("table", {"class": "table"})[0] \
@@ -28,19 +23,39 @@ def main(html):
 		.getText()
 
 		return hazszamok
+	
+	utcaListPairs = []
 
 	for item in utcaList:
 		szkUtca = getUtcaNev(item).replace('Cím::  ', '')
 		szkHazszamok = getHazszamok(item).replace('Tartomány típusa::  ', '')
-		result = {
+		utcaListPairs.append({
 			"szkUtca": szkUtca.strip(),
 			"szkHazszamok": szkHazszamok.strip()
-		}
+		})
+
+	return utcaListPairs
 	
-		print(json.dumps(result))
+
+def getSzavkorCim(soup):
+	szavkorCim = soup.findAll("div", {"class": "szavazokorieredmenyek-details-container"})[0] \
+	.findAll("div", {"class": "row-fluid"})[0] \
+	.findAll("div", {"class": "row-fluid"})[0] \
+	.findAll("span", {"class": "text-semibold"})[0] \
+	.getText()
+
+	return szavkorCim
+	
+
+def main(html):
+	soup = BeautifulSoup(html, "html.parser")
+	result = {
+		"kozteruletek": getUtca(soup),
+		"szavkorCim": getSzavkorCim(soup)
+	}
+	print(json.dumps(result))
+
 
 for line in sys.stdin:
 	main(json.loads(line)['html'])
 
-""" if __name__ == "__main__":
-	main()	 """

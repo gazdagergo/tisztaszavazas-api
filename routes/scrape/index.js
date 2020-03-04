@@ -15,22 +15,51 @@ router.get('/:SzavazokorId?', async (req, res) => {
   } = req;
 
   try {
-    const szkData = await Szavazokor.findById(SzavazokorId)
-    const { szavkorSorszam,
+    Szavazokor.findById(SzavazokorId)
+    .then(async szavkor => {
+      const { szavkorSorszam,
+        telepules: {
+          telepulesKod,
+          megyeKod
+        }
+      } = szavkor;
+      const url = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam)
+      console.log(url)
+      const html = await getHtml(url)
+      const szkParsedData = await parse(html)
+      const newSzavkor = Object.assign(szavkor, szkParsedData)
+      return newSzavkor
+    })
+    .then(szavkor => {
+      return szavkor.save()
+    })
+    .then(updatedSzavkor => res.json({
+      'message': 'szavazokor frissitve',
+      updatedSzavkor
+    }))
+
+
+    /* const { szavkorSorszam,
       telepules: {
         telepulesKod,
         megyeKod
       }
     } = szkData;
     const url = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam)
+    console.log(url)
     const html = await getHtml(url)
-    const { kozteruletek } = await parse(html)
-    res.json({...szkData['_doc'], kozteruletek})
+    const szkParsedData = await parse(html)
+    res.json({...szkData['_doc'], ...szkParsedData[0]}) */
   } catch (error) {
     console.log(error)
     res.status(500)
     res.json({ error: error.message })    
   }
+})
+
+router.post('/', async (req, res) => {
+  const { body } = req;
+  res.json(body)
 })
 
 export default router;

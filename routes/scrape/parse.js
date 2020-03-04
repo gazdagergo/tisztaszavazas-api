@@ -9,14 +9,14 @@ var options = {
 
 export default html => (
   new Promise((resolve, reject) => {
-    let pyShell = new PythonShell('getUtca.py', options)
+    let pyShell = new PythonShell('parseSzkHtml.py', options)
 
-    let kozteruletek = [];
+    let szkParsedData;
 
     pyShell.send({ html })
 
     pyShell.on('message', message => {
-      kozteruletek.push(message)
+      szkParsedData  = message;
     })
 
     pyShell.end((err,code,signal) => {
@@ -24,7 +24,7 @@ export default html => (
       console.log('The exit code was: ' + code);
       console.log('The exit signal was: ' + signal);
       console.log('finished');
-      resolve({ kozteruletek })
+      resolve(szkParsedData)
     });
   })
 )
