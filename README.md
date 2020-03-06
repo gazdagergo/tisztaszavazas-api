@@ -20,6 +20,11 @@ GET
 /szavazokorok
 ```
 
+Get a single ballot office
+```
+GET
+/szavazokorok/5e405d6a0ff37a310a0840dd
+```
 
 Query ballot offices
 ```
