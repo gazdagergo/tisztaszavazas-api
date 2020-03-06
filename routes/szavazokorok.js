@@ -7,9 +7,9 @@ dotenv.config();
 const router = express.Router()
 
 router.get('/:SzavazokorId?', async (req, res) => {
-  const {
+  let {
     params: { SzavazokorId },    
-    query:  { megyeKod, telepulesKod, szavkorSorszam }
+    query
   } = req;
 
   try {
@@ -17,11 +17,18 @@ router.get('/:SzavazokorId?', async (req, res) => {
     if (SzavazokorId) {
       result = await Szavazokor.findById(SzavazokorId)
     } else {
-      result = await Szavazokor.find({
+      query = Object.entries(query).reduce((acc, [key, value]) => {
+        acc[key] = isNaN(+value) ? value : +value
+        return acc
+      },{})
+
+/*       {
         szavkorSorszam: +szavkorSorszam,
         'telepules.telepulesKod': +telepulesKod,
         'telepules.megyeKod': +megyeKod
-      })
+      } */
+
+      result = await Szavazokor.find(query)
       result = result.map(szk => ({
         ...szk['_doc'],
         scrapeUrl: `${process.env.BASE_URL}/scrape/${szk['_doc']['_id']}`
