@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
+import authorization from './middlewares/authorization';
 
 dotenv.config()
 const app =  express();
@@ -17,6 +18,8 @@ const corsOptions = {
 // Middlewares
 app.use(bodyParser.json({limit: '50mb'}))
 app.use(cors(corsOptions));
+app.use(authorization);
+
 
 // Routes
 app.use('/szavazokorok', szkRoute)
