@@ -22,12 +22,6 @@ router.get('/:SzavazokorId?', async (req, res) => {
         return acc
       },{})
 
-/*       {
-        szavkorSorszam: +szavkorSorszam,
-        'telepules.telepulesKod': +telepulesKod,
-        'telepules.megyeKod': +megyeKod
-      } */
-
       result = await Szavazokor.find(query)
       result = result.map(szk => ({
         ...szk['_doc'],
