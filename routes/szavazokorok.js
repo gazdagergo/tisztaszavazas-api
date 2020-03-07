@@ -2,14 +2,16 @@ import express from 'express';
 import Szavazokor from '../schemas/Szavazokor';
 import dotenv from 'dotenv';
 
+const DEFAULT_LIMIT = 99999;
+
 dotenv.config();
 
 const router = express.Router()
 
 router.get('/:SzavazokorId?', async (req, res) => {
   let {
-    params: { SzavazokorId },    
-    query
+    params: { SzavazokorId },
+    query: { limit = DEFAULT_LIMIT, ...query }
   } = req;
 
   try {
@@ -22,7 +24,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
         return acc
       },{})
 
-      result = await Szavazokor.find(query)
+      result = await Szavazokor.find(query).limit(+limit)
       result = result.map(szk => ({
         ...szk['_doc'],
         scrapeUrl: `${process.env.BASE_URL}/scrape/${szk['_doc']['_id']}`
