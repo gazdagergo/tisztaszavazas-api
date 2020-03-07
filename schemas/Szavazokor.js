@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const SzavazokorSchema = mongoose.Schema({
   kozteruletek: Array,
   szavkorSorszam: Number,
-  telepules: {
+  kozigEgyseg: {
     type: Object,
     ref: 'KozigEgyseg'
   }
