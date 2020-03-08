@@ -9,14 +9,20 @@ from getUtcaLista import getUtcaLista
 from getSzavkorCim import getSzavkorCim
 
 def main(html):
-	soup = BeautifulSoup(html, "html.parser")
+	print(html)
+
+""" 	soup = BeautifulSoup(html, "html.parser")
 	result = {
 		"kozteruletek": getUtcaLista(soup),
 		"szavkorCim": getSzavkorCim(soup)
 	}
-	print(json.dumps(result))
+	print(json.dumps(result)) """
 
+for linenum, line in enumerate(sys.stdin):
+	if linenum == 0:
+		print(line)
 
-for line in sys.stdin:
-	main(json.loads(line)['html'])
+# for line in sys.stdin:
+# print(sys.stdin)
+	# main(line)
 

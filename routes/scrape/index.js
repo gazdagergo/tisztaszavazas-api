@@ -24,7 +24,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
         }
       } = szavkor;
       const url = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam)
-      console.log(url)
+      // console.log(url)
       const html = await getHtml(url)
       const szkParsedData = await parse(html)
       const newSzavkor = Object.assign(szavkor, szkParsedData)
