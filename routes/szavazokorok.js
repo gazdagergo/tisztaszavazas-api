@@ -71,28 +71,6 @@ router.post('/', async (req, res) => {
   }
 })
 
-router.put('/:SzavazokorId?', async (req, res) => {
-  const {
-    headers, 
-    body,
-    query
-  } = req;
-
-  if (headers.apikey !== process.env.APIKEY) {
-    res.status(403);
-    return res.json({ error: 'missing or bad apikey'})
-  }
-  
-  try {
-    const updatedRecord = await Szavazokor.updateOne(
-      query,
-      { $set: body }
-    )
-    res.json(updatedRecord)
-  } catch(error){
-    res.json({ error: error.message })
-  }
-})
 
 
 export default router;
