@@ -2,7 +2,10 @@ def getUtcaLista(soup):
 	completeSettlement = soup.findAll("div", {"class": "nvi-complete-settlement-wrapper"})
 
 	if completeSettlement:
-		return []
+		return {
+			"kozteruletek": [],
+			"egySzavazokorosTelepules": True
+			}
 
 	utcaList = soup.findAll("div", {"class": "nvi-search-list"})[0] \
 	.findAll("div", {"class": "nvi-custom-table"})[0] \
@@ -31,5 +34,8 @@ def getUtcaLista(soup):
 			"szkHazszamok": szkHazszamok.strip()
 		})
 
-	return utcaListPairs
+	return {
+		"kozteruletek": utcaListPairs,
+		"egySzavazokorosTelepules": False
+		}
 	

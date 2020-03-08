@@ -11,7 +11,7 @@ from getSzavkorCim import getSzavkorCim
 def main(html):
 	soup = BeautifulSoup(html, "html.parser")
 	result = {
-		"kozteruletek": getUtcaLista(soup),
+		**getUtcaLista(soup),
 		"szavkorCim": getSzavkorCim(soup)
 	}
 	print(json.dumps(result))
