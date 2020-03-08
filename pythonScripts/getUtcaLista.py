@@ -1,4 +1,9 @@
 def getUtcaLista(soup):
+	completeSettlement = soup.findAll("div", {"class": "nvi-complete-settlement-wrapper"})
+
+	if completeSettlement:
+		return []
+
 	utcaList = soup.findAll("div", {"class": "nvi-search-list"})[0] \
 	.findAll("div", {"class": "nvi-custom-table"})[0] \
 	.findAll("table", {"class": "table"})[0] \
