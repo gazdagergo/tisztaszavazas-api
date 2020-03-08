@@ -1,7 +1,7 @@
 import { PythonShell } from 'python-shell';
 
 var options = {
-  mode: 'text',
+  mode: 'json',
   pythonPath: 'python3',
   pythonOptions: ['-u'],
   scriptPath: './pythonScripts/',
@@ -12,11 +12,10 @@ export default html => (
     let pyShell = new PythonShell('parseSzkHtml.py', options)
 
     let szkParsedData;
-    pyShell.send('html')
-    console.log('sent')
+
+    pyShell.send({ html })
 
     pyShell.on('message', message => {
-      console.log({message})
       szkParsedData  = message;
     })
 
