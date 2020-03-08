@@ -16,7 +16,11 @@ def main(html):
 	}
 	print(json.dumps(result))
 
-
-for line in sys.stdin:
-	main(json.loads(line)['html'])
+if len(sys.argv)>1:
+	# manual start
+	html = open(sys.argv[1], 'r', encoding='utf-8')
+	main(html)
+else:
+	for line in sys.stdin:
+		main(json.loads(line)['html'])
 

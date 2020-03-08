@@ -48,3 +48,9 @@ Regex match
 Refresh the ballot office data from valasztas.hu
 
 `GET /scrape/5e405d6a0ff37a310a0840e7`
+
+
+# Development
+
+For python local testing you can manually start the parsing script with example data:
+`python3 pythonScripts/parseSzkHtml.py htmls/irsapuszta.html`
