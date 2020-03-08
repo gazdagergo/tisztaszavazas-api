@@ -20,6 +20,10 @@ router.get('/:SzavazokorId?', async (req, res) => {
     let result;
     if (SzavazokorId) {
       result = await Szavazokor.findById(SzavazokorId)
+      result = {
+        ...result['_doc'],
+        scrapeUrl: `${process.env.BASE_URL}/scrape/${result['_doc']['_id']}`,
+      }
     } else {
       query = Object.entries(query).reduce((acc, [key, value]) => ({
         ...acc, [key]: toNumeric(toRegex(value))
