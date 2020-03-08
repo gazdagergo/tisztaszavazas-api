@@ -1,4 +1,10 @@
-export const toNumeric = string => isNaN(+string) ? string : +string
+export const toNumeric = string => {
+  if (isNaN(+string)) {
+    return null
+  } else {
+    return +string
+  } 
+}
 
 export const toRegex = string => {
 	const parts = string.split('/')
@@ -9,11 +15,17 @@ export const toRegex = string => {
 		regex = parts[1];
 		options = parts[2];
 	} else {
-    return string
+    return null
   }
 	try {
 		return new RegExp(regex, options);
 	} catch (e) {
-		return string
+		return null
 	}
 };
+
+export const toBoolean = string => {
+  if (string === 'false') return false;
+  if (string === 'true') return true;
+  return null;
+}

@@ -1,12 +1,21 @@
 import express from 'express';
 import Szavazokor from '../schemas/Szavazokor';
 import dotenv from 'dotenv';
-import { toRegex, toNumeric } from '../utils';
+import { toRegex, toNumeric, toBoolean } from '../utils';
 import generateVhuUrl from '../functions/generateVhuUrl';
+
+
+dotenv.config();
 
 const DEFAULT_LIMIT = 99999;
 
-dotenv.config();
+const parseQueryValue = value => {
+  let parsed = toBoolean(value); if (parsed !== null) return parsed;
+  parsed = toNumeric(value); if (parsed !== null) return parsed;
+  parsed = toRegex(value); if (parsed !== null) return parsed;
+  return value
+}
+
 
 const router = express.Router()
 
@@ -26,7 +35,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
       }
     } else {
       query = Object.entries(query).reduce((acc, [key, value]) => ({
-        ...acc, [key]: toNumeric(toRegex(value))
+        ...acc, [key]: parseQueryValue(value)
       }), {})
 
       console.log(query)
