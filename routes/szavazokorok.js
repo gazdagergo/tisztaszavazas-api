@@ -1,7 +1,7 @@
 import express from 'express';
 import Szavazokor from '../schemas/Szavazokor';
 import dotenv from 'dotenv';
-import { validateRegex } from '../utils';
+import { toRegex, toNumeric } from '../utils';
 
 const DEFAULT_LIMIT = 99999;
 
@@ -21,12 +21,10 @@ router.get('/:SzavazokorId?', async (req, res) => {
       result = await Szavazokor.findById(SzavazokorId)
     } else {
       query = Object.entries(query).reduce((acc, [key, value]) => ({
-        ...acc, [key]: isNaN(+value) ? value : +value
-      }),{})
-
-      query = Object.entries(query).reduce((acc, [key, value]) => ({
-        ...acc, [key]: validateRegex(value) || value
+        ...acc, [key]: toNumeric(toRegex(value))
       }), {})
+
+      console.log(query)
 
       result = await Szavazokor.find(query).limit(+limit)
       result = result.map(szk => ({
