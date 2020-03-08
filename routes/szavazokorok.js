@@ -2,6 +2,7 @@ import express from 'express';
 import Szavazokor from '../schemas/Szavazokor';
 import dotenv from 'dotenv';
 import { toRegex, toNumeric } from '../utils';
+import generateVhuUrl from '../functions/generateVhuUrl';
 
 const DEFAULT_LIMIT = 99999;
 
@@ -29,7 +30,12 @@ router.get('/:SzavazokorId?', async (req, res) => {
       result = await Szavazokor.find(query).limit(+limit)
       result = result.map(szk => ({
         ...szk['_doc'],
-        scrapeUrl: `${process.env.BASE_URL}/scrape/${szk['_doc']['_id']}`
+        scrapeUrl: `${process.env.BASE_URL}/scrape/${szk['_doc']['_id']}`,
+        vhuUrl: generateVhuUrl(
+          szk.kozigEgyseg.megyeKod, 
+          szk.kozigEgyseg.telepulesKod, 
+          szk.szavkorSorszam
+        )
       }))
     }
     res.status(result ? 200 : 400)
