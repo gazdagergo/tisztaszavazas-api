@@ -32,6 +32,11 @@ router.get('/:SzavazokorId?', async (req, res) => {
       result = {
         ...result['_doc'],
         scrapeUrl: `${process.env.BASE_URL}/scrape/${result['_doc']['_id']}`,
+        vhuUrl: generateVhuUrl(
+          result.kozigEgyseg.megyeKod, 
+          result.kozigEgyseg.telepulesKod, 
+          result.szavkorSorszam
+        )
       }
     } else {
       query = Object.entries(query).reduce((acc, [key, value]) => ({
