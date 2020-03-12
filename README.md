@@ -42,6 +42,28 @@ Regex match
 
 *example body:* [szk.json](./utils/szk.json)
 
+### /szavazokorok
+
+#### Get all street sections
+
+`GET /szakaszok`
+
+#### Query street sections (to seek for ballot office based on address)
+
+Get the street section for the address. 
+
+1: First check the name of settlement. If result length is 1, the whole settlement belongs to one ballot office.
+
+`GET /szakaszok?telepulesNev=Zalamerenye`
+
+2: Otherwise check for settlement and street name. If result length is 1, the whole street belongs to one ballot office
+
+`GET /szakaszok?telepulesNev=Budapest&kozteruletNev=Körmöci utca`
+
+3: Otherwise check for the house number
+
+`GET /szakaszok?telepulesNev=Budapest&kozteruletNev=Logodi utca&kezdoHazszam={$lte: 78}&vegsoHazszam={$gt: 78}&megjegyzes=/Páros/`
+
 
 ### /scrape
 

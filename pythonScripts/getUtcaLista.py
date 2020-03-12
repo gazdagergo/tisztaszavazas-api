@@ -61,7 +61,7 @@ def getUtcaLista(soup):
 			"kozteruletNev": kozteruletNev,
 			"kezdoHazszam": nullOrInt(matches.group(2)),
 			"vegsoHazszam": vegsoHazszam,
-			"megjegyzes": szkHazszamok.strip()
+			"oldal": szkHazszamok.strip()
 		})
 		
 # https://regex101.com/r/vahPd7/1
