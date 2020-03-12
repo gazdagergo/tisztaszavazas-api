@@ -1,21 +1,9 @@
 import express from 'express';
 import Szavazokor from '../schemas/Szavazokor';
-import dotenv from 'dotenv';
-import { toRegex, toNumeric, toBoolean } from '../utils';
 import generateVhuUrl from '../functions/generateVhuUrl';
-
-
-dotenv.config();
+import parseQueryValue from '../functions/parseQueryValue';
 
 const DEFAULT_LIMIT = 99999;
-
-const parseQueryValue = value => {
-  let parsed = toBoolean(value); if (parsed !== null) return parsed;
-  parsed = toNumeric(value); if (parsed !== null) return parsed;
-  parsed = toRegex(value); if (parsed !== null) return parsed;
-  return value
-}
-
 
 const router = express.Router()
 
@@ -44,6 +32,9 @@ router.get('/:SzavazokorId?', async (req, res) => {
       }), {})
 
       console.log(query)
+
+      query = { 'kozteruletek.kozteruletNev': /Attila/i,
+      'kozteruletek.kezdoHazszam': { $gte: 123 } }
 
       result = await Szavazokor.find(query).limit(+limit)
       result = result.map(szk => ({
