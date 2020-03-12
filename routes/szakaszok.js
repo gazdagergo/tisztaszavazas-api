@@ -23,8 +23,6 @@ router.get('/:SzakaszId?', async (req, res) => {
 
       console.log(query)
 
-      query = { kezdoHazszam: {$lt: 25} }
-
       result = await Szakasz.find(query).limit(+limit)
     }
     res.status(result ? 200 : 400)

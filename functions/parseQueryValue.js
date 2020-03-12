@@ -1,4 +1,4 @@
-export const toNumeric = string => {
+const toNumeric = string => {
   if (isNaN(+string)) {
     return null
   } else {
@@ -6,7 +6,7 @@ export const toNumeric = string => {
   } 
 }
 
-export const toRegex = string => {
+const toRegex = string => {
 	const parts = string.split('/')
 	let regex = string;
   let options = '';
@@ -24,15 +24,27 @@ export const toRegex = string => {
 	}
 };
 
-export const toBoolean = string => {
+const toBoolean = string => {
   if (string === 'false') return false;
   if (string === 'true') return true;
   return null;
 }
 
-export default value => {
+const toQueryObject = string => {
+	const regex = /\{\s*(\$.[^:]*):\s*(.*[^\s])\s*\}/;
+	const group = string.match(regex)
+	if (group){
+		return {[group[1]]: parseQueryValue(group[2])}
+	}
+	return null
+}
+
+const parseQueryValue = value => {
   let parsed = toBoolean(value); if (parsed !== null) return parsed;
   parsed = toNumeric(value); if (parsed !== null) return parsed;
   parsed = toRegex(value); if (parsed !== null) return parsed;
+  parsed = toQueryObject(value); if (parsed !== null) return parsed;
   return value
 }
+
+export default parseQueryValue
