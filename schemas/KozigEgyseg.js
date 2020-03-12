@@ -5,8 +5,8 @@ const KozigEgysegSchema = mongoose.Schema({
   megyeKod: Number,
   telepulesKod: Number,
   nev: String,
-  kozigEgysegTipus: String,
-  kozigEgysegTipusKod: {
+  tipus: String,
+  tipusKod: {
     type: String,
     enum: ['ME', 'FV', 'MV', 'BK', 'TF', 'TA',]
   }

@@ -7,6 +7,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 import authorization from './middlewares/authorization';
+import kozigEgysegRoute from './routes/kozigegyseg';
 
 dotenv.config()
 const app =  express();
@@ -26,6 +27,8 @@ app.use(authorization);
 app.use('/szavazokorok', szkRoute)
 app.use('/szakaszok', szakaszRoute)
 app.use('/scrape', scrapeRoute)
+app.use('/kozigegyseg', kozigEgysegRoute)
+app.use('/telepules', kozigEgysegRoute)
 
 
 // Connect to DB
