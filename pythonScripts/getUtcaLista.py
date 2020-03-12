@@ -57,7 +57,7 @@ def getUtcaLista(soup):
 		vegsoHazszam = nullOrInt(matches.group(6)) if nullOrInt(matches.group(6)) else nullOrInt(matches.group(5))
 
 		utcaListPairs.append({
-			"utcaString": matches.group().strip(),
+			"leiras": matches.group().strip(),
 			"kozteruletNev": kozteruletNev,
 			"kezdoHazszam": nullOrInt(matches.group(2)),
 			"vegsoHazszam": vegsoHazszam,

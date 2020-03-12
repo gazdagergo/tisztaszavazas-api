@@ -1,5 +1,6 @@
 import express from 'express';
 import szkRoute from './routes/szavazokorok';
+import szakaszRoute from './routes/szakaszok';
 import scrapeRoute from './routes/scrape';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -23,6 +24,7 @@ app.use(authorization);
 
 // Routes
 app.use('/szavazokorok', szkRoute)
+app.use('/szakaszok', szakaszRoute)
 app.use('/scrape', scrapeRoute)
 
 
