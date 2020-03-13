@@ -1,6 +1,6 @@
 import express from 'express';
 import KozigEgyseg from '../schemas/KozigEgyseg';
-import parseQueryValue from '../functions/parseQueryValue';
+import parseQuery from '../functions/parseQuery';
 
 const DEFAULT_LIMIT = 9999999;
 
@@ -17,12 +17,8 @@ router.get('/:KozigEgysegId?', async (req, res) => {
     if (KozigEgysegId) {
       result = await KozigEgyseg.findById(KozigEgysegId)
     } else {
-      query = Object.entries(query).reduce((acc, [key, value]) => ({
-        ...acc, [key]: parseQueryValue(value)
-      }), {})
-
+      query = parseQuery(query)
       console.log(query)
-
       result = await KozigEgyseg.find(query).limit(+limit)
     }
     res.status(result ? 200 : 400)
