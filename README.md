@@ -64,6 +64,9 @@ Get the street section for the address.
 
 `GET /szakaszok?telepulesNev=Budapest&kozteruletNev=Logodi utca&kezdoHazszam={$lte: 78}&vegsoHazszam={$gt: 78}&megjegyzes=/Páros/`
 
+#### Get all settlements, countries or districts
+
+`GET /kozigegysegek`
 
 ### /scrape
 
