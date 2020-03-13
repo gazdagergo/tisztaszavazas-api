@@ -4,15 +4,21 @@ import dotenv from 'dotenv';
 import getHtml from './getHtml';
 import parse from './parse';
 import generateVhuUrl from '../../functions/generateVhuUrl';
+import SourceHtml from '../../schemas/SourceHtml';
+import parseQuery from '../../functions/parseQuery';
 
 dotenv.config();
 
 const router = express.Router()
+const responses = {};
 
 router.get('/:SzavazokorId?', async (req, res) => {
   const {
-    params: { SzavazokorId }
+    params: { SzavazokorId },
+    query
   } = req;
+
+  const { scrapeOnly } = parseQuery(query)
 
   try {
     Szavazokor.findById(SzavazokorId)
@@ -24,19 +30,32 @@ router.get('/:SzavazokorId?', async (req, res) => {
         }
       } = szavkor;
       const url = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam)
-      console.log(url)
       const html = await getHtml(url)
-      const szkParsedData = await parse(html)
+      const htmlUpdateResponse = await SourceHtml.insertMany([{
+        megyeKod,
+        telepulesKod,
+        szavkorSorszam,
+        url,
+        html
+      }])
+      responses.htmlUpdateResponse = htmlUpdateResponse[0]
+      const { kozteruletek, ...szkParsedData } = await parse(html)
+      
       const newSzavkor = Object.assign(szavkor, szkParsedData)
       return newSzavkor
     })
     .then(szavkor => {
-      return szavkor.save()
+      return scrapeOnly ?
+        'Szavkor not updated as scrapeOnly flat was true' :
+        szavkor.save()
     })
-    .then(updatedSzavkor => res.json({
-      'message': 'szavazokor frissitve',
-      updatedSzavkor
-    }))
+    .then(szavkorUpdateResponse => {
+      responses.szavkorUpdateResponse = szavkorUpdateResponse;
+      res.json({
+        'message': scrapeOnly ? 'sourceHtml refreshed in db' : 'szavazokor updated',
+        responses
+      })
+    })
   } catch (error) {
     console.log(error)
     res.status(500)
