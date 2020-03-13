@@ -2,9 +2,8 @@
 #!/usr/bin/env python3
 
 import re
-
-regex = r"(?:(^[^\d]+)(\d+|(?:(\d+)-\d+))(?:\s?)([A-z])?(?:\s-\s)((?:[\d\s]+)|(?:\d+-(\d+)))(?:\s?)([A-z]?)$)|^.+$"
-
+# https://regex101.com/r/vahPd7/3
+regex = r"(?:\s*)?(?:([^\d]+)(\d+|(?:(\d+)-\d+))(?:\s?)([A-z])?(?:\s-\s)((?:[\d\s]+)|(?:\d+-(\d+)))(?:\s?)(?:\s?/\s?)?([A-z]?)\s?$)|^.+$"
 def emptyOrStrip(string):
 	return "" if not string else string.strip()
 
@@ -61,10 +60,9 @@ def getUtcaLista(soup):
 			"kozteruletNev": kozteruletNev,
 			"kezdoHazszam": nullOrInt(matches.group(2)),
 			"vegsoHazszam": vegsoHazszam,
-			"oldal": szkHazszamok.strip()
+			"megjegyzes": szkHazszamok.strip()
 		})
 		
-# https://regex101.com/r/vahPd7/1
 
 	return {
 		"kozteruletek": utcaListPairs,
