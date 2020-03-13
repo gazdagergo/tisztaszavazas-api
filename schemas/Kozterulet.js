@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const SzakaszSchema = mongoose.Schema({
+const KozteruletSchema = mongoose.Schema({
 	"telepulesNev": String,
 	"leiras": String,
 	"kozteruletNev": String,
@@ -9,4 +9,4 @@ const SzakaszSchema = mongoose.Schema({
 	"megjegyzes": String,
 })
 
-export default mongoose.model('Szakasz', SzakaszSchema);
+export default mongoose.model('Kozterulet', KozteruletSchema);

@@ -46,7 +46,7 @@ Regex match
 
 #### Get all street sections
 
-`GET /szakaszok`
+`GET /kozteruletek`
 
 #### Query street sections (to seek for ballot office based on address)
 
@@ -54,15 +54,15 @@ Get the street section for the address.
 
 1: First check the name of settlement. If result length is 1, the whole settlement belongs to one ballot office.
 
-`GET /szakaszok?telepulesNev=Zalamerenye`
+`GET /kozteruletek?telepulesNev=Zalamerenye`
 
 2: Otherwise check for settlement and street name. If result length is 1, the whole street belongs to one ballot office
 
-`GET /szakaszok?telepulesNev=Budapest&kozteruletNev=Körmöci utca`
+`GET /kozteruletek?telepulesNev=Budapest&kozteruletNev=Körmöci utca`
 
 3: Otherwise check for the house number
 
-`GET /szakaszok?telepulesNev=Budapest&kozteruletNev=Logodi utca&kezdoHazszam={$lte: 78}&vegsoHazszam={$gt: 78}&megjegyzes=/Páros/`
+`GET /kozteruletek?telepulesNev=Budapest&kozteruletNev=Logodi utca&kezdoHazszam={$lte: 78}&vegsoHazszam={$gt: 78}&megjegyzes=/Páros/`
 
 #### Get all settlements, countries or districts
 
