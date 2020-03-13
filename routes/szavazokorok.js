@@ -33,9 +33,6 @@ router.get('/:SzavazokorId?', async (req, res) => {
 
       console.log(query)
 
-      query = { 'kozteruletek.kozteruletNev': /Attila/i,
-      'kozteruletek.kezdoHazszam': { $gte: 123 } }
-
       result = await Szavazokor.find(query).limit(+limit)
       result = result.map(szk => ({
         ...szk['_doc'],
