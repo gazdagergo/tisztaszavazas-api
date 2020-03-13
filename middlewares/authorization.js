@@ -1,4 +1,5 @@
 export default async (req, res, next) => {
+	if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') return next()
 	const authtokens = [
 		process.env.TOKEN1,
 		process.env.TOKEN2
