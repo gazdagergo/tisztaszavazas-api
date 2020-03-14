@@ -32,31 +32,56 @@ router.get('/:SzavazokorId?', async (req, res) => {
     } = szavkor;
 
     const url = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam)
-    const html = await getHtml(url)
 
-    const htmlUpdateResponse = await SourceHtml.insertMany([{
-      megyeKod,
-      telepulesKod,
-      szavkorSorszam,
-      url,
-      html
-    }])
+    let htmlUpdateResponse;
+    let html;
 
-    responses.htmlUpdateResponse = htmlUpdateResponse[0]
+    if (parseFromDb) {
+      htmlUpdateResponse = null;
+      ({ html } = await SourceHtml.findOne({ megyeKod, telepulesKod, szavkorSorszam }))
+    } else {
+      html = await getHtml(url)
+
+      htmlUpdateResponse = await SourceHtml.insertMany([{
+        megyeKod,
+        telepulesKod,
+        szavkorSorszam,
+        url,
+        html
+      }])
+
+      htmlUpdateResponse = htmlUpdateResponse[0]
+    }
+
+    responses = { ...responses, htmlUpdateResponse }
+
     const { kozteruletek, ...szkParsedData } = await parse(html)
       
     const newSzavkor = Object.assign(szavkor, szkParsedData)
 
     let szavkorUpdateResponse;
     if (scrapeOnly) {
-      szavkorUpdateResponse = 'Szavkor not updated as scrapeOnly flat was true'
+      szavkorUpdateResponse = null
     } else {
       szavkorUpdateResponse = await newSzavkor.save()
     }
 
     responses = {...responses, szavkorUpdateResponse }
+
+    let message;
+
+    if (scrapeOnly && parseFromDb) {
+      message = 'Nothing happened'
+    } else if (scrapeOnly) {
+      message = 'Szavazokor not updated. SourceHtml db updated'
+    } else if (parseFromDb) {
+      message = 'Szavazokor updated from stored SourceHtml db.'
+    } else {
+      message = 'Both szavazokor and sourceHtml updated from website.'
+    }
+    
     res.json({
-      'message': scrapeOnly ? 'sourceHtml refreshed in db' : 'szavazokor updated',
+      message,
       responses
     })
   } catch (error) {
