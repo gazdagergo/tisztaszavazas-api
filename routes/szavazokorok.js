@@ -24,6 +24,12 @@ router.get('/:SzavazokorId?', async (req, res) => {
           result.kozigEgyseg.megyeKod, 
           result.kozigEgyseg.telepulesKod, 
           result.szavkorSorszam
+        ),
+        polygonUrl: generateVhuUrl(
+          result.kozigEgyseg.megyeKod, 
+          result.kozigEgyseg.telepulesKod, 
+          result.szavkorSorszam,
+          true
         )
       }
     } else {
@@ -37,7 +43,13 @@ router.get('/:SzavazokorId?', async (req, res) => {
           szk.kozigEgyseg.megyeKod, 
           szk.kozigEgyseg.telepulesKod, 
           szk.szavkorSorszam
-        )
+        ),
+        polygonUrl: generateVhuUrl(
+          szk.kozigEgyseg.megyeKod, 
+          szk.kozigEgyseg.telepulesKod, 
+          szk.szavkorSorszam,
+          true
+        )        
       }))
     }
     res.status(result ? 200 : 400)
