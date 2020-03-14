@@ -70,9 +70,11 @@ Get the street section for the address.
 
 ### /scrape
 
-Refresh the ballot office data from valasztas.hu
+Refresh the ballot office data from valasztas.hu and stores the source html.
 
 `GET /scrape/5e405d6a0ff37a310a0840e7`
+
+Parameters: scrapeOnly=true, parseFromDb=true
 
 
 # Development
