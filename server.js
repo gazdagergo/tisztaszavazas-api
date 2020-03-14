@@ -1,13 +1,14 @@
 import express from 'express';
-import szkRoute from './routes/szavazokorok';
-import kozteruletRoute from './routes/kozteruletek';
-import scrapeRoute from './routes/scrape';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 import authorization from './middlewares/authorization';
+import szkRoute from './routes/szavazokorok';
+import kozteruletRoute from './routes/kozteruletek';
+import scrapeRoute from './routes/scrape';
 import kozigEgysegRoute from './routes/kozigegyseg';
+import sourceHtmlRoute from './routes/sourcehtmls';
 
 dotenv.config()
 const app =  express();
@@ -29,6 +30,7 @@ app.use('/kozteruletek', kozteruletRoute)
 app.use('/scrape', scrapeRoute)
 app.use('/kozigegyseg', kozigEgysegRoute)
 app.use('/telepules', kozigEgysegRoute)
+app.use('/sourcehtmls', sourceHtmlRoute)
 
 
 // Connect to DB
