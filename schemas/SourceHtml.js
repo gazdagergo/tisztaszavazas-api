@@ -1,12 +1,14 @@
 import mongoose from 'mongoose';
 
 const SourceHtmlSchema = mongoose.Schema({
-  megyeKod: Number,
-  telepulesKod: Number,
 	szavkorSorszam: Number,
+  kozigEgyseg: {
+    type: Object,
+    ref: 'KozigEgyseg'
+  },	
 	url: String,
+	area: Object,
 	html: String,
-	area: Object
 },
 {
   timestamps: true
