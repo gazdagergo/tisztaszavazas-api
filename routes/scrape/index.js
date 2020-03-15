@@ -104,6 +104,7 @@ export const scraper_GET = async (SzavazokorId, query) => {
       const { kozteruletek, ...szkParsedData } = await parse(html)
       const newSzavkor = Object.assign(szavazokor, {
         ...szkParsedData,
+        kozteruletek,
         parsedFromSrcHtml: timeStamp
       })
       szavkorUpdateResponse = await newSzavkor.save()
