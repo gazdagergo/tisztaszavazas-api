@@ -3,16 +3,44 @@ const pad = (num, size) => {
 	return s.substr(s.length-size);
 }
 
-const vltId = 687
-const vlId = 294
-const valasztasAzon = 'onk2019'
 
-export default (megyeKod, telepulesKod, szavkorSorszam, polygon = false) => {
-	const preId = 'onkszavazokorieredmenyek_WAR_nvinvrportlet';
+export default query => {
+		const megyeKod = query['kozigEgyseg.megyeKod'];
+		const telepulesKod = query['kozigEgyseg.telepulesKod'];
+
+		const {
+			szavazokorSzama,
+			polygon = false,
+			valasztasAzonosito = 'onk2019'
+		} = query
+
+		let vPre, vltId, vlId, uiParam, preId;
+
+		switch (valasztasAzonosito) {
+			case 'onk2019': {
+				vPre = 'onk';
+				vltId = 687;
+				vlId = 294;
+				preId = `${vPre}szavazokorieredmenyek_WAR_nvinvrportlet`;
+				uiParam = `&_${preId}_tabId=tab2`;
+				break;
+			}
+
+			case 'ep2019': {
+				vPre = 'ep';
+				vltId = 684;
+				vlId = 291;
+				preId = `${vPre}szavazokorieredmenyek_WAR_nvinvrportlet`;
+				uiParam = `&p_p_col_id=column-2&p_p_col_count=1`;
+				break;
+			}
+			default: return ''
+		}
+
 
 	if (polygon) {
 		return `https://www.valasztas.hu/` + 
-		`szavazokorok_${valasztasAzon}` +
+		`szavazokorok_${valasztasAzonosito}` +
 		`?p_p_id=${preId}` +
 		`&p_p_lifecycle=2` +
 		`&p_p_state=maximized` +
@@ -22,22 +50,22 @@ export default (megyeKod, telepulesKod, szavkorSorszam, polygon = false) => {
 		`&_${preId}_telepulesKod=${pad(telepulesKod, 3)}` +
 		`&_${preId}_megyeKod=${pad(megyeKod, 2)}` +
 		`&_${preId}_vlId=${vlId}` +
-		`&_${preId}_szavkorSorszam=${szavkorSorszam}` +
+		`&_${preId}_szavkorSorszam=${szavazokorSzama}` +
 		`&p_p_lifecycle=1` +
-		`&_${preId}_tabId=tab2` +
+		`${uiParam}` +
 		`&_${preId}_vltId=${vltId}`
 	}
 	
 	return `https://www.valasztas.hu/` + 
-	`szavazokorok_${valasztasAzon}` + 
+	`szavazokorok_${valasztasAzonosito}` + 
 	`?p_p_id=${preId}` + 
 	`&p_p_lifecycle=1` + 
 	`&p_p_state=maximized` + 
 	`&p_p_mode=view` + 
-	`&_${preId}_tabId=tab2` + 
+	`${uiParam}` + 
 	`&_${preId}_telepulesKod=${pad(telepulesKod, 3)}` + 
 	`&_${preId}_megyeKod=${pad(megyeKod, 2)}` + 
 	`&_${preId}_vlId=${vlId}` + 
 	`&_${preId}_vltId=${vltId}` + 
-	`&_${preId}_szavkorSorszam=${szavkorSorszam}`
+	`&_${preId}_szavkorSorszam=${szavazokorSzama}`
 }
