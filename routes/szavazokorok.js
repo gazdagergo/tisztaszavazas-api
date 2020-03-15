@@ -25,6 +25,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
     query: { limit = DEFAULT_LIMIT, ...query }
   } = req;
 
+
   try {
     let result;
     if (SzavazokorId) {
@@ -35,17 +36,57 @@ router.get('/:SzavazokorId?', async (req, res) => {
       }
     } else {
       query = parseQuery(query)
-      console.log(query)
-      const projection = { kozteruletek: 0, polygonUrl: 0, vhuUrl: 0 }
-      result = await Szavazokor.find(query, projection).limit(+limit)
-      result = result.map(szk => ({
-        ...szk['_doc'],
-        scrapeUrl: `${process.env.BASE_URL}/scrape/${szk['_doc']['_id']}`
-      }))
+
+      let [_, filterCond] = Object.entries(query).reduce(
+        (acc, [key, value]) => {
+          if (key.includes('kozteruletek')){
+            return [ acc[0], { ...acc[1], [key]: value } ]
+          }
+          return [ {...acc[0], [key]: value }, acc[1] ]
+        },
+        [{}, {}] 
+      )
+
+      filterCond = Object.entries(filterCond).reduce((acc = [], [key, value]) => {
+        if (value instanceof Object) {
+          const [operator, value2] = Object.entries(value)[0]
+          return [...acc, { [operator]: [ `$$${key}`, value2 ]  }]
+        }
+        return [...acc, { $eq: [ `$$${key}`, value ]  }]
+      }, [])
+
+      const aggregations = [{ $match: query }];
+      if (filterCond.length){
+        aggregations.push({ $project: {
+          _id: 1,
+          kozteruletek: {
+            $filter: {
+              input: '$kozteruletek',
+              as: 'kozteruletek',
+              cond: {
+                $and: filterCond
+              }
+            }
+          },
+          szavazokorSzama: 1,
+          kozigEgyseg: 1
+        }})
+      } else {
+        aggregations.push({ $project: {
+          kozteruletek: 0,
+          polygonUrl: 0,
+          vhuUrl: 0,
+          sourceHtmlEntryId: 0
+        }})
+
+      }
+
+      result = await Szavazokor.aggregate(aggregations)
     }
-    res.status(result ? 200 : 400)
+    res.status(result.length ? 200 : 404)
     res.json(result || 'Szavazokor not found')
   } catch(error) {
+    console.log(error)
     res.json({ error: error.message })
   }
 })
