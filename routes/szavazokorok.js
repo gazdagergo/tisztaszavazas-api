@@ -36,7 +36,8 @@ router.get('/:SzavazokorId?', async (req, res) => {
     } else {
       query = parseQuery(query)
       console.log(query)
-      result = await Szavazokor.find(query, { kozteruletek: 0 }).limit(+limit)
+      const projection = { kozteruletek: 0, polygonUrl: 0, vhuUrl: 0 }
+      result = await Szavazokor.find(query, projection).limit(+limit)
       result = result.map(szk => ({
         ...szk['_doc'],
         scrapeUrl: `${process.env.BASE_URL}/scrape/${szk['_doc']['_id']}`
