@@ -48,23 +48,29 @@ export const scraper_GET = async (SzavazokorId, query) => {
     let htmlUpdateResponse;
     let html;
 
+    let sourceHtml = await SourceHtml.findOne({ megyeKod, telepulesKod, szavkorSorszam })
+
     if (parseFromDb) {
       htmlUpdateResponse = null;
-      ({ html } = await SourceHtml.findOne({ megyeKod, telepulesKod, szavkorSorszam }))
+      ({ html } = sourceHtml)
     } else {
       ({ data: html } = await axios.get(url));
       const { data: area } = await axios.get(polygonUrl);
+      if (sourceHtml) {
+        sourceHtml = Object.assign(sourceHtml, { url, html, area })
+        htmlUpdateResponse = await sourceHtml.save(sourceHtml)
+      } else {
+        htmlUpdateResponse = await SourceHtml.insertMany([{
+          megyeKod,
+          telepulesKod,
+          szavkorSorszam,
+          url,
+          html,
+          area
+        }])
 
-      htmlUpdateResponse = await SourceHtml.insertMany([{
-        megyeKod,
-        telepulesKod,
-        szavkorSorszam,
-        url,
-        html,
-        area
-      }])
-
-      htmlUpdateResponse = htmlUpdateResponse[0]
+        htmlUpdateResponse = htmlUpdateResponse[0]
+      }
     }
 
     responses = { ...responses, htmlUpdateResponse }
