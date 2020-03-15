@@ -11,7 +11,9 @@ const SzavazokorSchema = mongoose.Schema({
   kozteruletek: [{
     type: Object,
     ref: 'Kozterulet'
-  }]
+  }],
+  sourceHtmlUpdated: Date,
+  parsedFromSrcHtml: Date,
 })
 
 export default mongoose.model('Szavazokor', SzavazokorSchema);
