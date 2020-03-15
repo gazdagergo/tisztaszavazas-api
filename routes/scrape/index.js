@@ -13,58 +13,37 @@ dotenv.config();
 const router = express.Router()
 let responses = {};
 
-const getSzavazokor = async (SzavazokorId, query) => {
-  let szavazokor;
+
+export const scraper_GET = async (szavazokorId, query) => {
+  let szavkorSorszam,
+    telepulesKod,
+    megyeKod,
+    szavazokor,
+    vhuUrl,
+    polygonUrl,
+    sourceHtmlEntryId
+
   try {
-    if (SzavazokorId) {
-      szavazokor = await Szavazokor.findById(SzavazokorId)
-      szavazokor = [szavazokor]
+    if (szavazokorId) {
+      szavazokor = await Szavazokor.findById(szavazokorId)
+      ;({ vhuUrl, polygonUrl, sourceHtmlEntryId } = szavazokor)
     } else if (query) {
       query = parseQuery(query)
-      szavazokor = await Szavazokor.find(query)    
-    }
-
-    if (!szavazokor){
-      throw new Error('Szavazokor not found')
-    }
-
-    return szavazokor
-  } catch(error) {
-    throw error;
-  }
-}
-
-export const scraper_GET = async (SzavazokorId, query) => {
-  let szavkorSorszam, telepulesKod, megyeKod, szavazokor;
-
-  try {
-    const szavazokorok = await getSzavazokor(SzavazokorId, query)
-    if (szavazokorok.length === 1) {
-      szavazokor = szavazokorok[0]
-      ;({
-        szavkorSorszam,
-        kozigEgyseg: {
-          telepulesKod,
-          megyeKod
-        }
-      } = szavazokor)
-    } else {
-      crawl(szavazokorok)
+      const szavazokorok = await Szavazokor.find(query)
+      crawl(szavazokorok) 
       return [200, {
         message: `crawler started on ${szavazokorok.length} szavazokors`,
         query
-      }]
+      }]      
     }
 
     const { scrapeOnly, parseFromDb } = parseQuery(query)
-    const url = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam)
-    const polygonUrl = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam, true)
 
     let htmlUpdateResponse;
     let szavkorUpdateResponse;
     let html;
 
-    let sourceHtml = await SourceHtml.findOne(query)
+    let sourceHtml = await SourceHtml.findById(sourceHtmlEntryId)
     let timeStamp = new Date()
     timeStamp = timeStamp.toISOString()
 
@@ -72,13 +51,11 @@ export const scraper_GET = async (SzavazokorId, query) => {
       htmlUpdateResponse = null;
       ({ html } = sourceHtml)
     } else {
-      ({ data: html } = await axios.get(url));
+      ;({ data: html } = await axios.get(vhuUrl));
       const { data: area } = await axios.get(polygonUrl);
-      const newSzavkor = Object.assign(szavazokor, { sourceHtmlUpdated: timeStamp })
-      szavkorUpdateResponse = await newSzavkor.save()
 
       if (sourceHtml) {
-        sourceHtml = Object.assign(sourceHtml, { url, html, area })
+        sourceHtml = Object.assign(sourceHtml, { url: vhuUrl, html, area })
         htmlUpdateResponse = await sourceHtml.save(sourceHtml)
       } else {
         htmlUpdateResponse = await SourceHtml.insertMany([{
@@ -87,13 +64,19 @@ export const scraper_GET = async (SzavazokorId, query) => {
             telepulesKod,
             megyeKod,
           },
-          url,
+          vhuUrl,
           html,
           area
         }])
 
         htmlUpdateResponse = htmlUpdateResponse[0]
       }
+      const { _id: sourceHtmlEntryId } = htmlUpdateResponse;
+      const newSzavkor = Object.assign(szavazokor, {
+        sourceHtmlUpdated: timeStamp,
+        sourceHtmlEntryId
+      })
+      szavkorUpdateResponse = await newSzavkor.save()
     }
 
     responses = { ...responses, htmlUpdateResponse }
@@ -125,6 +108,7 @@ export const scraper_GET = async (SzavazokorId, query) => {
     }
     
     return [200, {
+      szavazokorId,
       message,
       responses
     }]
@@ -136,12 +120,12 @@ export const scraper_GET = async (SzavazokorId, query) => {
   }  
 }
 
-router.get('/:SzavazokorId?', async (req, res) => {
+router.get('/:szavazokorId?', async (req, res) => {
   const {
-    params: { SzavazokorId },
+    params: { szavazokorId },
     query
   } = req;
-  const [code, response] = await scraper_GET(SzavazokorId, query)
+  const [code, response] = await scraper_GET(szavazokorId, query)
   res.status(code)
   res.json(response)
 })

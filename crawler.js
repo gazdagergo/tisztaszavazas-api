@@ -7,15 +7,9 @@ const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1) + min
 
 export const crawl = async szavazokorok => {
 	try {
-		for (({ szavkorSorszam, kozigEgyseg: { megyeKod, telepulesKod } }) of szavazokorok) {
-			const [code, { message }] = await scraper_GET(
-				null, {
-					szavkorSorszam, 
-					'kozigEgyseg.megyeKod': megyeKod,
-					'kozigEgyseg.telepulesKod': telepulesKod
-				}
-			)
-			console.log(code, message, szavkorSorszam,  megyeKod, telepulesKod )
+		for (({ _id: szavazokorId }) of szavazokorok) {
+			const [code, { message }] = await scraper_GET(szavazokorId)
+			console.log(code, message, szavazokorId )
 			await sleep(randomInt(12000, 24000))
 		}
 		console.log('crawling done')
