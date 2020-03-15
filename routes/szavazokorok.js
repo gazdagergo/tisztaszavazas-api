@@ -35,21 +35,10 @@ router.get('/:SzavazokorId?', async (req, res) => {
     } else {
       query = parseQuery(query)
       console.log(query)
-      result = await Szavazokor.find(query).limit(+limit)
+      result = await Szavazokor.find(query, { kozteruletek: 0 }).limit(+limit)
       result = result.map(szk => ({
         ...szk['_doc'],
-        scrapeUrl: `${process.env.BASE_URL}/scrape/${szk['_doc']['_id']}`,
-        vhuUrl: generateVhuUrl(
-          szk.kozigEgyseg.megyeKod, 
-          szk.kozigEgyseg.telepulesKod, 
-          szk.szavkorSorszam
-        ),
-        polygonUrl: generateVhuUrl(
-          szk.kozigEgyseg.megyeKod, 
-          szk.kozigEgyseg.telepulesKod, 
-          szk.szavkorSorszam,
-          true
-        )        
+        scrapeUrl: `${process.env.BASE_URL}/scrape/${szk['_doc']['_id']}`
       }))
     }
     res.status(result ? 200 : 400)
