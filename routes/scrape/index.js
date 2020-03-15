@@ -13,32 +13,47 @@ dotenv.config();
 const router = express.Router()
 let responses = {};
 
-export const scraper_GET = async (SzavazokorId, query) => {
-  let szavkorSorszam, telepulesKod, megyeKod, szavkor;
-
+const getSzavazokor = async (SzavazokorId, query) => {
+  let szavazokor;
   try {
     if (SzavazokorId) {
-      szavkor = await Szavazokor.findById(SzavazokorId)
+      szavazokor = await Szavazokor.findById(SzavazokorId)
+      szavazokor = [szavazokor]
+    } else if (query) {
+      query = parseQuery(query)
+      szavazokor = await Szavazokor.find(query)    
+    }
+
+    if (!szavazokor){
+      throw new Error('Szavazokor not found')
+    }
+
+    return szavazokor
+  } catch(error) {
+    throw error;
+  }
+}
+
+export const scraper_GET = async (SzavazokorId, query) => {
+  let szavkorSorszam, telepulesKod, megyeKod, szavazokor;
+
+  try {
+    const szavazokorok = await getSzavazokor(SzavazokorId, query)
+    if (szavazokorok.length === 1) {
+      szavazokor = szavazokorok[0]
       ;({
         szavkorSorszam,
         kozigEgyseg: {
           telepulesKod,
           megyeKod
         }
-      } = szavkor)
-    } else if (
-      query.szavkorSorszam && 
-      query['kozigEgyseg.telepulesKod'] &&
-      query['kozigEgyseg.megyeKod']
-    ) {
-      szavkorSorszam = query.szavkorSorszam;
-      telepulesKod = query['kozigEgyseg.telepulesKod'];
-      megyeKod = query['kozigEgyseg.megyeKod'];
-      query = parseQuery(query)
-      szavkor = await Szavazokor.findOne(query)
+      } = szavazokor)
     } else {
-      crawl()
-      return [200, { message:  'crawler started' }]
+      crawl(szavazokorok)
+      return [200, {
+        message: `crawler started on ${szavazokorok.length} szavazokors`,
+        query
+      }]
     }
 
     const { scrapeOnly, parseFromDb } = parseQuery(query)
@@ -80,7 +95,7 @@ export const scraper_GET = async (SzavazokorId, query) => {
       szavkorUpdateResponse = null
     } else {
       const { kozteruletek, ...szkParsedData } = await parse(html)
-      const newSzavkor = Object.assign(szavkor, szkParsedData)
+      const newSzavkor = Object.assign(szavazokor, szkParsedData)
       szavkorUpdateResponse = await newSzavkor.save()
     }
 

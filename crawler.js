@@ -5,10 +5,8 @@ export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 
-export const crawl = async query => {
+export const crawl = async szavazokorok => {
 	try {
-		const szavazokorok = await Szavazokor.find(query);
-
 		for (({ szavkorSorszam, kozigEgyseg: { megyeKod, telepulesKod } }) of szavazokorok) {
 			const [code, { message }] = await scraper_GET(
 				null, {
@@ -20,6 +18,7 @@ export const crawl = async query => {
 			console.log(code, message, szavkorSorszam,  megyeKod, telepulesKod )
 			await sleep(randomInt(12000, 24000))
 		}
+		console.log('crawling done')
 	} catch(error){
 		console.log(error)
 	}
