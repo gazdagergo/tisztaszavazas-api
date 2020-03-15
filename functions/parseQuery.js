@@ -47,8 +47,8 @@ const parseQueryValue = value => {
   return value
 }
 
-const parseQuery = queryString => (
-	Object.entries(queryString).reduce((acc, [key, value]) => ({
+const parseQuery = query => (
+	Object.entries(query).reduce((acc, [key, value]) => ({
 		...acc, [key]: parseQueryValue(value)
 	}), {})
 )
