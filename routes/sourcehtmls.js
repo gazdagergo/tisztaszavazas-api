@@ -2,7 +2,7 @@ import express from 'express';
 import SourceHtml from '../schemas/SourceHtml';
 import parseQuery from '../functions/parseQuery';
 
-const DEFAULT_LIMIT = 10;
+const DEFAULT_LIMIT = 99999;
 
 const router = express.Router()
 
@@ -19,7 +19,7 @@ router.get('/:SourceHtmlId?', async (req, res) => {
     } else {
       query = parseQuery(query)
       console.log(query)
-      result = await SourceHtml.find(query, { html: 0 }).limit(+limit)
+      result = await SourceHtml.find(query, { html: 0, area: 0, url: 0 }).limit(+limit)
     }
     res.status(result ? 200 : 400)
     res.json(result || 'SourceHtml not found')
