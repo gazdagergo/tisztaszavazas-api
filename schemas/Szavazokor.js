@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
 const SzavazokorSchema = mongoose.Schema({
-  egySzavazokorosTelepules: Boolean,
-  szavkorSorszam: Number,
+  valasztasAzonosito: String,
+  szavazokorSzama: Number,
   szavkorCim: String,
   kozigEgyseg: {
     type: Object,
@@ -12,7 +12,11 @@ const SzavazokorSchema = mongoose.Schema({
     type: Object,
     ref: 'Kozterulet'
   }],
+  vhuUrl: String,
+  polygonUrl: String,
+  egySzavazokorosTelepules: Boolean,
   sourceHtmlUpdated: Date,
+  sourceHtmlEntryId: String,
   parsedFromSrcHtml: Date,
 })
 

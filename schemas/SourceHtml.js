@@ -6,7 +6,7 @@ const SourceHtmlSchema = mongoose.Schema({
     type: Object,
     ref: 'KozigEgyseg'
   },	
-	url: String,
+	vhuUrl: String,
 	area: Object,
 	html: String,
 },
