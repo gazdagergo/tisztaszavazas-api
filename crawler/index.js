@@ -1,5 +1,4 @@
-import Szavazokor from "./schemas/Szavazokor";
-import { scraper_GET } from "./routes/scrape";
+import { scraper_GET } from "../routes/scrape";
 
 export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
