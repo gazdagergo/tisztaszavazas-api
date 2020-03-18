@@ -7,16 +7,16 @@ var options = {
   scriptPath: './pythonScripts/',
 };
 
-export default html => (
+export default (html, pyScript = 'parseSzkHtml.py') => (
   new Promise((resolve, reject) => {
-    let pyShell = new PythonShell('parseSzkHtml.py', options)
+    let pyShell = new PythonShell(pyScript, options)
 
-    let szkParsedData;
+    let parsedData;
 
     pyShell.send({ html })
 
     pyShell.on('message', message => {
-      szkParsedData  = message;
+      parsedData  = message;
     })
 
     pyShell.end((err,code,signal) => {
@@ -24,7 +24,7 @@ export default html => (
       console.log('The exit code was: ' + code);
       console.log('The exit signal was: ' + signal);
       console.log('finished');
-      resolve(szkParsedData)
+      resolve(parsedData)
     });
   })
 )
