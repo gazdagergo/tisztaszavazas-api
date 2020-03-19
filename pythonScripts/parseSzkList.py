@@ -11,9 +11,11 @@ from getSzkList import getSzkList
 
 def main(html):
 	soup = BeautifulSoup(html, "html.parser")
-	result = getSzkList(soup)
-	# print(result)
-	print(json.dumps(result))
+	try:
+		result = getSzkList(soup)
+		print(json.dumps(result))
+	except:
+		print(json.dumps({ "error": "NoResult" }))
 
 if len(sys.argv)>1:
 	# manual start
