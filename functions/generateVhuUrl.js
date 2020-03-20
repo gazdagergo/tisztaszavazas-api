@@ -4,6 +4,36 @@ const pad = (num, size) => {
 }
 
 
+export const getUrlParams = (valasztasAzonosito, prefix = 'szavazokorieredmenyek') => {
+	let vPre, preId;
+	switch (valasztasAzonosito) {
+		case 'onk2019': 
+			vPre = 'onk';
+			preId = `${vPre}${prefix}_WAR_nvinvrportlet`;
+			return ({
+				vPre,
+				vltId: 687,
+				vlId: 294,
+				preId,
+				uiParam: `&_${preId}_tabId=tab2`
+			})
+
+		case 'ep2019': 
+			vPre = 'ep';
+			preId = `${vPre}${prefix}_WAR_nvinvrportlet`;
+
+			return ({
+				vPre,
+				vltId: 684,
+				vlId: 291,
+				preId,
+				uiParam: `&p_p_col_id=column-2&p_p_col_count=1`
+			})
+
+		default: return null
+	}
+}
+
 export default query => {
 	const megyeKod = query['kozigEgyseg.megyeKod'];
 	const telepulesKod = query['kozigEgyseg.telepulesKod'];
@@ -12,31 +42,12 @@ export default query => {
 		szavazokorSzama,
 		valasztasAzonosito = 'onk2019',
 		context = 'szavazokorieredmenyek',  // szavazokorok, polygon
-		page
+		page,
 	} = query
 
-	let vPre, vltId, vlId, uiParam, preId;
+	const prefix = context === 'polygon' ? 'szavazokorieredmenyek' : context;
 
-	switch (valasztasAzonosito) {
-		case 'onk2019': {
-			vPre = 'onk';
-			vltId = 687;
-			vlId = 294;
-			preId = `${vPre}${context}_WAR_nvinvrportlet`;
-			uiParam = `&_${preId}_tabId=tab2`;
-			break;
-		}
-
-		case 'ep2019': {
-			vPre = 'ep';
-			vltId = 684;
-			vlId = 291;
-			preId = `${vPre}${context}_WAR_nvinvrportlet`;
-			uiParam = `&p_p_col_id=column-2&p_p_col_count=1`;
-			break;
-		}
-		default: return ''
-	}
+	let { vltId, vlId, uiParam, preId } = getUrlParams(valasztasAzonosito, prefix)
 
 	switch (context) {
 		case 'polygon':
@@ -77,7 +88,7 @@ export default query => {
 			`&_${preId}_resetCur=false` +
 			`&_${preId}_cur=${page}`
 
-		default:
+		default: //szavazokorieredmenyek
 			return `https://www.valasztas.hu/` + 
 			`szavazokorok_${valasztasAzonosito}` + 
 			`?p_p_id=${preId}` + 
