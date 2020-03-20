@@ -12,10 +12,7 @@ const valasztasAzonosito = process.argv[2] || 'onk2019';
 	await mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true })
 	let { preId } = getUrlParams(valasztasAzonosito);
 	const urlEntries = await SzavazokorUrl.find();
-	const toInsert = urlEntries.map(({
-		url: vhuUrl,
-		query
-	}) => {
+	const toInsert = urlEntries.map(({ query }) => {
 		const telepulesKod = +query[`_${preId}_telepulesKod`]
 		const megyeKod = +query[`_${preId}_megyeKod`]
 		const szavazokorSzama = +query[`_${preId}_szavkorSorszam`]
@@ -26,6 +23,14 @@ const valasztasAzonosito = process.argv[2] || 'onk2019';
 			'kozigEgyseg.telepulesKod': telepulesKod,
 			szavazokorSzama,
 			context: 'polygon'
+		})
+
+		const vhuUrl = generateVhuUrl({
+			valasztasAzonosito,
+			'kozigEgyseg.megyeKod': megyeKod,
+			'kozigEgyseg.telepulesKod': telepulesKod,
+			szavazokorSzama,
+			context: 'szavazokorieredmenyek'
 		})
 
 		return {
@@ -41,6 +46,6 @@ const valasztasAzonosito = process.argv[2] || 'onk2019';
 	})
 
 	const response = await Szavazokor.insertMany(toInsert)
-	console.log(response)
+	console.log(response.length)
 
 })()
