@@ -5,16 +5,23 @@
 from bs4 import BeautifulSoup
 import sys
 import json
+import logging
+
 from getUtcaLista import getUtcaLista
 from getSzavkorCim import getSzavkorCim
 
 def main(html):
-	soup = BeautifulSoup(html, "html.parser")
-	result = {
-		**getUtcaLista(soup),
-		"szavkorCim": getSzavkorCim(soup)
-	}
-	print(json.dumps(result))
+	# logging.basicConfig(filename='example.log',level=logging.DEBUG)
+
+	try:
+		soup = BeautifulSoup(html, "html.parser")
+		result = {
+			**getUtcaLista(soup),
+			"szavkorCim": getSzavkorCim(soup)
+		}
+		print(json.dumps(result))
+	except:
+		print(json.dumps({"error": "error"}))
 
 if len(sys.argv)>1:
 	# manual start
