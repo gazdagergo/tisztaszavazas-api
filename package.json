@@ -1,5 +1,5 @@
 {
-  "name": "fintech-node-backend",
+  "name": "vhu-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,8 @@
     "server": "nodemon server.js --exec babel-node",
     "heroku-postbuild": "npm install",
     "start": "babel-node server.js",
-    "crawl": "babel-node crawler/crawlUrls.js"
+    "crawl:onk2019": "babel-node crawler/crawlUrls.js onk2019",
+    "initszk:onk2019": "babel-node crawler/initSzks.js onk2019"
   },
   "repository": {
     "type": "git",
