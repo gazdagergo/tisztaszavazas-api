@@ -8,6 +8,10 @@ const SzavazokorSchema = mongoose.Schema({
     type: Object,
     ref: 'KozigEgyseg'
   },
+  valasztokerulet: {
+    type: Object,
+    ref: 'Valasztokerulet'
+  },
   kozteruletek: [{
     type: Object,
     ref: 'Kozterulet'
