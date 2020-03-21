@@ -17,7 +17,7 @@ def getSzavkorDetails(soup):
 	.getText()
 		
 	regex = r"^(.[^\d]+)\d{1,3}. szavazókör"
-	matches = re.match(regex, telepulesNev)
+	telepulesNevMatches = re.match(regex, telepulesNev)
 
 	valasztokeruletLeiras = groupDiv \
 	.findAll("div", {"class": "span6"})[4] \
@@ -25,16 +25,29 @@ def getSzavkorDetails(soup):
 	.getText()
 
 	regex = r"^.[^\d]+(\d{1,3})."
-	matches = re.match(regex, valasztokeruletLeiras)
+	valasztokeruletLeirasMatches = re.match(regex, valasztokeruletLeiras)
+
+	valasztokSzama = groupDiv \
+	.findAll("div", {"class": "span6"})[5] \
+	.findAll("span", {"class": "text-semibold"})[0] \
+	.getText()	
+
+	regex = r"^\s?(.+) f.+"
+	valasztokSzamaMatches = re.match(regex, valasztokSzama)
+
+	akadalymentes = groupDiv \
+	.select("div[class*=akadalymentes]")
 
 	return {
 		"szavazokorCime": szavazokorCime.strip(),
 		"kozigEgyseg": {
-			"kozigEgysegNeve": matches.group(1).strip()
+			"kozigEgysegNeve": telepulesNevMatches.group(1).strip()
 		},
 		"valasztokerulet": {
 			"leiras": valasztokeruletLeiras.strip(),
-			"szam": matches.group(1)
-		}
+			"szam": int(valasztokeruletLeirasMatches.group(1))
+		},
+		"valasztokSzama": int(valasztokSzamaMatches.group(1)),
+		"akadalymentes": bool(len(akadalymentes))
 	}
 	

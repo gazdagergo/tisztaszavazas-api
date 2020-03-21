@@ -22,6 +22,7 @@ const SzavazokorSchema = mongoose.Schema({
   sourceHtmlUpdated: Date,
   sourceHtmlEntryId: String,
   parsedFromSrcHtml: Date,
+  akadalymentes: Boolean
 })
 
 export default mongoose.model('Szavazokor', SzavazokorSchema);
