@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const KozigEgysegSchema = mongoose.Schema({
-  megye: String,
+  megyeNeve: String,
   megyeKod: Number,
   telepulesKod: Number,
   kozigEgysegNeve: String,
