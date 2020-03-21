@@ -5,8 +5,8 @@ import re
 import logging
 
 
-# https://regex101.com/r/vahPd7/3
-regex = r"(?:\s*)?(?:([^\d]+)(\d+|(?:(\d+)-\d+))(?:\s?)([A-z])?(?:\s-\s)((?:[\d\s]+)|(?:\d+-(\d+)))(?:\s?)(?:\s?/\s?)?([A-z]?)\s?$)|^.+$"
+# https://regex101.com/r/vahPd7/6
+regex = r"(?:\s*)?(?:([^\d]+)(\d+|(?:(\d+)-\d+))(?:\s?)(?:\s?/\s?)?([A-z])?(?:\s-\s)((?:[\d\s]+)|(?:\d+-(\d+)))(?:\s?)(?:\s?/\s?)?([A-z]?)\s?$)|^.+$"
 def emptyOrStrip(string):
 	return "" if not string else string.strip()
 
