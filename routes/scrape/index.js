@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import axios from 'axios';
 import parse from './parse';
 import Szavazokor from '../../schemas/Szavazokor';
-import generateVhuUrl from '../../functions/generateVhuUrl';
 import SourceHtml from '../../schemas/SourceHtml';
 import parseQuery from '../../functions/parseQuery';
 import { crawl } from '../../crawler';
@@ -13,7 +12,6 @@ dotenv.config();
 
 const router = express.Router()
 let responses = {};
-
 
 export const scraper_GET = async (szavazokorId, query = {}) => {
   let szavkorSorszam,
@@ -27,21 +25,20 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
     parseFromDb;
 
     query = parseQuery(query)
-    ;({ scrapeOnly, parseFromDb, ...query } = query)
+    ;({ scrapeOnly = false, parseFromDb = false, ...query } = query)
 
   try {
     if (szavazokorId) {
       szavazokor = await Szavazokor.findById(szavazokorId)
       ;({ vhuUrl, polygonUrl, sourceHtmlEntryId } = szavazokor)
-    } else if (Object.keys(query).length) {
+    } else {
       const szavazokorok = await Szavazokor.find(query)
-      crawl(szavazokorok) 
+      crawl(szavazokorok, { scrapeOnly, parseFromDb }) 
       return [200, {
         message: `crawler started on ${szavazokorok.length} szavazokors`,
         query
       }]      
     }
-
 
     let htmlUpdateResponse,
     szavkorUpdateResponse,
