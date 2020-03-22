@@ -28,4 +28,19 @@ router.get('/:id?', async (req, res) => {
   }
 })
 
+router.post('/:id?', async (req, res) => {
+  try {
+    const {
+      body
+    } = req
+
+    const response = await Schema.insertMany(body)
+    res.json(response)
+  } catch(error){
+    console.log(error)
+    res.status(500)
+    res.json({ error: error.message})
+  }
+})
+
 export default router;
