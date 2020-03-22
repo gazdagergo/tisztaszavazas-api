@@ -9,6 +9,7 @@ import logging
 
 from getUtcaLista import getUtcaLista
 from getSzavkorDetails import getSzavkorDetails
+from getRefreshDate import getRefreshDate
 
 def main(html):
 	# logging.basicConfig(filename='example.log',level=logging.DEBUG)
@@ -17,7 +18,8 @@ def main(html):
 		soup = BeautifulSoup(html, "html.parser")
 		result = {
 			**getUtcaLista(soup),
-			**getSzavkorDetails(soup)
+			**getSzavkorDetails(soup),
+			"frissitveValasztasHun": getRefreshDate(soup).strftime('%Y-%m-%dT%H:%M:%SZ')
 		}
 		print(json.dumps(result))
 	except:
