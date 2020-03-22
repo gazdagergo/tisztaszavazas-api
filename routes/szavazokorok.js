@@ -91,11 +91,12 @@ router.get('/:SzavazokorId?', async (req, res) => {
       }
 
       result = await Szavazokor.aggregate(aggregations)
+      
       if (regexStreetToFilter) {
         result = result.reduce((acc = [], entry) => {
-          const kozteruletek = entry.kozteruletek.filter(({ kozteruletNev }) => {
-            return kozteruletNev.match(new RegExp(regexStreetToFilter))
-          })
+          const kozteruletek = entry.kozteruletek.filter(({ kozteruletNev }) => (
+            kozteruletNev.match(regexStreetToFilter)
+          ))
           if (kozteruletek.length) return [...acc, { ...entry, kozteruletek }]
           return acc
         }, [])
