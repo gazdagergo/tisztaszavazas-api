@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const SourceHtmlSchema = mongoose.Schema({
-	szavkorSorszam: Number,
+	szavazokorSzama: Number,
   kozigEgyseg: {
     type: Object,
     ref: 'KozigEgyseg'

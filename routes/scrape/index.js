@@ -14,7 +14,7 @@ const router = express.Router()
 let responses = {};
 
 export const scraper_GET = async (szavazokorId, query = {}) => {
-  let szavkorSorszam,
+  let szavazokorSzama,
     telepulesKod,
     megyeKod,
     szavazokor,
@@ -29,8 +29,18 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
 
   try {
     if (szavazokorId) {
-      szavazokor = await Szavazokor.findById(szavazokorId)
-      ;({ vhuUrl, polygonUrl, sourceHtmlEntryId } = szavazokor)
+      szavazokor = await Szavazokor.findById(szavazokorId);
+      ;({
+        vhuUrl,
+        polygonUrl,
+        sourceHtmlEntryId,
+        szavazokorSzama,
+        kozigEgyseg: {
+          megyeKod,
+          telepulesKod
+        }
+      } = szavazokor)
+
     } else {
       const szavazokorok = await Szavazokor.find(query)
       crawl(szavazokorok, { scrapeOnly, parseFromDb }) 
@@ -46,14 +56,16 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
     parseMsg,
     html;
 
-    let sourceHtml = await SourceHtml.findById(sourceHtmlEntryId)
+    let { 0: sourceHtml } = await SourceHtml.find({ vhuUrl })
     let timeStamp = new Date()
     timeStamp = timeStamp.toISOString()
 
-    if (parseFromDb) {
+    if (parseFromDb && sourceHtml) {
       htmlUpdateResponse = null;
       scrapeMsg = 'Html update not requested. '
       ;({ html } = sourceHtml)
+    } else if (parseFromDb && !sourceHtml) {
+      throw new Error('Htm not available in db. ')
     } else {
       ;({ data: html } = await axios.get(vhuUrl));
       const { data: area } = await axios.get(polygonUrl);
@@ -65,7 +77,7 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
       } else {
         try {
           htmlUpdateResponse = await SourceHtml.insertMany([{
-            szavkorSorszam,
+            szavazokorSzama,
             kozigEgyseg: {
               telepulesKod,
               megyeKod,
@@ -75,15 +87,16 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
             area
           }])
           scrapeMsg = 'Html added to db. '
-          htmlUpdateResponse = htmlUpdateResponse[0]
+          // console.log({htmlUpdateResponse})     
+          // htmlUpdateResponse = htmlUpdateResponse[0]
         } catch(error){
-          scrapeMsg = 'DB error while updating html.'
+          // console.log(error)
+          scrapeMsg = error.message
         }
       }
-      const { _id: sourceHtmlEntryId } = htmlUpdateResponse;
+          
       const newSzavkor = Object.assign(szavazokor, {
         sourceHtmlUpdated: timeStamp,
-        sourceHtmlEntryId
       })
       szavkorUpdateResponse = await newSzavkor.save()
     }
@@ -111,7 +124,7 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
           szavkorUpdateResponse = await newSzavkor.save()
           parseMsg = 'Szavkor parsed and updated successfully.'
         } catch(error) {
-          console.log(error)
+          // console.log(error)
           parseMsg = 'Szavkor write db error. Szavkor not updated.'
         }
       }
