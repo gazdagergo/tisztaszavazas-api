@@ -24,6 +24,9 @@ const SzavazokorSchema = mongoose.Schema({
   parsedFromSrcHtml: Date,
   akadalymentes: Boolean,
   frissitveValasztasHun: Date
+},
+{
+  timestamps: true  
 })
 
 export default mongoose.model('Szavazokor', SzavazokorSchema);

@@ -39,11 +39,19 @@ const toQueryObject = string => {
 	return null
 }
 
+const toDate = string => {
+	if (!isNaN(Date.parse(string))) {
+		return new Date(string)
+	}
+	return null 
+}
+
 const parseQueryValue = value => {
   let parsed = toBoolean(value); if (parsed !== null) return parsed;
   parsed = toNumeric(value); if (parsed !== null) return parsed;
   parsed = toRegex(value); if (parsed !== null) return parsed;
-  parsed = toQueryObject(value); if (parsed !== null) return parsed;
+	parsed = toQueryObject(value); if (parsed !== null) return parsed;
+	parsed = toDate(value); if (parsed !== null) return parsed;
   return value
 }
 

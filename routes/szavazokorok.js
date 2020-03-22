@@ -19,12 +19,16 @@ const getGeneratedParams = szavazokor => {
   }
 }
 
+const instanceOf = (elem, constructorName = 'Object') => (
+  elem instanceof Object &&
+  Object.getPrototypeOf(elem).constructor.name == constructorName
+)
+
 router.get('/:SzavazokorId?', async (req, res) => {
   let {
     params: { SzavazokorId },
     query: { limit = DEFAULT_LIMIT, ...query }
   } = req;
-
 
   try {
     let result;
@@ -47,16 +51,23 @@ router.get('/:SzavazokorId?', async (req, res) => {
         [{}, {}] 
       )
 
+      let regexStreetToFilter = '';
+
       filterCond = Object.entries(filterCond).reduce((acc = [], [key, value]) => {
-        if (value instanceof Object) {
+        if (instanceOf(value, 'Object')) {
           const [operator, value2] = Object.entries(value)[0]
           return [...acc, { [operator]: [ `$$${key}`, value2 ]  }]
+        }
+        if (instanceOf(value, 'RegExp')) {
+          regexStreetToFilter = value
+          return acc
         }
         return [...acc, { $eq: [ `$$${key}`, value ]  }]
       }, [])
 
       const aggregations = [{ $match: query }];
-      if (filterCond.length){
+
+      if (filterCond && filterCond.length){
         aggregations.push({ $project: {
           _id: 1,
           kozteruletek: {
@@ -73,15 +84,22 @@ router.get('/:SzavazokorId?', async (req, res) => {
         }})
       } else {
         aggregations.push({ $project: {
-          kozteruletek: 0,
           polygonUrl: 0,
           vhuUrl: 0,
           sourceHtmlEntryId: 0
         }})
-
       }
 
       result = await Szavazokor.aggregate(aggregations)
+      if (regexStreetToFilter) {
+        result = result.reduce((acc = [], entry) => {
+          const kozteruletek = entry.kozteruletek.filter(({ kozteruletNev }) => {
+            return kozteruletNev.match(new RegExp(regexStreetToFilter))
+          })
+          if (kozteruletek.length) return [...acc, { ...entry, kozteruletek }]
+          return acc
+        }, [])
+      }
     }
     res.status(result.length ? 200 : 404)
     res.json(result || 'Szavazokor not found')
