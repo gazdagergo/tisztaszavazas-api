@@ -22,11 +22,12 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
     polygonUrl,
     scrapeOnly,
     parseFromDb,
-    dontSaveHtml
+    dontSaveHtml,
+    timeoutSec
     ;
 
     query = parseQuery(query)
-    ;({ scrapeOnly = false, parseFromDb = false, dontSaveHtml = false, ...query } = query)
+    ;({ scrapeOnly = false, parseFromDb = false, dontSaveHtml = false, timeoutSec, ...query } = query)
 
   try {
     if (szavazokorId) {
@@ -43,7 +44,7 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
 
     } else {
       const szavazokorok = await Szavazokor.find(query)
-      crawl(szavazokorok, { scrapeOnly, parseFromDb, dontSaveHtml }) 
+      crawl(szavazokorok, { scrapeOnly, parseFromDb, dontSaveHtml, timeoutSec }) 
       return [200, {
         message: `crawler started on ${szavazokorok.length} szavazokors`,
         query
