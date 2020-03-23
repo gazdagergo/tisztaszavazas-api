@@ -85,13 +85,12 @@ router.get('/:SzavazokorId?', async (req, res) => {
       } else {
         aggregations.push({ $project: {
           polygonUrl: 0,
-          vhuUrl: 0,
-          sourceHtmlEntryId: 0
+          vhuUrl: 0
         }})
       }
 
       result = await Szavazokor.aggregate(aggregations)
-      
+
       if (regexStreetToFilter) {
         result = result.reduce((acc = [], entry) => {
           const kozteruletek = entry.kozteruletek.filter(({ kozteruletNev }) => (
