@@ -101,6 +101,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
         }, [])
       }
     }
+    res.header('X-Total-Count', result.length)
     res.status(result.length ? 200 : 404)
     res.json(result || 'Szavazokor not found')
   } catch(error) {
