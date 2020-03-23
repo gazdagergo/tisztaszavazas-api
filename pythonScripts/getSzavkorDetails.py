@@ -20,14 +20,29 @@ def getSzavkorDetails(soup):
 	regex = r"^(.[^\d]+)\d{1,3}. szavazókör"
 	telepulesNevMatches = re.match(regex, telepulesNev)
 
-	# valasztokeruletLeiras
-	valasztokeruletLeiras = groupDiv \
+	# valasztokerulet
+	valasztokerulet = groupDiv \
 	.findAll("div", {"class": "span6"})[4] \
 	.findAll("span", {"class": "text-semibold"})[0] \
 	.getText()
 
-	regex = r"^.[^\d]+(\d{1,3})."
-	valasztokeruletLeirasMatches = re.match(regex, valasztokeruletLeiras)
+	if valasztokerulet.strip() == '-':
+		valasztokerulet_dict = {
+			"valasztokerulet": {
+				"leiras": "-",
+				"szam": None
+			}
+		}
+	else:
+		regex = r"^.[^\d]+(\d{1,3})."
+		valasztokeruletMatches = re.match(regex, valasztokerulet)
+
+		valasztokerulet_dict =	{
+			"valasztokerulet": {
+				"leiras": valasztokerulet.strip(),
+				"szam": int(valasztokeruletMatches.group(1))	
+			}
+		}
 
 	# valasztokSzama
 	valasztokSzama = groupDiv \
@@ -48,12 +63,8 @@ def getSzavkorDetails(soup):
 		"kozigEgyseg": {
 			"kozigEgysegNeve": telepulesNevMatches.group(1).strip()
 		},
-		"valasztokerulet": {
-			"leiras": valasztokeruletLeiras.strip(),
-			"szam": int(valasztokeruletLeirasMatches.group(1))
-		},
+		**valasztokerulet_dict,
 		"valasztokSzama": int(valasztokSzamaMatches.group(1)),
-		"akadalymentes": bool(len(akadalymentes)),
-		# "frissitveValasztasHun": 
+		"akadalymentes": bool(len(akadalymentes))
 	}
 	
