@@ -34,7 +34,6 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
       ;({
         vhuUrl,
         polygonUrl,
-        sourceHtmlEntryId,
         szavazokorSzama,
         kozigEgyseg: {
           megyeKod,
