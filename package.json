@@ -9,7 +9,8 @@
     "heroku-postbuild": "npm install",
     "start": "babel-node server.js",
     "crawl:onk2019": "babel-node crawler/crawlUrls.js onk2019",
-    "initszk:onk2019": "babel-node crawler/initSzks.js onk2019"
+    "initszk:onk2019": "babel-node crawler/initSzks.js onk2019",
+    "saveHtmsToFile": "babel-node utils/saveHtmsToFile.js"
   },
   "repository": {
     "type": "git",
