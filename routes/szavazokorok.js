@@ -122,6 +122,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
       result = await Szavazokor.aggregate(aggregations)
       
       result = result.reduce((acc = [], entry) => {
+        if (!entry.kozteruletek) return [...acc, entry]
         if (entry.egySzavazokorosTelepules) return [...acc, entry]
         const kozteruletek = entry.kozteruletek.filter(({ kozteruletNev }) => (
           kozteruletNev.match(regexStreetToFilter)  // default: '' -> matches with all
