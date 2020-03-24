@@ -23,7 +23,8 @@ const SzavazokorSchema = mongoose.Schema({
   parsedFromSrcHtml: Date,
   akadalymentes: Boolean,
   frissitveValasztasHun: Date,
-  valasztokSzama: Number
+  valasztokSzama: Number,
+  helyadatok: Object
 },
 {
   timestamps: true  
