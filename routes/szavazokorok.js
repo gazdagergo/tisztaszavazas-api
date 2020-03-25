@@ -2,6 +2,7 @@ import express from 'express';
 import Szavazokor from '../schemas/Szavazokor';
 import generateVhuUrl from '../functions/generateVhuUrl';
 import parseQuery from '../functions/parseQuery';
+import completeQueryParams from '../functions/completeQueryParams';
 
 const DEFAULT_LIMIT = 99999;
 
@@ -67,6 +68,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
 
   let limit;
 
+  query = completeQueryParams(query)
   query = parseQuery(query)
   ;({ limit = DEFAULT_LIMIT, ...query } = query)
 
