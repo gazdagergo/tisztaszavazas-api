@@ -10,6 +10,7 @@ import scrapeRoute from './routes/scrape';
 import kozigEgysegRoute from './routes/kozigegyseg';
 import sourceHtmlRoute from './routes/sourcehtmls';
 import urlsRoute from './routes/urls';
+import vhuPageRoute from './routes/vhupage';
 
 dotenv.config()
 const app =  express();
@@ -22,10 +23,13 @@ const corsOptions = {
 // Middlewares
 app.use(bodyParser.json({limit: '50mb'}))
 app.use(cors(corsOptions));
+
+// public routes
+app.use('/vhupage', vhuPageRoute)
+
 app.use(authorization);
 
-
-// Routes
+// authorized routes
 app.use('/szavazokorok', szkRoute)
 app.use('/kozteruletek', kozteruletRoute)
 app.use('/scrape', scrapeRoute)

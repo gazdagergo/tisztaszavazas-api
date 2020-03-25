@@ -77,10 +77,10 @@ router.get('/:SzavazokorId?', async (req, res) => {
     if (SzavazokorId) {
       const projection = getProjection(req.user, 'byId')
       result = await Szavazokor.findById(SzavazokorId, projection)
-/*       result = {
+      result = {
         ...result['_doc'],
-        scrapeUrl: `${process.env.BASE_URL}/scrape/${result['_doc']['_id']}`
-      } */
+        valasztasHuOldal: `${process.env.BASE_URL}/vhupage/${result['_doc']['_id']}`
+      }
     } else if (!Object.keys(query).length) {
       const projection = getProjection(req.user, 'noQuery')
       result = await Szavazokor.find({}, projection).limit(limit)
