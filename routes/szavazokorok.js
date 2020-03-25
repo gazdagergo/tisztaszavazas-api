@@ -25,6 +25,9 @@ const instanceOf = (elem, constructorName = 'Object') => (
 )
 
 const getProjection = ({ roles }, context) => {
+  const isAdmin = roles.includes('admin')
+
+
   switch (context) {
     case 'noQuery': return ({
       kozteruletek: 0,
@@ -46,11 +49,12 @@ const getProjection = ({ roles }, context) => {
     })
 
     default: return ({
-      sourceHtmlUpdated: roles.includes('admin') ? 1 : 0,
-      parsedFromSrcHtml: roles.includes('admin') ? 1 : 0,
-      createdAt: roles.includes('admin') ? 1 : 0,
-      'kozigEgyseg.megyeKod': roles.includes('admin') ? 1 : 0,
-      'kozigEgyseg.telepulesKod': roles.includes('admin') ? 1 : 0,
+      sourceHtmlUpdated: 0,
+      parsedFromSrcHtml: 0,
+      createdAt: 0,
+      'kozigEgyseg.megyeKod': 0,
+      'kozigEgyseg.telepulesKod': 0,
+      polygonUrl: 0,
     })
   }
 }
@@ -58,23 +62,27 @@ const getProjection = ({ roles }, context) => {
 router.get('/:SzavazokorId?', async (req, res) => {
   let {
     params: { SzavazokorId },
-    query: { limit = DEFAULT_LIMIT, ...query }
+    query
   } = req;
+
+  let limit;
+
+  query = parseQuery(query)
+  ;({ limit = DEFAULT_LIMIT, ...query } = query)
 
   try {
     let result;
     if (SzavazokorId) {
-      result = await Szavazokor.findById(SzavazokorId)
-      result = {
+      const projection = getProjection(req.user, 'byId')
+      result = await Szavazokor.findById(SzavazokorId, projection)
+/*       result = {
         ...result['_doc'],
         scrapeUrl: `${process.env.BASE_URL}/scrape/${result['_doc']['_id']}`
-      }
+      } */
     } else if (!Object.keys(query).length) {
       const projection = getProjection(req.user, 'noQuery')
       result = await Szavazokor.find({}, projection).limit(limit)
     } else {
-      query = parseQuery(query)
-
       let [_, filterCond] = Object.entries(query).reduce(
         (acc, [key, value]) => {
           if (key.includes('kozteruletek')){
