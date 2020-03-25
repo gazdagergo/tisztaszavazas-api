@@ -25,6 +25,7 @@ app.use(bodyParser.json({limit: '50mb'}))
 app.use(cors(corsOptions));
 
 // public routes
+app.use('/', express.static('apidoc'));
 app.use('/vhupage', vhuPageRoute)
 
 app.use(authorization);
