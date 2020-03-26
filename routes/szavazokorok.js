@@ -28,6 +28,16 @@ const instanceOf = (elem, constructorName = 'Object') => (
 const getProjection = ({ roles }, context) => {
   const isAdmin = roles.includes('admin')
 
+  let projection = {
+    sourceHtmlUpdated: 0,
+    parsedFromSrcHtml: 0,
+    createdAt: 0,
+    vhuUrl: 0,
+    'kozigEgyseg.megyeKod': 0,
+    'kozigEgyseg.telepulesKod': 0,
+    polygonUrl: 0,
+    valasztasAzonosito: 0
+  }
 
   switch (context) {
     case 'withQuery':
@@ -52,16 +62,13 @@ const getProjection = ({ roles }, context) => {
       'kozigEgyseg.megyeNeve': 1
     })
 
-    default: return ({
-      sourceHtmlUpdated: 0,
-      parsedFromSrcHtml: 0,
-      createdAt: 0,
-      vhuUrl: 0,
-      'kozigEgyseg.megyeKod': 0,
-      'kozigEgyseg.telepulesKod': 0,
-      polygonUrl: 0,
-      valasztasAzonosito: 0
-    })
+    default:
+      if (isAdmin) {
+        delete projection['kozigEgyseg.megyeKod']
+        delete projection['kozigEgyseg.telepulesKod']
+        delete projection.polygonUrl
+      }
+      return projection
   }
 }
 
