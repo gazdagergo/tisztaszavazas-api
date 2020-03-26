@@ -55,7 +55,8 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
     szavkorUpdateResponse,
     scrapeMsg,
     parseMsg,
-    html;
+    html,
+    area;
 
     let { 0: sourceHtml } = await SourceHtml.find({ vhuUrl })
     let timeStamp = new Date()
@@ -64,12 +65,18 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
     if (parseFromDb && sourceHtml) {
       htmlUpdateResponse = null;
       scrapeMsg = 'Html update not requested. '
-      ;({ html } = sourceHtml)
+      ;({ html, area } = sourceHtml)
     } else if (parseFromDb && !sourceHtml) {
       throw new Error('Htm not available in db. ')
     } else {
       ;({ data: html } = await axios.get(vhuUrl));
-      const { data: area } = await axios.get(polygonUrl);
+      let area;
+      try {
+        ;({ data: area } = await axios.get(polygonUrl))
+      } catch (error) {
+        console.log('polygon error')
+        area = null
+      }
 
       if (dontSaveHtml) {
         scrapeMsg = 'Html persistence not requested. '
@@ -117,6 +124,10 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
       } else {
         const newSzavkor = Object.assign(szavazokor, {
           ...szkParsedData,
+          helyadatok: {
+            korzethatar: area && area.polygon && JSON.parse(area.polygon.paths),
+            szavazokorKoordinatai: area && area.map && area.map.center
+          },
           kozigEgyseg: {
             ...szavazokor.kozigEgyseg,
             megyeNeve: getCountryName(szavazokor.kozigEgyseg.megyeKod),
