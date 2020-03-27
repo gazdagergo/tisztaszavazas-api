@@ -38,7 +38,8 @@ const getProjection = ({ roles }, context) => {
     'kozigEgyseg.megyeKod': 0,
     'kozigEgyseg.telepulesKod': 0,
     polygonUrl: 0,
-    valasztasAzonosito: 0
+    valasztasAzonosito: 0,
+    helyadatok: 0
   }
 
   switch (context) {
@@ -56,6 +57,7 @@ const getProjection = ({ roles }, context) => {
       'kozigEgyseg.megyeKod': 0,
       'kozigEgyseg.telepulesKod': 0,
       valasztasAzonosito: 0,
+      helyadatok: 0
     })
 
     case 'filterStreet': return ({
