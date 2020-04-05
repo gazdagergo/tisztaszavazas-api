@@ -11,7 +11,8 @@ import getSortObject from '../functions/getSortObject';
  * @apiName szavazokorok2
  * @apiGroup Szavazókörök
  *
- * @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default 99999)
+ * @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default: 20)
+ * @apiParam {Number} skip A lapozáshoz használható paraméter. (default: 0)
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -126,6 +127,8 @@ import getSortObject from '../functions/getSortObject';
  * @apiSampleRequest off
  */
 
+
+const DEFAULT_LIMIT = 20;
 const DEFAULT_SORT = 'kozigEgyseg.megyeKod,kozigEgyseg.telepulesKod,szavazokorSzama'
 
 const router = express.Router()
@@ -202,11 +205,11 @@ router.get('/:SzavazokorId?', async (req, res) => {
     query
   } = req;
 
-  let limit, projection, sort;
+  let limit, projection, sort, skip;
 
   query = completeQueryParams(query)
   query = parseQuery(query)
-  ;({ limit = DEFAULT_LIMIT, sort = DEFAULT_SORT, ...query } = query)
+  ;({ limit = DEFAULT_LIMIT, skip = 0, sort = DEFAULT_SORT, ...query } = query)
 
   sort = getSortObject(sort)
 
@@ -221,7 +224,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
       }
     } else if (!Object.keys(query).length) {
       projection = getProjection(req.user, 'noQuery')
-      result = await Szavazokor.find({}, projection).sort(sort).limit(limit)
+      result = await Szavazokor.find({}, projection).sort(sort).limit(limit).skip(skip)
     } else {
       let [_, filterCond] = Object.entries(query).reduce(
         (acc, [key, value]) => {
