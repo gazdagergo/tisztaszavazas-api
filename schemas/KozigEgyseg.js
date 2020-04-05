@@ -14,4 +14,10 @@ const KozigEgysegSchema = mongoose.Schema({
   },  
 })
 
-export default mongoose.model('KozigEgyseg', KozigEgysegSchema);
+export const KozigEgyseg = mongoose.model('KozigEgyseg', KozigEgysegSchema);
+
+const KozigEgyseg_onk2019 = mongoose.model('KozigEgyseg_onk2019', KozigEgysegSchema);
+
+export default {
+  KozigEgyseg_onk2019
+}
