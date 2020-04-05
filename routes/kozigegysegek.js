@@ -3,6 +3,63 @@ import KozigEgyseg from '../schemas/KozigEgyseg';
 import getSortObject from '../functions/getSortObject';
 import parseQuery from '../functions/parseQuery';
 
+
+/**
+* @api {get} /kozigegysegek/ 1.) Összes közigazgatási egység
+* @apiName kozigegysegek2
+* @apiGroup Közigegységek
+*
+* @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default 20)
+*
+* @apiSuccessExample {json} Success-Response:
+*  HTTP/1.1 200 OK
+*  [
+*    {
+*      "_id": "5e88bd8701f9fd6efbda43c4",
+*      "megyeNeve": "Budapest",
+*      "kozigEgysegNeve": "Budapest X.ker",
+*      "__v": 0
+*    },
+*    {
+*      "_id": "5e88bd8701f9fd6efbda43c5",
+*      "megyeNeve": "Budapest",
+*      "kozigEgysegNeve": "Budapest XI.ker",
+*      "__v": 0
+*    },
+* 		...
+*   ]
+* @apiSampleRequest off
+*/
+
+/**
+ * @api {get} /kozigegysegek/:id? 2.) Egy közigazgatási egység összes adata
+ * @apiName kozigegysegek3
+ * @apiGroup Közigegységek
+ *
+ * @apiParam {String} id A közigazgatási egység azonosítója az adatbázisban
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "_id": "5e88bd8701f9fd6efbda43c4",
+ *    "megyeNeve": "Budapest",
+ *    "kozigEgysegNeve": "Budapest X.ker",
+ *    "szavazokorok": "/szavazokorok?kozigEgyseg.kozigEgysegNeve=Budapest%20X.ker",
+ *    "kozteruletek": [
+ *      {
+ *        "kozteruletNev": "Agyagfejtő utca",
+ *        "szavazokorok": "/szavazokorok?kozigEgyseg.kozigEgysegNeve=Budapest%20X.ker&kozteruletek.kozteruletNev=Agyagfejt%C5%91%20utca"
+ *      },
+ *      {
+ *        "kozteruletNev": "Akna utca",
+ *        "szavazokorok": "/szavazokorok?kozigEgyseg.kozigEgysegNeve=Budapest%20X.ker&kozteruletek.kozteruletNev=Akna%20utca"
+ *      },
+ *      ...
+ *    ],          
+ *    "__v": 0,
+ *  }
+ * 
+ * @apiSampleRequest off
+ */
 const router = express.Router();
 
 const DEFAULT_LIMIT = 20;
@@ -23,6 +80,25 @@ const addGeneratedParams = entry => {
     szavazokorok,
     kozteruletek
   })
+}
+
+const getProjection = ({ roles }, context) => {
+  const isAdmin = roles.includes('admin');
+
+  let projection = {
+    megyeKod: 0,
+    telepulesKod: 0
+  }
+
+  switch (context) {
+    case 'byId':
+      return projection;
+    case 'byQuery':
+      projection = { ...projection, kozteruletek: 0 }
+      return projection
+    default:
+      return projection
+  }
 }
 
 
@@ -46,16 +122,15 @@ router.get('/:id?', async (req, res) => {
   sort = getSortObject(sort)
 
   if (id) {
-    result = await KozigEgyseg.findById(id)
+    const projection = getProjection(req.user, 'byId')
+    result = await KozigEgyseg.findById(id, projection)
     result = addGeneratedParams(result)
   } else {
-    result = await KozigEgyseg.find(query).sort(sort).limit(limit).skip(skip);
-    if (result.length === 1) {
-      result = [addGeneratedParams(result[0])]
-    }
+    const projection = getProjection(req.user, 'byQuery')
+    result = await KozigEgyseg.find(query, projection).sort(sort).limit(limit).skip(skip);
   }
 
-	await KozigEgyseg.find()
+  res.header('X-Total-Count', result.length)  
   res.json(result);
 });
 
