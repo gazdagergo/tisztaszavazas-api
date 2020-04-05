@@ -7,6 +7,7 @@ import SourceHtml from '../../schemas/SourceHtml';
 import parseQuery from '../../functions/parseQuery';
 import { crawl } from '../../crawler';
 import getCountryName from '../../functions/getCountryName';
+import authorization from '../../middlewares/authorization';
 
 dotenv.config();
 
@@ -168,19 +169,27 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
   }  
 }
 
+router.all('*', authorization)
+router.all('*', (req, res) => {
+  if (!req.user.roles.includes('admin')) {
+    res.status(404)
+    res.json('Not found')
+    return
+  }
+})
+
 router.get('/:szavazokorId?', async (req, res) => {
   const {
     params: { szavazokorId },
-    query
+    query,
   } = req;
+
+
+
   const [code, response] = await scraper_GET(szavazokorId, query)
   res.status(code)
   res.json(response)
 })
 
-router.post('/', async (req, res) => {
-  const { body } = req;
-  res.json(body)
-})
 
 export default router;
