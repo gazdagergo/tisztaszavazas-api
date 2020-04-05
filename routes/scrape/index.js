@@ -171,7 +171,7 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
 
 router.all('*', authorization)
 router.all('*', (req, res) => {
-  if (!req.user.roles.includes('admin')) {
+  if (!req.user.roles || !req.user.roles.includes('admin')) {
     res.status(404)
     res.json('Not found')
     return
