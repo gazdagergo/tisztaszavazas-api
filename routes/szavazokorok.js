@@ -15,6 +15,7 @@ import authorization from '../middlewares/authorization';
  * @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default: `20`)
  * @apiParam {Number} skip A lapozáshoz használható paraméter. (default: `0`)
  * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
+ * @apiHeader Authorization A regisztrációkor kapott kulcs
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -48,6 +49,7 @@ import authorization from '../middlewares/authorization';
  *
  * @apiParam {String} id A szavazókör azonosítója az adatbázisban
  * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
+ * @apiHeader Authorization A regisztrációkor kapott kulcs
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -101,7 +103,8 @@ import authorization from '../middlewares/authorization';
  * @apiParam {Number|Query} vegsoHazszam A közterület szavazókörhöz tartozó legmagasabb házszáma. Lekéréskor relációk használhatók, mint { $gte: 22 }, vagyis 22-nél nagyobb vagy egyenlő
  * @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default `20`)
  * 
- * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`) 
+ * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
+ * @apiHeader Authorization A regisztrációkor kapott kulcs
  *
  * @apiExample {curl} Example usage:
  *     curl --location --request GET 'http://api.tisztaszavazas.hu/szavazokorok?kozigEgysegNeve=/Hajd%C3%BAhadh%C3%A1z/&kozteruletNev=/Bercs%C3%A9nyi/&kezdoHazszam={%20$lte:%2022%20}&vegsoHazszam={%20$gt:%2022%20}&megjegyzes=P%C3%A1ros%20h%C3%A1zsz%C3%A1mok' \
@@ -155,7 +158,7 @@ const instanceOf = (elem, constructorName = 'Object') => (
 )
 
 const getProjection = ({ roles }, context) => {
-  const isAdmin = roles.includes('admin')
+  const isAdmin = roles && roles.includes('admin')
 
   let projection = {
     sourceHtmlUpdated: 0,
