@@ -25,9 +25,6 @@ const corsOptions = {
 app.use(bodyParser.json({limit: '50mb'}))
 app.use(cors(corsOptions));
 
-
-app.use(authorization);
-
 app.use('/', express.static(path.join(__dirname, 'apidoc')))
 app.use('/vhupage', vhuPageRoute)
 
@@ -35,7 +32,6 @@ app.use('/szavazokorok', szkRoute)
 app.use('/kozteruletek', kozteruletRoute)
 app.use('/scrape', scrapeRoute)
 app.use('/kozigegysegek', kozigEgysegRoute)
-app.use('/telepules', kozigEgysegRoute)
 app.use('/sourcehtmls', sourceHtmlRoute)
 app.use('/urls', urlsRoute)
 

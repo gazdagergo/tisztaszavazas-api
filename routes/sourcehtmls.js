@@ -1,10 +1,20 @@
 import express from 'express';
 import SourceHtml from '../schemas/SourceHtml';
 import parseQuery from '../functions/parseQuery';
+import authorization from '../middlewares/authorization';
 
 const DEFAULT_LIMIT = 99999;
 
 const router = express.Router()
+
+router.all('*', authorization)
+router.all('*', (req, res) => {
+  if (!req.user.roles.includes('admin')) {
+    res.status(404)
+    res.json('Not found')
+    return
+  }
+})
 
 router.get('/:SourceHtmlId?', async (req, res) => {
   let {

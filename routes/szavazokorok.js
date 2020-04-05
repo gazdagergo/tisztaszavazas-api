@@ -4,6 +4,7 @@ import generateVhuUrl from '../functions/generateVhuUrl';
 import parseQuery from '../functions/parseQuery';
 import completeQueryParams from '../functions/completeQueryParams';
 import getSortObject from '../functions/getSortObject';
+import authorization from '../middlewares/authorization';
 
 
 /**
@@ -198,6 +199,8 @@ const getProjection = ({ roles }, context) => {
       return projection
   }
 }
+
+router.all('*', authorization)
 
 router.get('/:SzavazokorId?', async (req, res) => {
   let {
