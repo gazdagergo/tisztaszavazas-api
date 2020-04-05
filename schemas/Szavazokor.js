@@ -30,4 +30,8 @@ const SzavazokorSchema = mongoose.Schema({
   timestamps: true  
 })
 
-export default mongoose.model('Szavazokor', SzavazokorSchema);
+const Szavazokor_onk2019 = mongoose.model('Szavazokor_onk2019', SzavazokorSchema);
+
+export default {
+  Szavazokor_onk2019
+}

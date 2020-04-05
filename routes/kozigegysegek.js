@@ -1,5 +1,5 @@
 import express from 'express';
-import KozigEgyseg from '../schemas/KozigEgyseg';
+import KozigEgysegSchemas from '../schemas/KozigEgyseg';
 import getSortObject from '../functions/getSortObject';
 import parseQuery from '../functions/parseQuery';
 import authorization from '../middlewares/authorization';
@@ -10,7 +10,8 @@ import authorization from '../middlewares/authorization';
 * @apiName kozigegysegek2
 * @apiGroup Közigegységek
 *
-* @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default 20)
+* @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default `20`)
+* @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
 *
 * @apiSuccessExample {json} Success-Response:
 *  HTTP/1.1 200 OK
@@ -38,6 +39,8 @@ import authorization from '../middlewares/authorization';
  * @apiGroup Közigegységek
  *
  * @apiParam {String} id A közigazgatási egység azonosítója az adatbázisban
+ * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
+ *  
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
  *  {
@@ -103,6 +106,14 @@ const getProjection = ({ roles }, context) => {
 }
 
 router.all('*', authorization)
+
+let KozigEgyseg;
+
+router.all('*', (req, _res, next) => { 
+  const db = req.headers['x-valasztas-kodja'] || 'onk2019'
+  KozigEgyseg = KozigEgysegSchemas[`KozigEgyseg_${db}`]
+  next()
+})
 
 router.get('/:id?', async (req, res) => {
   let {

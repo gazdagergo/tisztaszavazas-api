@@ -1,4 +1,4 @@
-import KozigEgyseg from "../schemas/KozigEgyseg"
+import { KozigEgyseg } from "../schemas/KozigEgyseg"
 import Kozterulet from "../schemas/Kozterulet";
 
 export default query => {
