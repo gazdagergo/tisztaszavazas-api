@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
+import path from 'path';
 import authorization from './middlewares/authorization';
 import szkRoute from './routes/szavazokorok';
 import kozteruletRoute from './routes/kozteruletek';
@@ -25,7 +26,7 @@ app.use(bodyParser.json({limit: '50mb'}))
 app.use(cors(corsOptions));
 
 // public routes
-app.use('/', express.static('apidoc'));
+app.use('/',  express.static(path.join(__dirname, 'apidoc')))
 app.use('/vhupage', vhuPageRoute)
 
 app.use(authorization);
