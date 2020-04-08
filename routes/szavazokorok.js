@@ -5,6 +5,8 @@ import parseQuery from '../functions/parseQuery';
 import completeQueryParams from '../functions/completeQueryParams';
 import getSortObject from '../functions/getSortObject';
 import authorization from '../middlewares/authorization';
+import getSzkAggregationFilter from '../functions/getSzkAggregationFilter';
+import getProjection from '../functions/getProjection';
 
 
 /**
@@ -157,66 +159,6 @@ const instanceOf = (elem, constructorName = 'Object') => (
   Object.getPrototypeOf(elem).constructor.name == constructorName
 )
 
-const getProjection = ({ roles }, context) => {
-  const isAdmin = roles && roles.includes('admin')
-
-  let projection = {
-    sourceHtmlUpdated: 0,
-    parsedFromSrcHtml: 0,
-    createdAt: 0,
-    vhuUrl: 0,
-    'kozigEgyseg.megyeKod': 0,
-    'kozigEgyseg.telepulesKod': 0,
-    polygonUrl: 0,
-    valasztasAzonosito: 0,
-    helyadatok: 0
-  }
-
-  switch (context) {
-    case 'withQuery':
-    case 'noQuery': return ({
-      kozteruletek: 0,
-      sourceHtmlUpdated: 0,
-      frissitveValasztasHun: 0,
-      parsedFromSrcHtml: 0,
-      vhuUrl: 0,
-      polygonUrl: 0,
-      createdAt: 0,
-      updatedAt: 0,
-      egySzavazokorosTelepules: 0,
-      'kozigEgyseg.megyeKod': 0,
-      'kozigEgyseg.telepulesKod': 0,
-      valasztasAzonosito: 0,
-      helyadatok: 0
-    })
-
-    case 'filterStreet': return ({
-      szavazokorSzama: 1,
-      'kozigEgyseg.kozigEgysegNeve': 1,
-      'kozigEgyseg.megyeNeve': 1
-    })
-
-    case 'withRegex': return ({
-      ...projection,
-      frissitveValasztasHun: 0,
-      szavazokorCime: 0,
-      valasztokSzama: 0,
-      valasztokerulet: 0,
-      akadalymentes: 0,
-      updatedAt: 0,
-      egySzavazokorosTelepules: 0,
-    })
-
-    default:
-      if (isAdmin) {
-        delete projection['kozigEgyseg.megyeKod']
-        delete projection['kozigEgyseg.telepulesKod']
-        delete projection.polygonUrl
-      }
-      return projection
-  }
-}
-
 router.all('*', authorization)
 
 let Szavazokor;
@@ -234,10 +176,11 @@ router.get('/:SzavazokorId?', async (req, res) => {
     query
   } = req;
 
-  let limit, projection, sort, skip;
+  let limit, projection, sort, skip, totalCount;
 
   query = completeQueryParams(query)
   query = parseQuery(query)
+
   ;({ limit = DEFAULT_LIMIT, skip = 0, sort = DEFAULT_SORT, ...query } = query)
 
   sort = getSortObject(sort)
@@ -246,6 +189,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
     let result;
     if (SzavazokorId) {
       projection = getProjection(req.user, 'byId')
+      totalCount = 1
       result = await Szavazokor.findById(SzavazokorId, projection)
       result = {
         ...result['_doc'],
@@ -253,33 +197,11 @@ router.get('/:SzavazokorId?', async (req, res) => {
       }
     } else if (!Object.keys(query).length) {
       projection = getProjection(req.user, 'noQuery')
+      totalCount = await Szavazokor.count()
       result = await Szavazokor.find({}, projection).sort(sort).limit(limit).skip(skip)
     } else {
-      let [_, filterCond] = Object.entries(query).reduce(
-        (acc, [key, value]) => {
-          if (key.includes('kozteruletek')){
-            return [ acc[0], { ...acc[1], [key]: value } ]
-          }
-
-          projection = getProjection(req.user, 'withQuery')
-          return [ {...acc[0], [key]: value }, acc[1] ]
-        },
-        [{}, {}] 
-      )
-
-      let regexStreetToFilter = '';
-
-      filterCond = Object.entries(filterCond).reduce((acc = [], [key, value]) => {
-        if (instanceOf(value, 'Object')) {
-          const [operator, value2] = Object.entries(value)[0]
-          return [...acc, { [operator]: [ `$$${key}`, value2 ]  }]
-        }
-        if (instanceOf(value, 'RegExp')) {
-          regexStreetToFilter = value
-          return acc
-        }
-        return [...acc, { $eq: [ `$$${key}`, value ]  }]
-      }, [])
+      
+      const [filterCond, regexStreetToFilter] = getSzkAggregationFilter;
 
       const aggregations = [{ $match: query }];
 
@@ -315,7 +237,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
         return acc
       }, [])
     }
-    res.header('X-Total-Count', result.length)
+    res.header('X-Total-Count', totalCount)
     res.status(result.length ? 200 : 404)
     res.json(result || 'Szavazokor not found')
   } catch(error) {
