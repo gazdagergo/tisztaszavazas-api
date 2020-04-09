@@ -1,7 +1,15 @@
 import express from 'express';
-import Szavazokor from '../schemas/Szavazokor';
+import SzavazokorSchemas from '../schemas/Szavazokor';
 
 const router = express.Router()
+
+let Szavazokor;
+
+router.all('*', (req, _res, next) => { 
+  const db = req.headers['x-valasztas-kodja'] || 'onk2019'
+  Szavazokor = SzavazokorSchemas[`Szavazokor_${db}`]
+  next()
+})
 
 router.get('/:id', async (req, res) => {
 	try {
