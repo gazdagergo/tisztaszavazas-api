@@ -142,23 +142,6 @@ const DEFAULT_SORT = 'kozigEgyseg.megyeKod,kozigEgyseg.telepulesKod,szavazokorSz
 
 const router = express.Router()
 
-const getGeneratedParams = szavazokor => {
-  const query = {
-    'kozigEgyseg.megyeKod': szavazokor.kozigEgyseg.megyeKod,
-    'kozigEgyseg.telepulesKod': szavazokor.kozigEgyseg.telepulesKod,
-    szavazokorSzama: szavazokor.szavazokorSzama
-  }
-  return {
-    vhuUrl: generateVhuUrl(query),
-    polygonUrl: generateVhuUrl({ ...query, context: 'polygon' })
-  }
-}
-
-const instanceOf = (elem, constructorName = 'Object') => (
-  elem instanceof Object &&
-  Object.getPrototypeOf(elem).constructor.name == constructorName
-)
-
 router.all('*', authorization)
 
 let Szavazokor;
