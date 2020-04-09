@@ -5,11 +5,9 @@ dotenv.config();
 
 export default (req, res, next) => {
  	if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-		req.user = { name: 'admin', roles: [ 'admin' ] };
+		req.user = { name: 'admin', roles: [ process.env.LOCALHOST_ROLE || 'admin' ] };
 		return next();
 	}
-
-	req.user = { name: 'admin', roles: [ 'admin' ] };
 
 	const token = req.headers.authorization;	
 
