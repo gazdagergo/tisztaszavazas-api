@@ -13,6 +13,7 @@
     "initszk:onk2019": "babel-node crawler/initSzks.js onk2019",
     "saveHtmsToFile": "babel-node utils/saveHtmsToFile.js",
     "generateKozigEgysegek": "babel-node scripts/generateKozigEgysegek.js",
+    "updateEgySzkTelepules": "babel-node scripts/updateEgySzkTelepules.js",
     "doc": "apidoc -i routes/ -o apidoc/"
   },
   "repository": {
