@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import axios from 'axios';
 import parse from './parse';
-import Szavazokor from '../../schemas/Szavazokor';
+import SzavazokorSchemas from '../../schemas/Szavazokor';
 import SourceHtml from '../../schemas/SourceHtml';
 import parseQuery from '../../functions/parseQuery';
 import { crawl } from '../../crawler';
@@ -170,12 +170,21 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
 }
 
 router.all('*', authorization)
-router.all('*', (req, res) => {
+router.all('*', (req, res, next) => {
   if (!req.user.roles || !req.user.roles.includes('admin')) {
     res.status(404)
     res.json('Not found')
     return
   }
+  next()
+})
+
+let Szavazokor;
+
+router.all('*', (req, _res, next) => { 
+  const db = req.headers['x-valasztas-kodja'] || 'onk2019'
+  Szavazokor = SzavazokorSchemas[`Szavazokor_${db}`]
+  next()
 })
 
 router.get('/:szavazokorId?', async (req, res) => {
@@ -183,8 +192,6 @@ router.get('/:szavazokorId?', async (req, res) => {
     params: { szavazokorId },
     query,
   } = req;
-
-
 
   const [code, response] = await scraper_GET(szavazokorId, query)
   res.status(code)
