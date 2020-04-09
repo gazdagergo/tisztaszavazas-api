@@ -54,6 +54,7 @@ export default ({ roles }, context) => {
         delete projection['kozigEgyseg.megyeKod']
         delete projection['kozigEgyseg.telepulesKod']
         delete projection.polygonUrl
+        delete projection.vhuUrl
       }
       return projection
   }
