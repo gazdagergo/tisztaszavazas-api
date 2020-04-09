@@ -10,7 +10,8 @@ export default ({ roles }, context) => {
     'kozigEgyseg.telepulesKod': 0,
     polygonUrl: 0,
     valasztasAzonosito: 0,
-    helyadatok: 0
+		helyadatok: 0,
+		egySzavazokorosTelepules: 0,
   }
 
   switch (context) {
