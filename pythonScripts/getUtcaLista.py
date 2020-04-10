@@ -17,8 +17,8 @@ def isInt(value):
   except ValueError:
     return False
 
-def nullOrInt(string):
-	result = float(string.replace(' ', '')) if string and isInt(string.replace(' ', '')) else None
+def intOrFallback(string, fb_value = None):
+	result = int(string.replace(' ', '')) if string and isInt(string.replace(' ', '')) else fb_value
 	return 9999 if (result and (result > 9999)) else result
 
 def getUtcaLista(soup):
@@ -60,12 +60,13 @@ def getUtcaLista(soup):
 		matches = re.match(regex, szkUtca)
 
 		kozteruletNev = emptyOrStrip(matches.group(1)) if emptyOrStrip(matches.group(1)) else emptyOrStrip(matches.group(0))
-		vegsoHazszam = nullOrInt(matches.group(6)) if nullOrInt(matches.group(6)) else nullOrInt(matches.group(5))
+		kezdoHazszam = intOrFallback(matches.group(3) or matches.group(2), 0)
+		vegsoHazszam = intOrFallback(matches.group(6) or matches.group(5), 9999)
 
 		utcaListItem = {
 			"leiras": matches.group().strip(),
 			"kozteruletNev": kozteruletNev,
-			"kezdoHazszam": nullOrInt(matches.group(3) or matches.group(2)),
+			"kezdoHazszam": kezdoHazszam,
 			"vegsoHazszam": vegsoHazszam,
 			"megjegyzes": szkHazszamok.strip()
 		}
