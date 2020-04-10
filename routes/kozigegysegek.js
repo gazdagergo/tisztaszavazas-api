@@ -114,6 +114,11 @@ let KozigEgyseg;
 router.all('*', (req, _res, next) => { 
   const db = req.headers['x-valasztas-kodja'] || 'onk2019'
   KozigEgyseg = KozigEgysegSchemas[`KozigEgyseg_${db}`]
+  if (!KozigEgyseg){
+    res.status(400)
+    res.json({'error': `Hibás választás kód: '${db}'` })
+    return
+  }	  
   next()
 })
 
@@ -123,7 +128,7 @@ router.get('/:id?', async (req, res) => {
     query
   } = req;
 
-  let limit, sort, skip, result;
+  let limit, sort, skip, result, totalCount;
   query = parseQuery(query)
   ;(
     {
@@ -140,12 +145,25 @@ router.get('/:id?', async (req, res) => {
     const projection = getProjection(req.user, 'byId')
     result = await KozigEgyseg.findById(id, projection)
     result = addGeneratedParams(result)
+    totalCount = 1;
   } else {
     const projection = getProjection(req.user, 'byQuery')
-    result = await KozigEgyseg.find(query, projection).sort(sort).limit(limit).skip(skip);
+    const aggregation = [
+      { $match: query },
+      { $project: projection },
+      { $skip: skip },
+      { $limit: limit }
+    ]
+
+    ;([{ result, totalCount: [{ totalCount }] }] = await KozigEgyseg.aggregate([
+      { $facet: {
+        result: aggregation,
+        totalCount: [{ $match: query },{ $count: 'totalCount' }]
+      }
+    }]))
   }
 
-  res.header('X-Total-Count', result.length)  
+  res.header('X-Total-Count', totalCount)  
   res.json(result);
 });
 
