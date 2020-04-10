@@ -7,7 +7,12 @@ let Szavazokor;
 
 router.all('*', (req, _res, next) => { 
   const db = req.headers['x-valasztas-kodja'] || 'onk2019'
-  Szavazokor = SzavazokorSchemas[`Szavazokor_${db}`]
+	Szavazokor = SzavazokorSchemas[`Szavazokor_${db}`]
+  if (!Szavazokor){
+    res.status(400)
+    res.json({'error': `Hibás választás kód: '${db}'` })
+    return
+  }	
   next()
 })
 
