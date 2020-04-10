@@ -1,3 +1,8 @@
+const instanceOf = (elem, constructorName = 'Object') => (
+  elem instanceof Object &&
+  Object.getPrototypeOf(elem).constructor.name == constructorName
+)
+
 export default query => {
 	let [_, filterCond] = Object.entries(query).reduce(
 		(acc, [key, value]) => {
