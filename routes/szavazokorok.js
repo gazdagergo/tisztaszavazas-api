@@ -26,7 +26,8 @@ import getProjection from '../functions/getProjection';
  *        "_id": "5e77c3f08723e7a7b25c40b0",
  *        "kozigEgyseg": {
  *          "megyeNeve": "Hajdú-Bihar",
- *          "kozigEgysegNeve": "Esztár"
+ *          "kozigEgysegNeve": "Esztár",
+ *          "egySzavazokorosTelepules": true
  *        },
  *        "szavazokorSzama": 1, 
  *        "szavazokorCime": "Kossuth utca 1.",
@@ -60,7 +61,8 @@ import getProjection from '../functions/getProjection';
  *    "szavazokorSzama": 24,
  *    "kozigEgyseg": {
  *        "megyeNeve": "Somogy",
- *        "kozigEgysegNeve": "Kaposvár"
+ *        "kozigEgysegNeve": "Kaposvár",
+ *        "egySzavazokorosTelepules": false
  *    },
  *    "kozteruletek": [
  *       {
@@ -79,7 +81,6 @@ import getProjection from '../functions/getProjection';
  *        }
  *    ],
  *    "akadalymentes": true,
- *    "egySzavazokorosTelepules": false,
  *    "frissitveValasztasHun": "2020-01-09T14:49:48.000Z",
  *    "szavazokorCime": "Búzavirág utca 21. (Kinizsi Lakótelepi Tagiskola)",
  *    "valasztokSzama": 1345,
@@ -120,7 +121,8 @@ import getProjection from '../functions/getProjection';
  *         "szavazokorSzama": 6,
  *         "kozigEgyseg": {
  *             "megyeNeve": "Hajdú-Bihar",
- *             "kozigEgysegNeve": "Hajdúhadház"
+ *             "kozigEgysegNeve": "Hajdúhadház",
+ *             "egySzavazokorosTelepules": false
  *         },
  *         "kozteruletek": [
  *             {
@@ -184,7 +186,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
       }
     } else if (!Object.keys(query).length) {
       projection = getProjection(req.user, 'noQuery')
-      totalCount = await Szavazokor.count()
+      totalCount = await Szavazokor.estimatedDocumentCount()
       result = await Szavazokor.find({}, projection).sort(sort).limit(limit).skip(skip)
     } else {
       
