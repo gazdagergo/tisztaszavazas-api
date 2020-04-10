@@ -187,12 +187,10 @@ router.get('/:SzavazokorId?', async (req, res) => {
     } else if (!Object.keys(query).length) {
       projection = getProjection(req.user, 'noQuery')
       totalCount = await Szavazokor.estimatedDocumentCount()
-      result = await Szavazokor.find({}, projection).sort(sort).limit(limit).skip(skip)
+      result = await Szavazokor.find({}, projection).sort(sort).skip(skip).limit(limit)
     } else {
       
       const [filterCond, regexStreetToFilter] = getSzkAggregationFilter(query);
-
-      const aggregations = [{ $match: query }];
 
       if (filterCond && filterCond.length){
         projection = {
@@ -213,9 +211,19 @@ router.get('/:SzavazokorId?', async (req, res) => {
       } else {
         projection = getProjection(req.user, 'noQuery')
       }
-      aggregations.push({ $project: projection })
 
-      result = await Szavazokor.aggregate(aggregations)
+      const aggregations = [
+        { $match: query },
+        { $project: projection },
+        { $skip: skip },
+        { $limit: limit },
+      ];
+
+      ;([{ result, totalCount: [ { totalCount }] }] = await Szavazokor.aggregate([{
+        $facet: {
+          result: aggregations,
+          totalCount: [{ $match: query },{ $count: 'totalCount' }] }
+      }]))
       
       result = result.reduce((acc = [], entry) => {
         if (!entry.kozteruletek || !entry.kozteruletek.length) return [...acc, entry]
