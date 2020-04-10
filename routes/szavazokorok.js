@@ -152,7 +152,6 @@ router.all('*', (req, _res, next) => {
   next()
 })
 
-
 router.get('/:SzavazokorId?', async (req, res) => {
   let {
     params: { SzavazokorId },
@@ -184,12 +183,12 @@ router.get('/:SzavazokorId?', async (req, res) => {
       result = await Szavazokor.find({}, projection).sort(sort).limit(limit).skip(skip)
     } else {
       
-      const [filterCond, regexStreetToFilter] = getSzkAggregationFilter;
+      const [filterCond, regexStreetToFilter] = getSzkAggregationFilter(query);
 
       const aggregations = [{ $match: query }];
 
       if (filterCond && filterCond.length){
-        aggregations.push({ $project: {
+        projection = {
           _id: 1,
           kozteruletek: {
             $filter: {
@@ -201,22 +200,23 @@ router.get('/:SzavazokorId?', async (req, res) => {
             }
           },
           ...getProjection(req.user, 'filterStreet')
-        }})
+        }
       } else if (regexStreetToFilter) {
-        aggregations.push({ $project: getProjection(req.user, 'withRegex') })
+        projection = getProjection(req.user, 'withRegex')
       } else {
-        aggregations.push({ $project: getProjection(req.user, 'noQuery') })
+        projection = getProjection(req.user, 'noQuery')
       }
+      aggregations.push({ $project: projection })
 
       result = await Szavazokor.aggregate(aggregations)
       
       result = result.reduce((acc = [], entry) => {
-        if (!entry.kozteruletek) return [...acc, entry]
-        if (entry.egySzavazokorosTelepules) return [...acc, entry]
+        if (!entry.kozteruletek || !entry.kozteruletek.length) return [...acc, entry]
         const kozteruletek = entry.kozteruletek.filter(({ kozteruletNev }) => (
           kozteruletNev.match(regexStreetToFilter)  // default: '' -> matches with all
         ))
-        if (kozteruletek.length) return [...acc, { ...entry, kozteruletek }]
+        const { _id, kozteruletek: kt, ...entryRest } = entry;
+        if (kozteruletek.length) return [...acc, { _id, kozteruletek, ...entryRest }]
         return acc
       }, [])
     }
