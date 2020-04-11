@@ -6,7 +6,7 @@ const instanceOf = (elem, constructorName = 'Object') => (
 export default query => {
 	let [_, filterCond] = Object.entries(query).reduce(
 		(acc, [key, value]) => {
-			if (key.includes('kozteruletek')){
+			if (key.includes('kozteruletek.')){
 				return [ acc[0], { ...acc[1], [key]: value } ]
 			}
 			return [ {...acc[0], [key]: value }, acc[1] ]
