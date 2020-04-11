@@ -1,8 +1,6 @@
 import express from 'express';
 import SzavazokorSchemas from '../schemas/Szavazokor';
-import generateVhuUrl from '../functions/generateVhuUrl';
 import parseQuery from '../functions/parseQuery';
-import completeQueryParams from '../functions/completeQueryParams';
 import getSortObject from '../functions/getSortObject';
 import authorization from '../middlewares/authorization';
 import getSzkAggregationFilter from '../functions/getSzkAggregationFilter';
@@ -167,7 +165,6 @@ router.get('/:SzavazokorId?', async (req, res) => {
 
   let limit, projection, sort, skip, totalCount;
 
-  query = completeQueryParams(query)
   query = parseQuery(query)
 
   ;({ limit = DEFAULT_LIMIT, skip = 0, sort = DEFAULT_SORT, ...query } = query)
