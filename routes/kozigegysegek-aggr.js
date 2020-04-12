@@ -5,6 +5,83 @@ import authorization from '../middlewares/authorization';
 import SzavazokorSchemas from '../schemas/Szavazokor';
 import { encodeHex, pad } from '../functions/stringFunctions';
 
+
+/**
+* @api {get} /kozigegysegek/ 1.) Összes közigazgatási egység
+* @apiName kozigegysegek2
+* @apiGroup Közigegységek
+*
+* @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default `20`)
+* @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
+* @apiHeader Authorization A regisztrációkor kapott kulcs
+*
+* @apiSuccessExample {json} Success-Response:
+*  HTTP/1.1 200 OK
+*  [
+*    {
+*      "_id": "006f6e6b3230313903f2",
+*      "megyeNeve": "Budapest",
+*      "kozigEgysegNeve": "Budapest X.ker",
+*      "kozigEgysegSzavazokoreinekSzama": 76
+*    },
+*    {
+*      "_id": "006f6e6b3230313903f3",
+*      "megyeNeve": "Budapest",
+*      "kozigEgysegNeve": "Budapest XI.ker",
+*      "kozigEgysegSzavazokoreinekSzama": 115
+*    },
+* 		...
+*   ]
+* @apiSampleRequest off
+*/
+
+/**
+ * @api {get} /kozigegysegek/:id? 2.) Egy közigazgatási egység összes adata
+ * @apiName kozigegysegek3
+ * @apiGroup Közigegységek
+ *
+ * @apiParam {String} id A közigazgatási egység azonosítója az adatbázisban
+ * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
+ * @apiHeader Authorization A regisztrációkor kapott kulcs
+ *  
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  
+ * {
+ *   "_id": "006f6e6b3230313903f2",
+ *   "megyeNeve": "Budapest",
+ *   "kozigEgysegNeve": "Budapest X.ker",
+ *   "kozigEgysegSzavazokoreinekSzama": 76,
+ *   "szavazokorok": [
+ *     {
+ *       "szavazokorSzama": 1,
+ *       "link": "/szavazokorok/5e77c3f08723e7a7b25c47c6"
+ *     },
+ *     {
+ *       "szavazokorSzama": 2,
+ *       "link": "/szavazokorok/5e77c3f08723e7a7b25c47c7"
+ *     },
+ *   ...
+ *     {
+ *       "szavazokorSzama": 76,
+ *       "link": "/szavazokorok/5e77c3f08723e7a7b25c47c9"
+ *     }
+ *   ],
+ *   "kozteruletek": [
+ *     {
+ *       "kozteruletNev": "Agyagfejtő utca",
+ *       "kozteruletSzavazokorei": "/szavazokorok?kozigEgyseg.kozigEgysegNeve=Budapest%20X.ker&kozteruletek.kozteruletNev=Agyagfejt%C5%91%20utca"
+ *     },
+ *     {
+ *       "kozteruletNev": "Akna utca",
+ *       "kozteruletSzavazokorei": "/szavazokorok?kozigEgyseg.kozigEgysegNeve=Budapest%20X.ker&kozteruletek.kozteruletNev=Akna%20utca"
+ *     },
+ *  ...
+ * }
+ * 
+ * @apiSampleRequest off
+ */
+
 const router = express.Router();
 
 const DEFAULT_LIMIT = 20;
@@ -160,14 +237,12 @@ router.get('/:id?', async (req, res) => {
         megyeNeve: result.megyeNeve,
         kozigEgysegNeve: result.kozigEgysegNeve,
         kozigEgysegSzavazokoreinekSzama: result.count[0].szkCount,
-        kozteruletek: addKozteruletLinks(result.kozteruletek, result.kozigEgysegNeve),
         szavazokorok: result.szavazokorok.map(({ _id, szavazokorSzama }) => ({
           szavazokorSzama,
           link: `/szavazokorok/${_id}`
         })),
+        kozteruletek: addKozteruletLinks(result.kozteruletek, result.kozigEgysegNeve),
       }
-
-      // result = result && result[0] && result[0].kozteruletek
 
       totalCount = 1;
     } else {
