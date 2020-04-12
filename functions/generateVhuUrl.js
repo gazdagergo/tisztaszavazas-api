@@ -1,8 +1,4 @@
-export const pad = (num, size) => {
-	var s = "000000" + num;
-	return s.substr(s.length-size);
-}
-
+import { pad } from './stringFunctions'
 
 export const getUrlParams = (valasztasAzonosito, prefix = 'szavazokorieredmenyek') => {
 	let vPre, preId;

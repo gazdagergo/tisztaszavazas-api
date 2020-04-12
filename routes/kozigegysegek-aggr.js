@@ -3,6 +3,7 @@ import getSortObject from '../functions/getSortObject';
 import parseQuery from '../functions/parseQuery';
 import authorization from '../middlewares/authorization';
 import SzavazokorSchemas from '../schemas/Szavazokor';
+import { encodeHex, pad } from '../functions/stringFunctions';
 
 const router = express.Router();
 
@@ -37,6 +38,12 @@ const getProjection = ({ roles }, context) => {
     default:
       return projection
   }
+}
+
+export const generateKozigEgysegId = ({ megyeKod, telepulesKod }, db) => {
+  let id = (+megyeKod * 1000 + telepulesKod).toString(16);
+  id = pad(encodeHex(db), 16) + pad(id, 4)
+  return id
 }
 
 router.all('*', authorization)
