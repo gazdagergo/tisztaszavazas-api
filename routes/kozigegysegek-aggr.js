@@ -82,8 +82,12 @@ router.get('/:id?', async (req, res) => {
     sort = getSortObject(sort)
 
     if (id) {
-      const megyeKod = +id.slice(-5,-3)
-      const telepulesKod = +id.slice(2)
+      let parsedId = id.toString().slice(-4)
+      parsedId = parseInt(parsedId, 16)
+
+      const megyeKod = +parsedId.toString().slice(-5,-3)
+      const telepulesKod = +parsedId.toString().slice(-3)
+
       query = { 'kozigEgyseg.megyeKod': megyeKod, 'kozigEgyseg.telepulesKod': telepulesKod }
       projection = getProjection(req.user, 'byId')
       group = {
