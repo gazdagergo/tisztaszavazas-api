@@ -201,17 +201,24 @@ router.get('/:id?', async (req, res) => {
           ...projection
         }},
         { $match: query },
+     
+      ]
+
+      const aggregationPaginated = [
+        ...aggregation,
         { $skip: skip },
-        { $limit: limit }      
+        { $limit: limit }
+      ]
+
+      const aggregationCounted = [
+        ...aggregation,
+        { $count: 'totalCount' }
       ]
 
       ;([{ result, totalCount }] = await Szavazokor.aggregate([
         { $facet: {
-          result: aggregation,
-          totalCount: [
-            { $group: group },
-            { $unwind: '$kozigEgyseg' },
-            { $count: 'totalCount' }]
+          result: aggregationPaginated,
+          totalCount: aggregationCounted
         }
       }]))
 
