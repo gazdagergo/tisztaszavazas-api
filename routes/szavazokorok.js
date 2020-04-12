@@ -18,26 +18,44 @@ import { generateKozigEgysegId } from './kozigegysegek-aggr'
  * @apiHeader Authorization A regisztrációkor kapott kulcs
  *
  * @apiSuccessExample {json} Success-Response:
- *  HTTP/1.1 200 OK
- *   [
+ * HTTP/1.1 200 OK
+ * [
  *     {
- *        "_id": "5e77c3f08723e7a7b25c40b0",
- *        "kozigEgyseg": {
- *          "megyeNeve": "Hajdú-Bihar",
- *          "kozigEgysegNeve": "Esztár",
- *        },
- *        "szavazokorSzama": 1, 
- *        "szavazokorCime": "Kossuth utca 1.",
- *        "akadalymentes": true, 
- *        "valasztokerulet": {
- *          "leiras": "-",
- *          "szam": null
- *        },
- *        "valasztokSzama": 1131,
- *        "__v": 0,
- *     },
- * 		...
- *   ]
+ *       "_id": "5e77c3f08723e7a7b25c411a",
+ *       "szavazokorSzama": 1,
+ *       "kozigEgyseg": {
+ *           "megyeNeve": "Hajdú-Bihar",
+ *           "kozigEgysegNeve": "Balmazújváros",
+ *           "link": "/kozigegysegek/006f6e6b32303139232d"
+ *       },
+ *       "szavazokorCime": "Batthyány utca 7. (Veres Péter Gimnázium)",
+ *       "akadalymentes": true,
+ *       "valasztokerulet": {
+ *           "leiras": "Balmazújváros 1. számú EVK",
+ *           "szam": 1
+ *       },
+ *       "valasztokSzama": 1035,
+ *       "__v": 1
+ *   },
+ *   {
+ *       "_id": "5e77c3f08723e7a7b25c411b",
+ *       "szavazokorSzama": 2,
+ *       "kozigEgyseg": {
+ *           "megyeNeve": "Hajdú-Bihar",
+ *           "kozigEgysegNeve": "Balmazújváros",
+ *           "link": "/kozigegysegek/006f6e6b32303139232d"
+ *       },
+ *       "szavazokorCime": "Batthyány utca 7. (Veres Péter Gimnázium)",
+ *       "akadalymentes": true,
+ *       "valasztokerulet": {
+ *           "leiras": "Balmazújváros 1. számú EVK",
+ *           "szam": 1
+ *       },
+ *       "valasztokSzama": 760,
+ *       "__v": 1
+ *   },
+ * ...
+ * ]
  * @apiSampleRequest off
  */
 
@@ -52,42 +70,47 @@ import { generateKozigEgysegId } from './kozigegysegek-aggr'
  * @apiHeader Authorization A regisztrációkor kapott kulcs
  *
  * @apiSuccessExample {json} Success-Response:
- *  HTTP/1.1 200 OK
- *  {
+ * HTTP/1.1 200 OK
+ *  
+ *{
  *    "_id": "5e77c3f18723e7a7b25c5f72",
  *    "szavazokorSzama": 24,
  *    "kozigEgyseg": {
  *        "megyeNeve": "Somogy",
- *        "kozigEgysegNeve": "Kaposvár"
+ *        "kozigEgysegNeve": "Kaposvár",
+ *        "kozigEgysegSzavazokoreinekSzama": 59,
+ *        "link": "/kozigegysegek/006f6e6b323031393af3"
  *    },
- *    "kozteruletek": [
- *       {
- *            "leiras": "Füredi utca 53 - 67 2 2",
- *            "kozteruletNev": "Füredi utca",
- *            "kezdoHazszam": 53,
- *            "vegsoHazszam": 67,
- *            "megjegyzes": "Páratlan házszámok"
- *        },
- *        {
- *            "leiras": "Kinizsi lakótelep",
- *            "kozteruletNev": "Kinizsi lakótelep",
- *            "kezdoHazszam": null,
- *            "vegsoHazszam": null,
- *            "megjegyzes": "Teljes közterület"
- *        }
- *    ],
+ *    "szavazokorCime": "Búzavirág utca 21. (Kinizsi Lakótelepi Tagiskola",
  *    "akadalymentes": true,
- *    "frissitveValasztasHun": "2020-01-09T14:49:48.000Z",
- *    "szavazokorCime": "Búzavirág utca 21. (Kinizsi Lakótelepi Tagiskola)",
  *    "valasztokSzama": 1345,
  *    "valasztokerulet": {
  *        "leiras": "Kaposvár 2. számú EVK",
  *        "szam": 2
  *    },
- *    "valasztasHuOldal": "http://localhost:1337/vhupage/5e77c3f18723e7a7b25c5f72"
- *    "__v": 1,
- *    "updatedAt": "2020-03-24T20:26:44.292Z",
- * }
+ *    "kozteruletek": [
+ *        {
+ *            "leiras": "Füredi utca 53 - 67 2 2",
+ *            "kozteruletNev": "Füredi utca",
+ *            "kezdoHazszam": 53,
+ *            "vegsoHazszam": 6722,
+ *            "megjegyzes": "Páratlan házszámok"
+ *        },
+ *        {
+ *            "leiras": "Kinizsi lakótelep",
+ *            "kozteruletNev": "Kinizsi lakótelep",
+ *            "kezdoHazszam": 0,
+ *            "vegsoHazszam": 9999,
+ *            "megjegyzes": "Teljes közterület"
+ *        }
+ *    ],
+ *    "frissitveValasztasHun": "2020-01-09T14:49:48.000Z",
+ *    "valasztasHuOldal": "/vhupage/5e77c3f18723e7a7b25c5f72",
+ *    "updatedAt": "2020-04-12T07:47:23.094Z",
+ *    "__v": 1
+ *}
+ * 
+ * 
  * @apiSampleRequest off
  */
 
@@ -106,7 +129,7 @@ import { generateKozigEgysegId } from './kozigegysegek-aggr'
  * @apiHeader Authorization A regisztrációkor kapott kulcs
  *
  * @apiExample {curl} Example usage:
- *     curl --location --request GET 'http://api.tisztaszavazas.hu/szavazokorok?kozigEgysegNeve=/Hajd%C3%BAhadh%C3%A1z/&kozteruletNev=/Bercs%C3%A9nyi/&kezdoHazszam={%20$lte:%2022%20}&vegsoHazszam={%20$gt:%2022%20}&megjegyzes=P%C3%A1ros%20h%C3%A1zsz%C3%A1mok' \
+ *     curl --location --request GET 'http://api.tisztaszavazas.hu/szavazokorok?kozigEgyseg.kozigEgysegNeve=/Hajd%C3%BAhadh%C3%A1z/&kozteruletek.kozteruletNev=/Bercs%C3%A9nyi/&kozteruletek.kezdoHazszam={%20$lte:%2022%20}&kozteruletek.vegsoHazszam={%20$gt:%2022%20}&megjegyzes=P%C3%A1ros%20h%C3%A1zsz%C3%A1mok' \
  *     --header 'Authorization: {jwt-token} \
  * 
  * @apiSuccessExample {json} Success-Response:
