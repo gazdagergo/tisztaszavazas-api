@@ -27,8 +27,7 @@ def getUtcaLista(soup):
 
 	if completeSettlement:
 		return {
-			"kozteruletek": [],
-			"egySzavazokorosTelepules": True
+			"kozteruletek": []
 			}
 
 	utcaList = soup.findAll("div", {"class": "nvi-search-list"})[0] \
@@ -76,7 +75,6 @@ def getUtcaLista(soup):
 	logging.info(utcaListPairs)
 		
 	return {
-		"kozteruletek": utcaListPairs,
-		"egySzavazokorosTelepules": False
+		"kozteruletek": utcaListPairs
 		}
 	

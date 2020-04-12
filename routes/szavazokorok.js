@@ -25,7 +25,6 @@ import getProjection from '../functions/getProjection';
  *        "kozigEgyseg": {
  *          "megyeNeve": "Hajdú-Bihar",
  *          "kozigEgysegNeve": "Esztár",
- *          "egySzavazokorosTelepules": true
  *        },
  *        "szavazokorSzama": 1, 
  *        "szavazokorCime": "Kossuth utca 1.",
@@ -59,8 +58,7 @@ import getProjection from '../functions/getProjection';
  *    "szavazokorSzama": 24,
  *    "kozigEgyseg": {
  *        "megyeNeve": "Somogy",
- *        "kozigEgysegNeve": "Kaposvár",
- *        "egySzavazokorosTelepules": false
+ *        "kozigEgysegNeve": "Kaposvár"
  *    },
  *    "kozteruletek": [
  *       {
@@ -119,8 +117,7 @@ import getProjection from '../functions/getProjection';
  *         "szavazokorSzama": 6,
  *         "kozigEgyseg": {
  *             "megyeNeve": "Hajdú-Bihar",
- *             "kozigEgysegNeve": "Hajdúhadház",
- *             "egySzavazokorosTelepules": false
+ *             "kozigEgysegNeve": "Hajdúhadház"
  *         },
  *         "kozteruletek": [
  *             {
@@ -176,11 +173,39 @@ router.get('/:SzavazokorId?', async (req, res) => {
     if (SzavazokorId) {
       projection = getProjection(req.user, 'byId')
       totalCount = 1
+
       result = await Szavazokor.findById(SzavazokorId, projection)
+
+      const { kozigEgyseg: { megyeKod, telepulesKod } } = result
+
+      const count = await Szavazokor.aggregate([
+        { $match: {
+          'kozigEgyseg.megyeKod': megyeKod,
+          'kozigEgyseg.telepulesKod': telepulesKod
+        }},
+        { $count: 'kozigEgysegSzavazokoreinekSzama' }
+      ])
+
       result = {
-        ...result['_doc'],
-        valasztasHuOldal: `${process.env.BASE_URL}/vhupage/${result['_doc']['_id']}`
-      }
+        _id: result['_id'],
+        szavazokorSzama: result.szavazokorSzama,
+        kozigEgyseg: {
+          megyeNeve: result.kozigEgyseg.megyeNeve,
+          kozigEgysegNeve: result.kozigEgyseg.kozigEgysegNeve,
+          kozigEgysegSzavazokoreinekSzama: count[0].kozigEgysegSzavazokoreinekSzama,
+          link: `/kozigegysegek/${result.kozigEgyseg.megyeKod * 1000 + result.kozigEgyseg.telepulesKod}`
+        },
+        szavazokorCime: result.szavazokorCime,
+        akadalymentes: result.akadalymentes,
+        valasztokSzama: result.valasztokSzama,
+        valasztokerulet: result.valasztokerulet,
+        kozteruletek: result.kozteruletek,
+        frissitveValasztasHun: result.frissitveValasztasHun,
+        valasztasHuOldal: `/vhupage/${result['_doc']['_id']}`,
+        updatedAt: result.updatedAt,
+        __v: result['__v'],        
+      }      
+
     } else if (!Object.keys(query).length) {
       projection = getProjection(req.user, 'noQuery')
       totalCount = await Szavazokor.estimatedDocumentCount()
@@ -216,11 +241,15 @@ router.get('/:SzavazokorId?', async (req, res) => {
         { $limit: limit },
       ];
 
-      ;([{ result, totalCount: [ { totalCount }] }] = await Szavazokor.aggregate([{
+      ;([{ result, totalCount }] = await Szavazokor.aggregate([{
         $facet: {
           result: aggregations,
           totalCount: [{ $match: query },{ $count: 'totalCount' }] }
       }]))
+
+      totalCount = totalCount && totalCount[0] && totalCount[0].totalCount
+
+      if (!totalCount) result = []
       
       result = result.reduce((acc = [], entry) => {
         if (!entry.kozteruletek || !entry.kozteruletek.length) return [...acc, entry]
