@@ -5,7 +5,7 @@ import getSortObject from '../functions/getSortObject';
 import authorization from '../middlewares/authorization';
 import getSzkAggregationFilter from '../functions/getSzkAggregationFilter';
 import getProjection from '../functions/getProjection';
-
+import { generateKozigEgysegId } from './kozigegysegek-aggr'
 
 /**
  * @api {get} /szavazokorok/ 1.) Összes szavazókör
@@ -134,7 +134,7 @@ import getProjection from '../functions/getProjection';
  */
 
 
-const mapResult = (result, query) => result.map(({
+const mapResult = (result, query, db) => result.map(({
   _id,
   kozigEgyseg,
   szavazokorSzama,
@@ -152,7 +152,7 @@ const mapResult = (result, query) => result.map(({
     kozigEgyseg: {
       megyeNeve: kozigEgyseg.megyeNeve,
       kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
-      link: generateKozigEgysegLink(kozigEgyseg)
+      link: `/kozigegysegek/${generateKozigEgysegId(kozigEgyseg, db)}`
     },
     szavazokorCime,
     akadalymentes,
@@ -170,8 +170,6 @@ const mapResult = (result, query) => result.map(({
   return entry
 })
 
-const generateKozigEgysegLink = kozigEgyseg => `/kozigegysegek/${+kozigEgyseg.megyeKod * 1000 + kozigEgyseg.telepulesKod}`
-
 const DEFAULT_LIMIT = 20;
 const DEFAULT_SORT = 'kozigEgyseg.megyeKod,kozigEgyseg.telepulesKod,szavazokorSzama'
 
@@ -179,10 +177,10 @@ const router = express.Router()
 
 router.all('*', authorization)
 
-let Szavazokor;
+let Szavazokor, db;
 
 router.all('*', (req, res, next) => { 
-  const db = req.headers['x-valasztas-kodja'] || 'onk2019'
+  db = req.headers['x-valasztas-kodja'] || 'onk2019'
   Szavazokor = SzavazokorSchemas[`Szavazokor_${db}`]
   if (!Szavazokor){
     res.status(400)
@@ -231,7 +229,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
           megyeNeve: result.kozigEgyseg.megyeNeve,
           kozigEgysegNeve: result.kozigEgyseg.kozigEgysegNeve,
           kozigEgysegSzavazokoreinekSzama: count[0].kozigEgysegSzavazokoreinekSzama,
-          link: generateKozigEgysegLink(result.kozigEgyseg)
+          link: `/kozigegysegek/${generateKozigEgysegId(result.kozigEgyseg, db)}`
         },
         szavazokorCime: result.szavazokorCime,
         akadalymentes: result.akadalymentes,
@@ -248,7 +246,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
       projection = getProjection(req.user, 'noQuery')
       totalCount = await Szavazokor.estimatedDocumentCount()
       result = await Szavazokor.find({}, projection).sort(sort).skip(skip).limit(limit)
-      result = mapResult(result, query)
+      result = mapResult(result, query, db)
     } else {
       
       const [filterCond, regexStreetToFilter] = getSzkAggregationFilter(query);
@@ -305,7 +303,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
         return acc
       }, [])
 
-      result = mapResult(result, query)
+      result = mapResult(result, query, db)
 
     }
     res.header('X-Total-Count', totalCount)
