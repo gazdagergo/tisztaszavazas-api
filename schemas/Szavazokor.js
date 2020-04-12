@@ -18,7 +18,6 @@ const SzavazokorSchema = mongoose.Schema({
   }],
   vhuUrl: String,
   polygonUrl: String,
-  egySzavazokorosTelepules: Boolean,
   sourceHtmlUpdated: Date,
   parsedFromSrcHtml: Date,
   akadalymentes: Boolean,

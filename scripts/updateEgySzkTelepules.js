@@ -11,9 +11,8 @@ dotenv.config()
 	console.log('connected')
 
 	console.log('querying')
-	const res = await Szavazokor[`Szavazokor_${db}`].updateMany({
-		egySzavazokorosTelepules: false
-	}, { 'kozigEgyseg.egySzavazokorosTelepules': false })
+	const res = await Szavazokor[`Szavazokor_${db}`].updateMany({}, { $unset: { 'egySzavazokorosTelepules': '' }})
+
 	console.log(res)
 	return
 })()

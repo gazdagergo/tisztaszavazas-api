@@ -41,8 +41,7 @@ dotenv.config()
         "megyeKod": 7,
         "telepulesKod": 24,
         "megyeNeve": "Fejér",
-        "kozigEgysegNeve": "Dunaújváros",
-        "egySzavazokorosTelepules": false
+        "kozigEgysegNeve": "Dunaújváros"
     },
     "akadalymentes": false,
     "frissitveValasztasHun": "2020-01-09T14:49:48.000Z",
