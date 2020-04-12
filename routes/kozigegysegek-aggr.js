@@ -25,8 +25,6 @@ const getProjection = ({ roles }, context) => {
   const isAdmin = roles && roles.includes('admin');
 
   let projection = {
-    megyeKod: 0,
-    telepulesKod: 0
   }
 
   switch (context) {
@@ -48,10 +46,10 @@ export const generateKozigEgysegId = ({ megyeKod, telepulesKod }, db) => {
 
 router.all('*', authorization)
 
-let Szavazokor;
+let Szavazokor, db;
 
 router.all('*', (req, res, next) => { 
-  const db = req.headers['x-valasztas-kodja'] || 'onk2019'
+  db = req.headers['x-valasztas-kodja'] || 'onk2019'
   Szavazokor = SzavazokorSchemas[`Szavazokor_${db}`]
   if (!Szavazokor){
     res.status(400)
@@ -219,8 +217,8 @@ router.get('/:id?', async (req, res) => {
 
       totalCount = totalCount && totalCount[0] && totalCount[0].totalCount
 
-      result = result.map(({ _id, megyeNeve, kozigEgysegNeve, kozigEgysegSzavazokoreinekSzama }) => ({
-        _id,
+      result = result.map(({ megyeKod, telepulesKod, megyeNeve, kozigEgysegNeve, kozigEgysegSzavazokoreinekSzama }) => ({
+        _id: generateKozigEgysegId({ megyeKod, telepulesKod }, db),
         megyeNeve,
         kozigEgysegNeve,
         kozigEgysegSzavazokoreinekSzama,
