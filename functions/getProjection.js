@@ -22,8 +22,6 @@ export default ({ roles }, context) => {
       polygonUrl: 0,
       createdAt: 0,
       updatedAt: 0,
-      'kozigEgyseg.megyeKod': 0,
-      'kozigEgyseg.telepulesKod': 0,
       valasztasAzonosito: 0,
       helyadatok: 0
     })
@@ -31,7 +29,9 @@ export default ({ roles }, context) => {
     case 'filterStreet': return ({
       szavazokorSzama: 1,
       'kozigEgyseg.kozigEgysegNeve': 1,
-      'kozigEgyseg.megyeNeve': 1
+      'kozigEgyseg.megyeNeve': 1,
+      'kozigEgyseg.megyeKod': 1,
+      'kozigEgyseg.telepulesKod': 1,
     })
 
     case 'withRegex': return ({

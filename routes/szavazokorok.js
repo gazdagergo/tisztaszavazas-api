@@ -168,6 +168,8 @@ router.get('/:SzavazokorId?', async (req, res) => {
 
   sort = getSortObject(sort)
 
+  const generateKozigEgysegLink = kozigEgyseg => `/kozigegysegek/${+kozigEgyseg.megyeKod * 1000 + kozigEgyseg.telepulesKod}`
+
   try {
     let result;
     if (SzavazokorId) {
@@ -193,7 +195,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
           megyeNeve: result.kozigEgyseg.megyeNeve,
           kozigEgysegNeve: result.kozigEgyseg.kozigEgysegNeve,
           kozigEgysegSzavazokoreinekSzama: count[0].kozigEgysegSzavazokoreinekSzama,
-          link: `/kozigegysegek/${result.kozigEgyseg.megyeKod * 1000 + result.kozigEgyseg.telepulesKod}`
+          link: generateKozigEgysegLink(result.kozigEgyseg)
         },
         szavazokorCime: result.szavazokorCime,
         akadalymentes: result.akadalymentes,
@@ -237,6 +239,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
       const aggregations = [
         { $match: query },
         { $project: projection },
+        { $sort: sort },
         { $skip: skip },
         { $limit: limit },
       ];
@@ -260,6 +263,18 @@ router.get('/:SzavazokorId?', async (req, res) => {
         if (kozteruletek.length) return [...acc, { _id, kozteruletek, ...entryRest }]
         return acc
       }, [])
+
+      result = result.map(({ _id, kozigEgyseg, szavazokorSzama, kozteruletek, __v }) => ({
+        _id,
+        szavazokorSzama,
+        kozigEgyseg: {
+          megyeNeve: kozigEgyseg.megyeNeve,
+          kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
+          link: generateKozigEgysegLink(kozigEgyseg)
+        },
+        kozteruletek,
+        __v
+      }))
     }
     res.header('X-Total-Count', totalCount)
     res.status(result.length ? 200 : 404)
