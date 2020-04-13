@@ -118,6 +118,7 @@ const getProjection = ({ roles }, context) => {
 export const generateKozigEgysegId = ({ megyeKod, telepulesKod }, db) => {
   let id = (+megyeKod * 1000 + telepulesKod).toString(16);
   id = pad(encodeHex(db), 16) + pad(id, 4)
+  id = `5e77${id}`
   return id
 }
 
