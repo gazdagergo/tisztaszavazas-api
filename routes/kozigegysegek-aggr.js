@@ -4,6 +4,7 @@ import parseQuery from '../functions/parseQuery';
 import authorization from '../middlewares/authorization';
 import SzavazokorSchemas from '../schemas/Szavazokor';
 import { encodeHex, pad } from '../functions/stringFunctions';
+import getPrevNextLinks from '../functions/getPrevNextLinks';
 
 
 /**
@@ -307,7 +308,16 @@ router.get('/:id?', async (req, res) => {
         kozigEgysegSzavazokoreinekSzama,
       }))      
     }
-    
+
+    const prevNextLinks = getPrevNextLinks({
+      route: 'kozigegysegek',
+      skip,
+      limit,
+      query,
+      totalCount
+    })
+
+    res.header({...prevNextLinks})
     res.header('X-Total-Count', totalCount)  
     res.json(result);
   } catch (error) {
