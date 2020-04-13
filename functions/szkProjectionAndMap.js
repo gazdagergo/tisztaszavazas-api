@@ -57,7 +57,7 @@ export const getProjection = ({ roles }, context) => {
   }
 }
 
-export const mapQueryResult = (result, query, db) => result.map(({
+export const mapQueryResult = (result, query, db, szkSzamIfLengthOne) => result.map(({
   _id,
   kozigEgyseg,
   szavazokorSzama,
@@ -75,6 +75,7 @@ export const mapQueryResult = (result, query, db) => result.map(({
     kozigEgyseg: {
       megyeNeve: kozigEgyseg.megyeNeve,
       kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
+      kozigEgysegSzavazokoreinekSzama: szkSzamIfLengthOne,
       link: `/kozigegysegek/${generateKozigEgysegId(kozigEgyseg, db)}`
     },
     szavazokorCime,
