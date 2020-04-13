@@ -12,9 +12,13 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
 * @apiName kozigegysegek2
 * @apiGroup Közigegységek
 *
-* @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default `20`)
-* @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
-* @apiHeader Authorization A regisztrációkor kapott kulcs
+* @apiParam (Request Parameters) {Number} [limit] Csak a megadott számú találatot adja vissza (default: `20`)
+* @apiParam (Request Parameters) {Number} [skip] A lapozáshoz használható paraméter. (default: `0`)
+* @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
+* @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (default: `onk2019`)
+* @apiHeader (Response Headers) X-Total-Count A szűrési feltételeknek megfelelő, a válaszban lévő összes elem a lapozási beállításoktől függetlenül
+* @apiHeader (Response Headers) X-Prev-Page A `limit` és `skip` paraméterekkel meghatározott lapozás következő oldala
+* @apiHeader (Response Headers) X-Next-Page A `limit` és `skip` paraméterekkel meghatározott lapozás előző oldala
 *
 * @apiSuccessExample {json} Success-Response:
 *  HTTP/1.1 200 OK
@@ -42,8 +46,8 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
  * @apiGroup Közigegységek
  *
  * @apiParam {String} id A közigazgatási egység azonosítója az adatbázisban
- * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
- * @apiHeader Authorization A regisztrációkor kapott kulcs
+ * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
+ * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (default: `onk2019`)
  *  
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK

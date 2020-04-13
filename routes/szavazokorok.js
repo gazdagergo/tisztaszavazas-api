@@ -13,11 +13,14 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
  * @apiName szavazokorok2
  * @apiGroup Szavazókörök
  *
- * @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default: `20`)
- * @apiParam {Number} skip A lapozáshoz használható paraméter. (default: `0`)
- * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
- * @apiHeader Authorization A regisztrációkor kapott kulcs
- *
+ * @apiParam (Request Parameters) {Number} [limit] Csak a megadott számú találatot adja vissza (default: `20`)
+ * @apiParam (Request Parameters) {Number} [skip] A lapozáshoz használható paraméter. (default: `0`)
+ * @apiParam (Request Parameters) {Number|String|Regex|Query} [queryParameters] A rekordok bármely paramétere alapján lehet szűkíteni a listát. Használatukról bővebben a [3. pont](#api-Szavazókörök-szavazokorok3) alatt.
+ * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
+ * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (default: `onk2019`)
+ * @apiHeader (Response Headers) X-Total-Count A szűrési feltételeknek megfelelő, a válaszban lévő összes elem a lapozási beállításoktől függetlenül
+ * @apiHeader (Response Headers) X-Prev-Page A `limit` és `skip` paraméterekkel meghatározott lapozás következő oldala
+ * @apiHeader (Response Headers) X-Next-Page A `limit` és `skip` paraméterekkel meghatározott lapozás előző oldala
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * [
@@ -67,8 +70,8 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
  * @apiGroup Szavazókörök
  *
  * @apiParam {String} id A szavazókör azonosítója az adatbázisban
- * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
- * @apiHeader Authorization A regisztrációkor kapott kulcs
+ * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
+ * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (default: `onk2019`)
  *
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
@@ -119,14 +122,18 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
  * @api {get} /szavazokorok?param={value|query} 3.) Szavazókörök keresése paraméter alapján
  * @apiName szavazokorok3
  * @apiGroup Szavazókörök
- *
- * @apiParam {String|Regex} [textFields] Szöveget tartalmazó mezők. (pl: megyenév: `kozigEgyseg.megyeNeve`, település vagy budapesti kerület neve: `kozigEgyseg.kozigEgysegNeve`, szavazókör címe: `szavazokorCime`, a szavazókörhöz tartozó utcák, terek stb nevei: `kozteruletek.kozteruletNev`). Lekérdezhetőek teljes egyezésre (pl: `kozigEgyseg.kozigEgysegNeve=Barcs`) vagy reguláris kifejezéssel (regexel) (pl. `kozteruletek.kozteruletNev=/^hunyadi/i`)
- * @apiParam {Number|Query} [numericFields] Numberikus mezők (pl: a szavazókör száma: `szavazokorSzama`, a szavazókörbe tartozó legkisebb házszám egy adott közterületen: `kozteruletek.kezdoHazszam`, a szavazókörbe tartozó legnagyobb házszám: `kozteruletek.vegsoHazszam`, a szavazókör névjegyzékében szereplők száma: `valasztokSzama` stb). Lekérdezhető pontos egyezésre (pl. `szavazokorSzama=4`) illetve operátorok használhatók, mint: `kozteruletek.kezdoHazszam={ $lt: 22 }`, azaz a kezdő házszám kisebb, mint 22. A következő operátorok használhatók: `$gt`, `$gte`, `$lt`, `$lte`, `$eq`, `$ne`;
- * @apiParam {Number} [limit] Csak a megadott számú találatot adja vissza (default `20`)
  * 
- * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
- * @apiHeader Authorization A regisztrációkor kapott kulcs
- *
+ * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
+ * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (default: `onk2019`)
+ * @apiHeader (Response Headers) X-Total-Count A szűrési feltételeknek megfelelő, a válaszban lévő összes elem a lapozási beállításoktől függetlenül
+ * @apiHeader (Response Headers) X-Prev-Page A `limit` és `skip` paraméterekkel meghatározott lapozás következő oldala
+ * @apiHeader (Response Headers) X-Next-Page A `limit` és `skip` paraméterekkel meghatározott lapozás előző oldala
+ * 
+ * @apiParam (Request Parameters) {String|Regex} [textFields] Szöveget tartalmazó mezők. (pl: megyenév: `kozigEgyseg.megyeNeve`, település vagy budapesti kerület neve: `kozigEgyseg.kozigEgysegNeve`, szavazókör címe: `szavazokorCime`, a szavazókörhöz tartozó utcák, terek stb nevei: `kozteruletek.kozteruletNev` stb.). Lekérdezhetőek teljes egyezésre (pl: `kozigEgyseg.kozigEgysegNeve=Barcs`) vagy reguláris kifejezéssel (regexel) (pl. `kozteruletek.kozteruletNev=/^hunyadi/i`)
+ * @apiParam (Request Parameters) {Number|Query} [numericFields] Numberikus mezők (pl: a szavazókör száma: `szavazokorSzama`, a szavazókörbe tartozó legkisebb házszám egy adott közterületen: `kozteruletek.kezdoHazszam`, a szavazókörbe tartozó legnagyobb házszám: `kozteruletek.vegsoHazszam`, a szavazókör névjegyzékében szereplők száma: `valasztokSzama` stb). Lekérdezhető pontos egyezésre (pl. `szavazokorSzama=4`) vagy operátorok segítségével, mint: `kozteruletek.kezdoHazszam={ $lt: 22 }`, azaz a kezdő házszám kisebb, mint 22. A következő operátorok használhatók: `$gt`, `$gte`, `$lt`, `$lte`, `$eq`, `$ne`;
+ * @apiParam (Request Parameters) {Number} [skip] A lapozáshoz használható paraméter. (default: `0`)
+ * @apiParam (Request Parameters) {Number} [limit] Csak a megadott számú találatot adja vissza (default: `20`)
+ * 
  * @apiExample {curl} Example usage:
  *   curl --location --request GET 'http://api.tisztaszavazas.hu/szavazokorok?\
  *     kozigEgyseg.kozigEgysegNeve=/Hajd%C3%BAhadh%C3%A1z/&\
