@@ -119,11 +119,9 @@ import reduceResultByRegex from '../functions/reduceResultByRegex';
  * @apiName szavazokorok3
  * @apiGroup Szavazókörök
  *
- * @apiParam {String|Regex} kozigEgysegNeve A település vagy budapesti kerület neve
- * @apiParam {String|Regex} kozteruletNev A szavazó lakcíme közterületének neve (pl: Bercsényi utca v. /bercs/i)
- * @apiParam {Number|Query} kezdoHazszam A közterület szavazókörhöz tartozó legkisebb házszáma. Lekéréskor relációk használhatók, mint { $lt: 22 }, vagyis 22-nél kisebb
- * @apiParam {Number|Query} vegsoHazszam A közterület szavazókörhöz tartozó legmagasabb házszáma. Lekéréskor relációk használhatók, mint { $gte: 22 }, vagyis 22-nél nagyobb vagy egyenlő
- * @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default `20`)
+ * @apiParam {String|Regex} [textFields] Szöveget tartalmazó mezők. (pl: megyenév: `kozigEgyseg.megyeNeve`, település vagy budapesti kerület neve: `kozigEgyseg.kozigEgysegNeve`, szavazókör címe: `szavazokorCime`, a szavazókörhöz tartozó utcák, terek stb nevei: `kozteruletek.kozteruletNev`). Lekérdezhetőek teljes egyezésre (pl: `kozigEgyseg.kozigEgysegNeve=Barcs`) vagy reguláris kifejezéssel (regexel) (pl. `kozteruletek.kozteruletNev=/^hunyadi/i`)
+ * @apiParam {Number|Query} [numericFields] Numberikus mezők (pl: a szavazókör száma: `szavazokorSzama`, a szavazókörbe tartozó legkisebb házszám egy adott közterületen: `kozteruletek.kezdoHazszam`, a szavazókörbe tartozó legnagyobb házszám: `kozteruletek.vegsoHazszam`, a szavazókör névjegyzékében szereplők száma: `valasztokSzama` stb). Lekérdezhető pontos egyezésre (pl. `szavazokorSzama=4`) illetve operátorok használhatók, mint: `kozteruletek.kezdoHazszam={ $lt: 22 }`, azaz a kezdő házszám kisebb, mint 22. A következő operátorok használhatók: `$gt`, `$gte`, `$lt`, `$lte`, `$eq`, `$ne`;
+ * @apiParam {Number} [limit] Csak a megadott számú találatot adja vissza (default `20`)
  * 
  * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
  * @apiHeader Authorization A regisztrációkor kapott kulcs
