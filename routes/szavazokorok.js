@@ -281,7 +281,14 @@ router.get('/:SzavazokorId?', async (req, res) => {
         totalCount = undefined
       }
 
-      result = mapQueryResult(result, query, db)
+      let szkSzamIfLengthOne;
+      
+      if (result.length === 1) {
+        const { megyeKod, telepulesKod } = result[0].kozigEgyseg;
+        szkSzamIfLengthOne = await getSzavazokorCount({ megyeKod, telepulesKod })
+      }
+
+      result = mapQueryResult(result, query, db, szkSzamIfLengthOne)
     }
 
     res.header('X-Total-Count', totalCount)
