@@ -261,7 +261,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
         if (projection[key] === 0) delete projection[key]
       })      
 
-      const aggregations = [
+      let aggregations = [
         { $match: query },
         { $project: projection },
         { $sort: sort },
@@ -269,17 +269,43 @@ router.get('/:SzavazokorId?', async (req, res) => {
         { $limit: limit },
       ];
 
-      ;([{ result, totalCount }] = await Szavazokor.aggregate([{
-        $facet: {
-          result: aggregations,
-          totalCount: [{ $match: query },{ $count: 'totalCount' }] }
-      }]))
+      if (!req.headers['x-sajat-szavazokor-keresese']) {
+        ;([{ result, totalCount }] = await Szavazokor.aggregate([{
+          $facet: {
+            result: aggregations,
+            totalCount: [{ $match: query },{ $count: 'totalCount' }] }
+        }]))
+  
+        totalCount = totalCount && totalCount[0] && totalCount[0].totalCount
+  
+        if (!totalCount) result = []
+  
+        result = reduceResultByRegex(result, regexStreetToFilter, projection)
+      } else {
+        let $match;
+        ;([ { $match }, ...aggregations] = aggregations)
+        const [facet] = Object.entries($match).reduce((acc, [key, value], i) => {
+          acc[1] = { ...acc[1], [key]: value }
+          acc[0] = {
+            ...acc[0],
+            [`result${i}`]: [
+              { $match: acc[1] },
+              ...aggregations
+            ]
+          }
+          return acc
+        }, [{}, {}])
 
-      totalCount = totalCount && totalCount[0] && totalCount[0].totalCount
+        let [results] = await Szavazokor.aggregate([{
+          $facet: facet
+        }])
 
-      if (!totalCount) result = []
+        results = Object.values(results)
 
-      result = reduceResultByRegex(result, regexStreetToFilter, projection)
+        for (let r of results) {
+          if (r.length) result = r
+        }
+      }
 
       if (regexStreetToFilter && totalCount <= limit){
         totalCount = result.length
