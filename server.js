@@ -10,6 +10,7 @@ import kozigEgysegRoute from './routes/kozigegysegek-aggr';
 import sourceHtmlRoute from './routes/sourcehtmls';
 import urlsRoute from './routes/urls';
 import vhuPageRoute from './routes/vhupage';
+import usageRoute from './routes/usage';
 
 dotenv.config()
 const app =  express();
@@ -31,6 +32,7 @@ app.use('/scrape', scrapeRoute)
 app.use('/kozigegysegek', kozigEgysegRoute)
 app.use('/sourcehtmls', sourceHtmlRoute)
 app.use('/urls', urlsRoute)
+app.use('/usage', usageRoute)
 
 
 // Connect to DB
