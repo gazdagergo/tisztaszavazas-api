@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import Usage from '../schemas/Usage';
 
 dotenv.config();
 
@@ -18,7 +19,9 @@ export default (req, res, next) => {
 				return res.json({ error: 'Authorization token is invalid.' });
 			}
 			req.user = user;
+			const ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
 			next();
+			Usage.insertMany([{ name: user.name, ip }])
 		});
 	} else {
 		res.status(401);
