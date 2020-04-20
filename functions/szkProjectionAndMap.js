@@ -9,7 +9,6 @@ export const getProjection = ({ roles }, context) => {
     createdAt: 0,
     vhuUrl: 0,
     polygonUrl: 0,
-    valasztasAzonosito: 0,
 		helyadatok: 0
   }
 
@@ -46,6 +45,7 @@ export const getProjection = ({ roles }, context) => {
       updatedAt: 0
     })
 
+    case 'byId':
     default:
       if (isAdmin) {
         delete projection['kozigEgyseg.megyeKod']
@@ -122,6 +122,7 @@ export const mapIdResult = ({
   kozteruletek,
   frissitveValasztasHun,
   valasztasHuOldal: `/vhupage/${_id}`,
+  valasztasKodja: db,
   updatedAt,
   __v,        
 })
