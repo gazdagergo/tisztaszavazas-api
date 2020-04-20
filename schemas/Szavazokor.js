@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 const SzavazokorSchema = mongoose.Schema({
-  valasztasAzonosito: String,
   szavazokorSzama: Number,
   szavazokorCime: String,
   kozigEgyseg: {
