@@ -1,5 +1,29 @@
 import mongoose from 'mongoose';
 
+const KorzethatarSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ['Polygon'],
+    required: true
+  },
+  coordinates: {
+    type: [[[Number]]], // Array of arrays of arrays of numbers
+    required: true
+  }
+});
+
+const PointSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ['Point'],
+    required: true
+  },
+  coordinates: {
+    type: [Number],
+    required: true
+  }
+});
+
 const SzavazokorSchema = mongoose.Schema({
   szavazokorSzama: Number,
   szavazokorCime: String,
@@ -16,6 +40,8 @@ const SzavazokorSchema = mongoose.Schema({
     ref: 'Kozterulet'
   }],
   vhuUrl: String,
+  korzethatar: KorzethatarSchema,
+  szavazohelyisegHelye: PointSchema,
   polygonUrl: String,
   sourceHtmlUpdated: Date,
   parsedFromSrcHtml: Date,
