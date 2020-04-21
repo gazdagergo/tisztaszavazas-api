@@ -40,6 +40,11 @@ const toQueryObject = string => {
 	return undefined
 }
 
+const toGeoQuery = string => {
+	const regex = /\{\s*(\$geoIntersects):\s*(\[.*\])\s*\}/;
+
+}
+
 const toDate = string => {
 	if (!isNaN(Date.parse(string))) {
 		return new Date(string)
