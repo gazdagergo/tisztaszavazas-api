@@ -1,7 +1,7 @@
 import express from 'express';
 import Schema from '../schemas/SzavazokorUrl';
 
-const DEFAULT_LIMIT = 99999;
+const DEFAULT_LIMIT = 20;
 
 const router = express.Router()
 
@@ -17,7 +17,7 @@ router.get('/:id?', async (req, res) => {
     if (id) {
       result = await Schema.findById(id)
     } else {
-      result = await Schema.find(query)
+      result = await Schema.find(query).limit(limit)
     }
 
     res.status(result.length ? 200 : 404)
