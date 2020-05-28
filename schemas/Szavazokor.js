@@ -70,9 +70,10 @@ const SzavazokorSchema = mongoose.Schema({
 })
 
 const Szavazokor_onk2019_v1 = mongoose.model('Szavazokor_onk2019_v1', SzavazokorSchema);
-const Szavazokor_onk2019 = mongoose.model('Szavazokor_onk2019', SzavazokorSchema);
+const Szavazokor_onk2019_v2 = mongoose.model('Szavazokor_onk2019_v2', SzavazokorSchema);
 
 export default {
   Szavazokor_onk2019_v1,
-  Szavazokor_onk2019,
+  Szavazokor_onk2019_v2,
+  Szavazokor_onk2019: Szavazokor_onk2019_v1
 }
