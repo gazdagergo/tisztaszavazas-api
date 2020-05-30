@@ -5,22 +5,12 @@ const router = express.Router()
 
 let Szavazokor;
 
-router.all('*', (req, _res, next) => { 
-  const db = req.headers['x-valasztas-kodja'] || 'onk2019_v1'
-	Szavazokor = SzavazokorSchemas[`Szavazokor_${db}`]
-  if (!Szavazokor){
-    res.status(400)
-    res.json({'error': `Hibás választás kód: '${db}'` })
-    return
-  }	
-  next()
-})
-
-router.get('/:id', async (req, res) => {
+router.get('/:db/:id', async (req, res) => {
 	try {
+		Szavazokor = SzavazokorSchemas[`Szavazokor_${req.params.db}`]		
 		const { vhuUrl } = await Szavazokor.findById(req.params.id)
 		res.redirect(vhuUrl)
-	} catch(error){
+	} catch(error){h
 		res.status(400)
 		res.json('Not found')
 	}

@@ -128,7 +128,7 @@ export const mapIdResult = ({
   korzethatar,
   szavazohelyisegHelye,
   frissitveValasztasHun,
-  valasztasHuOldal: `/vhupage/${_id}`,
+  valasztasHuOldal: `/vhupage/${db}/${_id}`,
   valasztasKodja: db,
   updatedAt,
   __v
