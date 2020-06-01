@@ -202,9 +202,9 @@ const getSzavazokorCount = async ({ megyeKod, telepulesKod }) => {
 }
 
 
-router.get('/:SzavazokorId?', async (req, res) => {
+router.get('/:szavazokorId?', async (req, res) => {
   let {
-    params: { SzavazokorId },
+    params: { szavazokorId },
     query,
     body
   } = req;
@@ -219,11 +219,11 @@ router.get('/:SzavazokorId?', async (req, res) => {
 
   try {
     let result;
-    if (SzavazokorId) {
+    if (szavazokorId) {
       projection = getProjection(req.user, 'byId')
       totalCount = 1
 
-      result = await Szavazokor.findById(SzavazokorId, projection)
+      result = await Szavazokor.findById(szavazokorId)
 
       const { kozigEgyseg: { megyeKod, telepulesKod } } = result
 
