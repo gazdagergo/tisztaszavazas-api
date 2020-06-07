@@ -1,6 +1,9 @@
-import mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
+import KozigEgysegSchema from './KozigEgyseg';
 
-const KorzethatarSchema = new mongoose.Schema({
+// https://stackoverflow.com/questions/55096055/mongoose-different-ways-to-reference-subdocuments
+
+const KorzethatarSchema = new Schema({
   type: {
     type: String,
     enum: ['Polygon'],
@@ -12,7 +15,7 @@ const KorzethatarSchema = new mongoose.Schema({
   }
 });
 
-const PointSchema = new mongoose.Schema({
+const PointSchema = new Schema({
   type: {
     type: String,
     enum: ['Point'],
@@ -24,14 +27,7 @@ const PointSchema = new mongoose.Schema({
   }
 });
 
-const KozigEgysegSchema = new mongoose.Schema({
-  megyeNeve: String,
-  megyeKod: Number,
-  telepulesKod: Number,
-  kozigEgysegNeve: String,
-})
-
-const KozteruletSchema = mongoose.Schema({
+const KozteruletSchema = Schema({
 	"leiras": String,
 	"kozteruletNev": String,
 	"kezdoHazszam": Number,
@@ -39,16 +35,22 @@ const KozteruletSchema = mongoose.Schema({
 	"megjegyzes": String,
 })
 
-const ValasztokeruletSchema = new mongoose.Schema({
+const ValasztokeruletSchema = new Schema({
   tipus: String,
   leiras: String,
   szam: Number
 })
 
-const SzavazokorSchema = mongoose.Schema({
+model('kozigEgysegRef', KozigEgysegSchema);
+
+const SzavazokorSchema = Schema({
   szavazokorSzama: Number,
   szavazokorCime: String,
   kozigEgyseg: KozigEgysegSchema,
+  kozigEgysegRef: {
+    type: Schema.Types.ObjectId,
+    ref: 'kozigEgysegRef'
+  },
   valasztokerulet: ValasztokeruletSchema,
   kozteruletek: [{
     type: Object,
@@ -68,13 +70,12 @@ const SzavazokorSchema = mongoose.Schema({
   timestamps: true  
 })
 
-const Szavazokor_onk2019_v1 = mongoose.model('Szavazokor_onk2019_v1', SzavazokorSchema);
-const Szavazokor_onk2019_v2 = mongoose.model('Szavazokor_onk2019_v2', SzavazokorSchema);
-const Szavazokor_ogy2018_v1 = mongoose.model('Szavazokor_ogy2018_v1', SzavazokorSchema);
+export const Szavazokor_onk2019_v1 = model('Szavazokor_onk2019_v1', SzavazokorSchema);
+export const Szavazokor_onk2019_v2 = model('Szavazokor_onk2019_v2', SzavazokorSchema);
+export const Szavazokor_ogy2018_v1 = model('Szavazokor_ogy2018_v1', SzavazokorSchema);
 
 export default {
   Szavazokor_onk2019_v1,
   Szavazokor_onk2019_v2,
-  Szavazokor_onk2019: Szavazokor_onk2019_v2,
-  Szavazokor_ogy2018_v1
+  Szavazokor_ogy2018_v1,
 }

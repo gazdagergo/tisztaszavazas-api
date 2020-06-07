@@ -223,7 +223,7 @@ router.get('/:szavazokorId?', async (req, res) => {
       projection = getProjection(req.user, 'byId')
       totalCount = 1
 
-      result = await Szavazokor.findById(szavazokorId)
+      result = await Szavazokor.findById(szavazokorId, projection)
 
       const { kozigEgyseg: { megyeKod, telepulesKod } } = result
 
