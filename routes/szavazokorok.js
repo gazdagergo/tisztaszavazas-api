@@ -7,6 +7,7 @@ import getSzkAggregationFilter from '../functions/getSzkAggregationFilter';
 import { getProjection, mapQueryResult, mapIdResult } from '../functions/szkProjectionAndMap';
 import reduceResultByRegex from '../functions/reduceResultByRegex';
 import getPrevNextLinks from '../functions/getPrevNextLinks';
+import KozigEgysegSchema, { KozigEgyseg_ogy2018_v1, KozigEgyseg_onk2019_v1 } from '../schemas/KozigEgyseg';
 
 /**
  * @api {get} /szavazokorok/ 1.) Összes szavazókör
@@ -177,11 +178,13 @@ const router = express.Router()
 
 router.all('*', authorization)
 
-let Szavazokor, db;
+let Szavazokor, db, KozigEgyseg;
 
 router.all('*', (req, res, next) => { 
   db = req.headers['x-valasztas-kodja'] || process.env.DEFAULT_DB
+  
   Szavazokor = SzavazokorSchemas[`Szavazokor_${db}`]
+  KozigEgyseg = KozigEgyseg_onk2019_v1
   if (!Szavazokor){
     res.status(400)
     res.json({'error': `Hibás választás kód: '${db}'` })
@@ -271,28 +274,54 @@ router.get('/:szavazokorId?', async (req, res) => {
 
       Object.keys(query).forEach(key => {
         if (projection[key] === 0) delete projection[key]
-      })      
+      })
+
+      const lookup = {
+        from: 'KozigEgyseg_onk2019_v1',
+        localField: 'kozigEgysegRef',
+        foreignField: '_id',
+        as: 'kozigEgyseg2'
+      }
+
+
 
       let aggregations = [
         { $match: query },
-        { $project: projection },
+        // { $lookup: lookup },
+        // { $project: projection },
         { $sort: sort },
         { $skip: skip },
         { $limit: limit },
       ];
 
       if (!req.headers['x-iterating-query']) {
-        ;([{ result, totalCount }] = await Szavazokor.aggregate([{
+/*         ;([{ result, totalCount }] = await Szavazokor.aggregate([{
           $facet: {
             result: aggregations,
             totalCount: [{ $match: query },{ $count: 'totalCount' }] }
-        }]))
+        }])) */
 
-        totalCount = totalCount && totalCount[0] && totalCount[0].totalCount
+        result = await Szavazokor.aggregate(aggregations)
+
+        result = await KozigEgyseg_onk2019_v1.populate(result, { path: 'kozigEgysegRef' })
+
+/*         result = await Szavazokor.findOne({ _id: '5ed382ed103c8ba7d263c239' })
+          .populate({
+            path: "kozigEgysegRef"
+          })
+          .exec((error, ke) => {
+            if (error) console.log(error)
+            console.log(ke)
+            return ke
+          }) */
+          
+          return res.json(result)
+
+  /*       totalCount = totalCount && totalCount[0] && totalCount[0].totalCount
   
         if (!totalCount) result = []
   
-        result = reduceResultByRegex(result, regexStreetToFilter, projection)
+        result = reduceResultByRegex(result, regexStreetToFilter, projection) */
       } else {
         let $match;
         ;([ { $match }, ...aggregations] = aggregations)
@@ -336,7 +365,7 @@ router.get('/:szavazokorId?', async (req, res) => {
         szkSzamIfLengthOne = await getSzavazokorCount({ megyeKod, telepulesKod })
       }
 
-      result = mapQueryResult(result, query, db, szkSzamIfLengthOne)
+      // result = mapQueryResult(result, query, db, szkSzamIfLengthOne)
     }
 
     const prevNextLinks = getPrevNextLinks({
