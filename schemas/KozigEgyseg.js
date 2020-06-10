@@ -7,7 +7,8 @@ const KozigEgysegSchema = new Schema({
   kozigEgysegNeve: String,
 })
 
-export const KozigEgyseg_onk2019_v1 = model('KozigEgyseg_onk2019_v1', KozigEgysegSchema);
-export const KozigEgyseg_ogy2018_v1 = model('KozigEgyseg_ogy2018_v1', KozigEgysegSchema);
+export const onk2019_v1_kozigegyseg = model('onk2019_v1_kozigegyseg', KozigEgysegSchema);
+export const onk2019_v2_kozigegyseg = model('onk2019_v2_kozigegyseg', KozigEgysegSchema);
+export const ogy2018_v1_kozigegyseg = model('ogy2018_v1_kozigegyseg', KozigEgysegSchema);
 
 export default KozigEgysegSchema

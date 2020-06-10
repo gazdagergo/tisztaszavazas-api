@@ -41,15 +41,14 @@ const ValasztokeruletSchema = new Schema({
   szam: Number
 })
 
-model('kozigEgysegRef', KozigEgysegSchema);
+model('kozigEgyseg', KozigEgysegSchema);
 
 const SzavazokorSchema = Schema({
   szavazokorSzama: Number,
   szavazokorCime: String,
-  kozigEgyseg: KozigEgysegSchema,
-  kozigEgysegRef: {
+  kozigEgyseg: {
     type: Schema.Types.ObjectId,
-    ref: 'kozigEgysegRef'
+    ref: 'kozigEgyseg'
   },
   valasztokerulet: ValasztokeruletSchema,
   kozteruletek: [{
@@ -70,12 +69,8 @@ const SzavazokorSchema = Schema({
   timestamps: true  
 })
 
-export const Szavazokor_onk2019_v1 = model('Szavazokor_onk2019_v1', SzavazokorSchema);
-export const Szavazokor_onk2019_v2 = model('Szavazokor_onk2019_v2', SzavazokorSchema);
-export const Szavazokor_ogy2018_v1 = model('Szavazokor_ogy2018_v1', SzavazokorSchema);
+export const onk2019_v1_szavazokor = model('onk2019_v1_szavazokor', SzavazokorSchema);
+export const onk2019_v2_szavazokor = model('onk2019_v2_szavazokor', SzavazokorSchema);
+export const ogy2018_v1_szavazokor = model('ogy2018_v1_szavazokor', SzavazokorSchema);
 
-export default {
-  Szavazokor_onk2019_v1,
-  Szavazokor_onk2019_v2,
-  Szavazokor_ogy2018_v1,
-}
+export default SzavazokorSchema
