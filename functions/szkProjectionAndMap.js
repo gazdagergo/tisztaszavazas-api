@@ -114,10 +114,8 @@ export const mapIdResult = ({
   _id,
   szavazokorSzama,
   kozigEgyseg: {
-    megyeNeve: kozigEgyseg.megyeNeve,
-    kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
-    kozigEgysegSzavazokoreinekSzama,
-    link: `/kozigegysegek/${generateKozigEgysegId(kozigEgyseg, db)}`
+    ...kozigEgyseg,
+    link: `/kozigegysegek/${kozigEgyseg}`
   },
   szavazokorCime,
   akadalymentes,
