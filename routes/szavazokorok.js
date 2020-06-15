@@ -223,11 +223,14 @@ router.get('/:szavazokorId?', async (req, res) => {
       projection = getProjection(req.user, 'byId')
       totalCount = 1
 
-      result = await Szavazokor.findById(szavazokorId, projection)
+      let kozigEgysegSzavazokoreinekSzama = null;
 
-      const { kozigEgyseg: { megyeKod, telepulesKod } } = result
+      const { kozigEgyseg } = result
 
-      const kozigEgysegSzavazokoreinekSzama = await getSzavazokorCount({ megyeKod, telepulesKod })
+      if (kozigEgyseg) {
+        const { megyeKod, telepulesKod } = kozigEgyseg;
+        kozigEgysegSzavazokoreinekSzama = await getSzavazokorCount({ megyeKod, telepulesKod })
+      }
 
       result = mapIdResult(result, db, kozigEgysegSzavazokoreinekSzama)
 
