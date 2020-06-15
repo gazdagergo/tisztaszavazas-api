@@ -1,5 +1,5 @@
 import express from 'express';
-import SzavazokorSchemas from '../schemas/Szavazokor';
+import schemas from '../schemas';
 import parseQuery from '../functions/parseQuery';
 import getSortObject from '../functions/getSortObject';
 import authorization from '../middlewares/authorization';
@@ -177,12 +177,14 @@ const router = express.Router()
 
 router.all('*', authorization)
 
-let Szavazokor, db;
+let Szavazokors, db;
 
-router.all('*', (req, res, next) => { 
+router.all('*', (req, res, next) => {
   db = req.headers['x-valasztas-kodja'] || process.env.DEFAULT_DB
-  Szavazokor = SzavazokorSchemas[`Szavazokor_${db}`]
-  if (!Szavazokor){
+  const [valasztasAzonosito, version] = db.split('_')
+  Szavazokors = schemas.Szavazokor[valasztasAzonosito][version] || schemas.Szavazokor[valasztasAzonosito].latest
+  
+  if (!Szavazokors){
     res.status(400)
     res.json({'error': `Hibás választás kód: '${db}'` })
     return
@@ -190,8 +192,9 @@ router.all('*', (req, res, next) => {
   next()
 })
 
+
 const getSzavazokorCount = async ({ megyeKod, telepulesKod }) => {
-  const count = await Szavazokor.aggregate([
+  const count = await Szavazokors.aggregate([
     { $match: {
       'kozigEgyseg.megyeKod': megyeKod,
       'kozigEgyseg.telepulesKod': telepulesKod
@@ -223,6 +226,8 @@ router.get('/:szavazokorId?', async (req, res) => {
       projection = getProjection(req.user, 'byId')
       totalCount = 1
 
+      result = await Szavazokors.findById(szavazokorId, projection)
+
       let kozigEgysegSzavazokoreinekSzama = null;
 
       const { kozigEgyseg } = result
@@ -237,7 +242,7 @@ router.get('/:szavazokorId?', async (req, res) => {
     } else if (Object.keys(body).length){
       try {
         const aggregations = body
-        result = await Szavazokor.aggregate(aggregations)
+        result = await Szavazokors.aggregate(aggregations)
         result = mapQueryResult(result, query, db)
 
       } catch(error){
@@ -245,8 +250,8 @@ router.get('/:szavazokorId?', async (req, res) => {
       }
     } else if (!Object.keys(query).length) {
       projection = getProjection(req.user, 'noQuery')
-      totalCount = await Szavazokor.estimatedDocumentCount()
-      result = await Szavazokor.find({}, projection).sort(sort).skip(skip).limit(limit)
+      totalCount = await Szavazokors.estimatedDocumentCount()
+      result = await Szavazokors.find({}, projection).sort(sort).skip(skip).limit(limit)
       result = mapQueryResult(result, query, db)
     } else {
       
@@ -285,7 +290,7 @@ router.get('/:szavazokorId?', async (req, res) => {
       ];
 
       if (!req.headers['x-iterating-query']) {
-        ;([{ result, totalCount }] = await Szavazokor.aggregate([{
+        ;([{ result, totalCount }] = await Szavazokors.aggregate([{
           $facet: {
             result: aggregations,
             totalCount: [{ $match: query },{ $count: 'totalCount' }] }
@@ -311,7 +316,7 @@ router.get('/:szavazokorId?', async (req, res) => {
           return acc
         }, [{}, {}])
 
-        let [results] = await Szavazokor.aggregate([{
+        let [results] = await Szavazokors.aggregate([{
           $facet: facet
         }])
 

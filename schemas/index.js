@@ -1,32 +1,34 @@
 import {
-	Szavazokor_onk2019_v1,
-	Szavazokor_onk2019_v2,
-	Szavazokor_ogy2018_v1 } from "./Szavazokor"
+	onk2019_v1_szavazokor,
+	onk2019_v2_szavazokor,
+	ogy2018_v1_szavazokor } from "./Szavazokor"
 
 import {
-	KozigEgyseg_onk2019_v1,
-	KozigEgyseg_ogy2018_v1 } from "./KozigEgyseg"
+	onk2019_v1_kozigegyseg,
+	onk2019_v2_kozigegyseg,
+	ogy2018_v1_kozigegyseg } from "./KozigEgyseg"
 
 export default {
 	Szavazokor: {
 		onk2019: {
-			v1: Szavazokor_onk2019_v1,
-			v2: Szavazokor_onk2019_v2,
-			latest: Szavazokor_onk2019_v2
+			v1: onk2019_v1_szavazokor,
+			v2: onk2019_v2_szavazokor,
+			latest: onk2019_v2_szavazokor
 		},
 		ogy2018: {
-			v1: Szavazokor_ogy2018_v1,
-			latest: Szavazokor_ogy2018_v1
+			v1: ogy2018_v1_szavazokor,
+			latest: ogy2018_v1_szavazokor
 		}
 	},
 	KozigEgyseg: {
 		onk2019: {
-			v1: KozigEgyseg_onk2019_v1,
-			latest: KozigEgyseg_onk2019_v1,
+			v1: onk2019_v1_kozigegyseg,
+			v1: onk2019_v2_kozigegyseg,
+			latest: onk2019_v2_kozigegyseg,
 		},
 		ogy2018: {
-			v1: KozigEgyseg_ogy2018_v1,
-			latest: KozigEgyseg_ogy2018_v1,
+			v1: ogy2018_v1_kozigegyseg,
+			latest: ogy2018_v1_kozigegyseg,
 		}
 	}
 }

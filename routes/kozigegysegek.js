@@ -2,7 +2,7 @@ import express from 'express';
 import getSortObject from '../functions/getSortObject';
 import parseQuery from '../functions/parseQuery';
 import authorization from '../middlewares/authorization';
-import Models from '../schemas';
+import { KozigEgyseg, Szavazokor } from '../schemas';
 import getPrevNextLinks from '../functions/getPrevNextLinks';
 
 
@@ -126,8 +126,8 @@ let KozigEgysegs, Szavazokors, db;
 router.all('*', (req, res, next) => { 
   db = req.headers['x-valasztas-kodja'] || process.env.DEFAULT_DB
   const [valasztasAzonosito, version] = db.split('_')
-  KozigEgysegs = Models.KozigEgyseg[valasztasAzonosito][version] || Models.KozigEgyseg[valasztasAzonosito].latest
-  Szavazokors = Models.Szavazokor[valasztasAzonosito][version] || Models.Szavazokor[valasztasAzonosito].latest
+  KozigEgysegs = KozigEgyseg[valasztasAzonosito][version] || KozigEgyseg[valasztasAzonosito].latest
+  Szavazokors = Szavazokor[valasztasAzonosito][version] || Szavazokor[valasztasAzonosito].latest
   if (!KozigEgysegs || !Szavazokors){
     res.status(400)
     res.json({'error': `Hibás választás kód: '${db}'` })
