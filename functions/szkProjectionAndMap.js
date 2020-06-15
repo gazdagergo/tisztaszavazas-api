@@ -1,5 +1,3 @@
-import { generateKozigEgysegId } from '../routes/kozigegysegek-aggr'
-
 export const getProjection = ({ roles }, context) => {
   const isAdmin = roles && roles.includes('admin')
 
@@ -74,10 +72,8 @@ export const mapQueryResult = (result, query, db, szkSzamIfLengthOne) => result.
     _id,
     szavazokorSzama,
     kozigEgyseg: {
-      megyeNeve: kozigEgyseg.megyeNeve,
-      kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
-      kozigEgysegSzavazokoreinekSzama: szkSzamIfLengthOne,
-      link: `/kozigegysegek/${generateKozigEgysegId(kozigEgyseg, db)}`
+      ...kozigEgyseg,
+      link: `/kozigegysegek/${kozigEgyseg}`
     },
     szavazokorCime,
     akadalymentes,
