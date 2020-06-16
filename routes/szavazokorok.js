@@ -177,12 +177,14 @@ const router = express.Router()
 
 router.all('*', authorization)
 
-let Szavazokors, db;
+let Szavazokors, KozigEgysegs, db;
 
 router.all('*', (req, res, next) => {
   db = req.headers['x-valasztas-kodja'] || process.env.DEFAULT_DB
   const [valasztasAzonosito, version] = db.split('_')
   Szavazokors = schemas.Szavazokor[valasztasAzonosito][version] || schemas.Szavazokor[valasztasAzonosito].latest
+  KozigEgysegs = schemas.KozigEgyseg[valasztasAzonosito][version] || schemas.KozigEgyseg[valasztasAzonosito].latest
+
   
   if (!Szavazokors){
     res.status(400)
@@ -236,6 +238,7 @@ router.get('/:szavazokorId?', async (req, res) => {
         const { megyeKod, telepulesKod } = kozigEgyseg;
         kozigEgysegSzavazokoreinekSzama = await getSzavazokorCount({ megyeKod, telepulesKod })
       }
+      result = await KozigEgysegs.populate(result, { path: 'kozigEgyseg' })
 
       result = mapIdResult(result, db, kozigEgysegSzavazokoreinekSzama)
 

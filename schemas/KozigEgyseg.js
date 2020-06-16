@@ -10,5 +10,6 @@ const KozigEgysegSchema = new Schema({
 export const onk2019_v1_kozigegyseg = model('onk2019_v1_kozigegyseg', KozigEgysegSchema);
 export const onk2019_v2_kozigegyseg = model('onk2019_v2_kozigegyseg', KozigEgysegSchema);
 export const ogy2018_v1_kozigegyseg = model('ogy2018_v1_kozigegyseg', KozigEgysegSchema);
+export const ogy2018_v2_kozigegyseg = model('ogy2018_v2_kozigegyseg', KozigEgysegSchema);
 
 export default KozigEgysegSchema

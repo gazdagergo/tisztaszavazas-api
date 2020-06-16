@@ -110,14 +110,17 @@ export const mapIdResult = ({
   _id,
   szavazokorSzama,
   kozigEgyseg: {
-    ...kozigEgyseg,
-    link: `/kozigegysegek/${kozigEgyseg}`
+    kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
+    megyeNeve: kozigEgyseg.megyeNeve,
+    link: `/kozigegysegek/${kozigEgyseg['_id']}`
   },
   szavazokorCime,
   akadalymentes,
   valasztokSzama,
   valasztokerulet,
-  kozteruletek,
+  kozteruletek: kozteruletek && kozteruletek.map(({
+    leiras, kozteruletNev, kezdoHazszam, vegsoHazszam, megjegyzes
+  }) => ({ leiras, kozteruletNev, kezdoHazszam, vegsoHazszam, megjegyzes })),
   helyadatok,
   korzethatar,
   szavazohelyisegHelye,
