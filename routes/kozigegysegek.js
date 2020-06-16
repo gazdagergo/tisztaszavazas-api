@@ -1,8 +1,9 @@
+import { Types } from 'mongoose'
 import express from 'express';
 import getSortObject from '../functions/getSortObject';
 import parseQuery from '../functions/parseQuery';
 import authorization from '../middlewares/authorization';
-import { KozigEgyseg, Szavazokor } from '../schemas';
+import Models from '../schemas';
 import getPrevNextLinks from '../functions/getPrevNextLinks';
 
 
@@ -126,8 +127,8 @@ let KozigEgysegs, Szavazokors, db;
 router.all('*', (req, res, next) => { 
   db = req.headers['x-valasztas-kodja'] || process.env.DEFAULT_DB
   const [valasztasAzonosito, version] = db.split('_')
-  KozigEgysegs = KozigEgyseg[valasztasAzonosito][version] || KozigEgyseg[valasztasAzonosito].latest
-  Szavazokors = Szavazokor[valasztasAzonosito][version] || Szavazokor[valasztasAzonosito].latest
+  KozigEgysegs = Models.KozigEgyseg[valasztasAzonosito][version] || Models.KozigEgyseg[valasztasAzonosito].latest
+  Szavazokors = Models.Szavazokor[valasztasAzonosito][version] || Models.Szavazokor[valasztasAzonosito].latest
   if (!KozigEgysegs || !Szavazokors){
     res.status(400)
     res.json({'error': `Hibás választás kód: '${db}'` })
@@ -157,100 +158,69 @@ router.get('/:id?', async (req, res) => {
     sort = getSortObject(sort)
 
     if (id) {
+
       result = await KozigEgysegs.findById(id)
-/*       projection = getProjection(req.user, 'byQuery')
-      result = {
-        ...result['_doc'],
-        foo: 'bar'
-      } */
-
-      const megyeKod = result.megyeKod;
-      const telepulesKod = result.telepulesKod;
   
-        query = { 'kozigEgyseg.megyeKod': megyeKod, 'kozigEgyseg.telepulesKod': telepulesKod }
-        projection = getProjection(req.user, 'byId')
-        group = {
-          _id: 'a',
-          kozteruletek: {
-          $addToSet: {
-            kozteruletNev: '$kozteruletNev'
-          }
-        } }
+      const szkQuery = { "kozigEgyseg": Types.ObjectId(id) }
+      group = {
+        _id: null,
+        kozteruletek: {
+        $addToSet: {
+          kozteruletNev: '$kozteruletNev'
+        }
+      } }
+    
+      const kozterulatAggregation = [
+        { $match: szkQuery },
+        { $unwind: "$kozteruletek" },
+        { $replaceRoot: { newRoot: "$kozteruletek" } },
+        { $group: group },
+        { $unwind: "$kozteruletek" },
+        { $sort: { 'kozteruletek.kozteruletNev':  1 } },
+        { $group: {
+          "_id": null,
+          kozteruletek: { $push: '$kozteruletek' } }
+        }
+      ]
   
-        const kozigEgysegAggregation = [
-          { $match: query },
-          { $group: {
-            _id: null,
-            kozigEgyseg: {
-              $addToSet: {
-                kozigEgyseg: '$kozigEgyseg'
-              }
-            }
-          }}
-        ]
-  
-        const kozterulatAggregation = [
-          { $match: query },
-          { $unwind: "$kozteruletek" },
-          { $replaceRoot: { newRoot: "$kozteruletek" } },
-          { $group: group },
-          { $unwind: "$kozteruletek" },
-          { $sort: { 'kozteruletek.kozteruletNev':  1 } },
-          { $group: {
-            "_id": null,
-            kozteruletek: { $push: '$kozteruletek' } }
-          }
-        ]
-  
-        const szavazokorAggregation = [
-          { $match: query },
-          { $project: { szavazokorSzama: 1 }},
-          { $sort: { szavazokorSzama: 1 }}
-        ]
+      const szavazokorAggregation = [
+        { $match: szkQuery },
+        { $project: { szavazokorSzama: 1 }},
+        { $sort: { szavazokorSzama: 1 }}
+      ]
         
-        const szkCountAggregation = [
-          { $match: query },
-          { $count: 'szkCount' },
-        ]   
-  
-        result = await Szavazokors.aggregate([
-          { $facet: {
-            kozigEgyseg: kozigEgysegAggregation,
-            kozteruletek: kozterulatAggregation,
-            szavazokorok: szavazokorAggregation,
-            count: szkCountAggregation
-          }},
-          { $addFields: {
-            megyeNeve: { $arrayElemAt: [ { $arrayElemAt: ['$kozigEgyseg.kozigEgyseg.kozigEgyseg.megyeNeve', 0 ] }, 0 ] },
-            kozigEgysegNeve: { $arrayElemAt: [ { $arrayElemAt: ['$kozigEgyseg.kozigEgyseg.kozigEgyseg.kozigEgysegNeve', 0 ] }, 0 ] },
-            kozteruletek:  { $arrayElemAt: ['$kozteruletek.kozteruletek', 0 ] },
-            szavazokorok: '$szavazokorok',
-            count: '$count'
-          }},
-          { $project: { kozigEgyseg: 0 }}
-        ])
-  
-        result = result[0]
-  
-        if (!result.count[0]) {
-          throw Error(`KozigEgyseg with id '${id}' does not exists`)
-        }
-  
-        result = {
-          _id: id,
-          megyeNeve: result.megyeNeve,
-          kozigEgysegNeve: result.kozigEgysegNeve,
-          kozigEgysegSzavazokoreinekSzama: result.count[0].szkCount,
-          szavazokorok: result.szavazokorok.map(({ _id, szavazokorSzama }) => ({
-            szavazokorSzama,
-            link: `/szavazokorok/${_id}`
-          })),
-          kozteruletek: addKozteruletLinks(result.kozteruletek, result.kozigEgysegNeve),
-        }
-  
-        totalCount = 1;
+      const szkCountAggregation = [
+        { $match: szkQuery },
+        { $count: 'szkCount' },
+      ]   
 
-      //--------------
+      let szkResult = await Szavazokors.aggregate([
+        { $facet: {
+          kozteruletek: kozterulatAggregation,
+          szavazokorok: szavazokorAggregation,
+          count: szkCountAggregation
+        }},
+        { $addFields: {
+          kozteruletek:  { $arrayElemAt: ['$kozteruletek.kozteruletek', 0 ] },
+          szavazokorok: '$szavazokorok',
+          count: '$count'
+        }}
+      ])
+   
+      szkResult = szkResult[0]
+
+      result = {
+        megyeNeve: result.megyeNeve,
+        kozigEgysegNeve: result.kozigEgysegNeve,
+        kozigEgysegSzavazokoreinekSzama: szkResult.count[0].szkCount,
+        szavazokorok: szkResult.szavazokorok.map(({ _id, szavazokorSzama }) => ({
+          szavazokorSzama,
+          link: `/szavazokorok/${_id}`
+        })),
+        kozteruletek: addKozteruletLinks(szkResult.kozteruletek, szkResult.kozigEgysegNeve),
+      }
+   
+      totalCount = 1;
     } else {
       projection = getProjection(req.user, 'byQuery')
       let aggregations = [
