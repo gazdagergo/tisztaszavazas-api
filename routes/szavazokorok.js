@@ -1,4 +1,5 @@
 import express from 'express';
+import { Types } from 'mongoose';
 import schemas from '../schemas';
 import parseQuery from '../functions/parseQuery';
 import getSortObject from '../functions/getSortObject';
@@ -177,7 +178,7 @@ const router = express.Router()
 
 router.all('*', authorization)
 
-let Szavazokors, KozigEgysegs, db;
+let Szavazokors, KozigEgysegs, db, kozigEgysegNeve, megyeNeve;
 
 router.all('*', (req, res, next) => {
   db = req.headers['x-valasztas-kodja'] || process.env.DEFAULT_DB
@@ -195,12 +196,10 @@ router.all('*', (req, res, next) => {
 })
 
 
-const getSzavazokorCount = async ({ megyeKod, telepulesKod }) => {
+const getSzavazokorCount = async ({ kozigEgysegId }) => {
+  
   const count = await Szavazokors.aggregate([
-    { $match: {
-      'kozigEgyseg.megyeKod': megyeKod,
-      'kozigEgyseg.telepulesKod': telepulesKod
-    }},
+    { $match: { "kozigEgyseg": Types.ObjectId(kozigEgysegId) }},
     { $count: 'kozigEgysegSzavazokoreinekSzama' }
   ])
   return count && count[0] && count[0].kozigEgysegSzavazokoreinekSzama
@@ -235,8 +234,7 @@ router.get('/:szavazokorId?', async (req, res) => {
       const { kozigEgyseg } = result
 
       if (kozigEgyseg) {
-        const { megyeKod, telepulesKod } = kozigEgyseg;
-        kozigEgysegSzavazokoreinekSzama = await getSzavazokorCount({ megyeKod, telepulesKod })
+        kozigEgysegSzavazokoreinekSzama = await getSzavazokorCount({ kozigEgysegId: kozigEgyseg })
       }
       result = await KozigEgysegs.populate(result, { path: 'kozigEgyseg' })
 
@@ -255,6 +253,7 @@ router.get('/:szavazokorId?', async (req, res) => {
       projection = getProjection(req.user, 'noQuery')
       totalCount = await Szavazokors.estimatedDocumentCount()
       result = await Szavazokors.find({}, projection).sort(sort).skip(skip).limit(limit)
+
       result = mapQueryResult(result, query, db)
     } else {
       
@@ -278,6 +277,22 @@ router.get('/:szavazokorId?', async (req, res) => {
         projection = getProjection(req.user, 'withRegex')
       } else {
         projection = getProjection(req.user, 'withQuery')       
+      }
+
+      ;({
+        'kozigEgyseg.kozigEgysegNeve': kozigEgysegNeve,
+        'kozigEgyseg.megyeNeve': megyeNeve,
+        ...query
+      } = query)
+
+      if (kozigEgysegNeve || megyeNeve) {
+        const kozigQuery = {}
+
+        if (kozigEgysegNeve) kozigQuery.kozigEgysegNeve = kozigEgysegNeve;
+        if (megyeNeve) kozigQuery.megyeNeve = megyeNeve;
+
+        const [{ _id: kozigEgysegId }] = await KozigEgysegs.find(kozigQuery)
+        query = { ...query, kozigEgyseg: kozigEgysegId }
       }
 
       Object.keys(query).forEach(key => {
@@ -343,8 +358,7 @@ router.get('/:szavazokorId?', async (req, res) => {
       let szkSzamIfLengthOne;
       
       if (result.length === 1) {
-        const { megyeKod, telepulesKod } = result[0].kozigEgyseg;
-        szkSzamIfLengthOne = await getSzavazokorCount({ megyeKod, telepulesKod })
+        szkSzamIfLengthOne = await getSzavazokorCount({ kozigEgysegId: result[0].kozigEgyseg })
       }
 
       result = mapQueryResult(result, query, db, szkSzamIfLengthOne)
