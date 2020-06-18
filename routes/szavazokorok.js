@@ -196,10 +196,9 @@ router.all('*', (req, res, next) => {
 })
 
 
-const getSzavazokorCount = async ({ kozigEgysegId }) => {
-  
+const getSzavazokorCount = async ({ kozigEgysegRef }) => {
   const count = await Szavazokors.aggregate([
-    { $match: { "kozigEgyseg": Types.ObjectId(kozigEgysegId) }},
+    { $match: { "kozigEgysegRef": Types.ObjectId(kozigEgysegRef) }},
     { $count: 'kozigEgysegSzavazokoreinekSzama' }
   ])
   return count && count[0] && count[0].kozigEgysegSzavazokoreinekSzama
@@ -231,12 +230,11 @@ router.get('/:szavazokorId?', async (req, res) => {
 
       let kozigEgysegSzavazokoreinekSzama = null;
 
-      const { kozigEgyseg } = result
+      const { kozigEgysegRef } = result
 
-      if (kozigEgyseg) {
-        kozigEgysegSzavazokoreinekSzama = await getSzavazokorCount({ kozigEgysegId: kozigEgyseg })
+      if (kozigEgysegRef) {
+        kozigEgysegSzavazokoreinekSzama = await getSzavazokorCount({ kozigEgysegRef })
       }
-      result = await KozigEgysegs.populate(result, { path: 'kozigEgyseg' })
 
       result = mapIdResult(result, db, kozigEgysegSzavazokoreinekSzama)
 
@@ -279,21 +277,6 @@ router.get('/:szavazokorId?', async (req, res) => {
         projection = getProjection(req.user, 'withQuery')       
       }
 
-      ;({
-        'kozigEgyseg.kozigEgysegNeve': kozigEgysegNeve,
-        'kozigEgyseg.megyeNeve': megyeNeve,
-        ...query
-      } = query)
-
-      if (kozigEgysegNeve || megyeNeve) {
-        const kozigQuery = {}
-
-        if (kozigEgysegNeve) kozigQuery.kozigEgysegNeve = kozigEgysegNeve;
-        if (megyeNeve) kozigQuery.megyeNeve = megyeNeve;
-
-        const [{ _id: kozigEgysegId }] = await KozigEgysegs.find(kozigQuery)
-        query = { ...query, kozigEgyseg: kozigEgysegId }
-      }
 
       Object.keys(query).forEach(key => {
         if (projection[key] === 0) delete projection[key]
@@ -374,7 +357,7 @@ router.get('/:szavazokorId?', async (req, res) => {
 
     res.header({...prevNextLinks})
     res.header('X-Total-Count', totalCount)
-    res.status(result.length ? 200 : 404)
+    res.status(result && result.length ? 200 : 404)
     res.json(result || 'Szavazokor not found')
   } catch(error) {
     console.log(error)

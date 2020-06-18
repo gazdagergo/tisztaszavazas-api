@@ -185,7 +185,7 @@ router.get('/:id?', async (req, res) => {
   
       const szavazokorAggregation = [
         { $match: szkQuery },
-        { $project: { szavazokorSzama: 1, szavazokorCime: 1 }},
+        { $project: { szavazokorSzama: 1, szavazokorCime: 1, _id: 1 }},
         { $sort: { szavazokorSzama: 1 }}
       ]
         
@@ -210,6 +210,7 @@ router.get('/:id?', async (req, res) => {
       szkResult = szkResult[0]
 
       result = {
+        _id: result['_id'],
         megyeNeve: result.megyeNeve,
         kozigEgysegNeve: result.kozigEgysegNeve,
         kozigEgysegSzavazokoreinekSzama: szkResult.count[0].szkCount,

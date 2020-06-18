@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import KozigEgysegSchema from './KozigEgyseg';
+import KozigEgyseg from './KozigEgyseg';
 
 // https://stackoverflow.com/questions/55096055/mongoose-different-ways-to-reference-subdocuments
 
@@ -27,7 +27,7 @@ const PointSchema = new Schema({
   }
 });
 
-const KozteruletSchema = Schema({
+const Kozterulet = Schema({
 	"leiras": String,
 	"kozteruletNev": String,
 	"kezdoHazszam": Number,
@@ -41,14 +41,18 @@ const ValasztokeruletSchema = new Schema({
   szam: Number
 })
 
-model('kozigEgyseg', KozigEgysegSchema);
+model('KozigEgysegModel', KozigEgyseg);
 
 const SzavazokorSchema = Schema({
   szavazokorSzama: Number,
   szavazokorCime: String,
   kozigEgyseg: {
+    type: Object,
+    ref: 'KozigEgyseg'
+  },
+  kozigEgysegRef: {
     type: Schema.Types.ObjectId,
-    ref: 'kozigEgyseg'
+    ref: 'KozigEgysegModel'
   },
   valasztokerulet: ValasztokeruletSchema,
   kozteruletek: [{
