@@ -158,10 +158,9 @@ router.get('/:id?', async (req, res) => {
     sort = getSortObject(sort)
 
     if (id) {
-
       result = await KozigEgysegs.findById(id)
   
-      const szkQuery = { "kozigEgyseg": Types.ObjectId(id) }
+      const szkQuery = { "kozigEgyseg._id": Types.ObjectId(id) }
       group = {
         _id: null,
         kozteruletek: {
@@ -254,8 +253,9 @@ router.get('/:id?', async (req, res) => {
     res.header('X-Total-Count', totalCount)  
     res.json(result);
   } catch (error) {
+    console.log(error)
     res.status(404);
-    res.json({ error: error.message })
+    res.json('Kozigegyseg not found')
   }
 });
 

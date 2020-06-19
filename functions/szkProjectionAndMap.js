@@ -1,3 +1,7 @@
+const mapKozteruletek = kozteruletek => kozteruletek && kozteruletek.map(({
+  leiras, kozteruletNev, kezdoHazszam, vegsoHazszam, megjegyzes
+}) => ({ leiras, kozteruletNev, kezdoHazszam, vegsoHazszam, megjegyzes }))
+
 export const getProjection = ({ roles }, context) => {
   const isAdmin = roles && roles.includes('admin')
 
@@ -27,6 +31,7 @@ export const getProjection = ({ roles }, context) => {
 
     case 'filterStreet': return ({
       szavazokorSzama: 1,
+      'kozigEgyseg._id': 1,
       'kozigEgyseg.kozigEgysegNeve': 1,
       'kozigEgyseg.megyeNeve': 1,
       'kozigEgyseg.megyeKod': 1,
@@ -68,17 +73,19 @@ export const mapQueryResult = (result, query, db, szkSzamIfLengthOne) => result.
   __v,
   ...rest
 }) => {
+  console.log({kozigEgyseg})
   const entry = {
     _id,
     szavazokorSzama,
     kozigEgyseg: {
-      ...kozigEgyseg,
-      link: `/kozigegysegek/${kozigEgyseg}`
+      kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
+      megyeNeve: kozigEgyseg.megyeNeve,
+      link: `/kozigegysegek/${kozigEgyseg['_id']}`
     },
     szavazokorCime,
     akadalymentes,
     valasztokerulet,
-    kozteruletek,
+    kozteruletek: mapKozteruletek(kozteruletek),
     valasztokSzama,
     __v
   }
@@ -112,15 +119,14 @@ export const mapIdResult = ({
   kozigEgyseg: {
     kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
     megyeNeve: kozigEgyseg.megyeNeve,
+    kozigEgysegSzavazokoreinekSzama,
     link: `/kozigegysegek/${kozigEgyseg['_id']}`
   },
   szavazokorCime,
   akadalymentes,
   valasztokSzama,
   valasztokerulet,
-  kozteruletek: kozteruletek && kozteruletek.map(({
-    leiras, kozteruletNev, kezdoHazszam, vegsoHazszam, megjegyzes
-  }) => ({ leiras, kozteruletNev, kezdoHazszam, vegsoHazszam, megjegyzes })),
+  kozteruletek: mapKozteruletek(kozteruletek),
   helyadatok,
   korzethatar,
   szavazohelyisegHelye,

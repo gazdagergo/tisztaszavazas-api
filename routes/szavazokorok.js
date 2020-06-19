@@ -196,9 +196,9 @@ router.all('*', (req, res, next) => {
 })
 
 
-const getSzavazokorCount = async ({ kozigEgysegRef }) => {
+const getSzavazokorCount = async ({ kozigEgyseg }) => {
   const count = await Szavazokors.aggregate([
-    { $match: { "kozigEgysegRef": Types.ObjectId(kozigEgysegRef) }},
+    { $match: { "kozigEgyseg._id": kozigEgyseg._id }},
     { $count: 'kozigEgysegSzavazokoreinekSzama' }
   ])
   return count && count[0] && count[0].kozigEgysegSzavazokoreinekSzama
@@ -229,15 +229,12 @@ router.get('/:szavazokorId?', async (req, res) => {
       result = await Szavazokors.findById(szavazokorId, projection)
 
       let kozigEgysegSzavazokoreinekSzama = null;
-
-      const { kozigEgysegRef } = result
-
-      if (kozigEgysegRef) {
-        kozigEgysegSzavazokoreinekSzama = await getSzavazokorCount({ kozigEgysegRef })
+      
+      if (result && result.kozigEgyseg) {
+        const { kozigEgyseg } = result
+        kozigEgysegSzavazokoreinekSzama = await getSzavazokorCount({ kozigEgyseg })
+        result = mapIdResult(result, db, kozigEgysegSzavazokoreinekSzama)
       }
-
-      result = mapIdResult(result, db, kozigEgysegSzavazokoreinekSzama)
-
     } else if (Object.keys(body).length){
       try {
         const aggregations = body
@@ -341,7 +338,7 @@ router.get('/:szavazokorId?', async (req, res) => {
       let szkSzamIfLengthOne;
       
       if (result.length === 1) {
-        szkSzamIfLengthOne = await getSzavazokorCount({ kozigEgysegId: result[0].kozigEgyseg })
+        szkSzamIfLengthOne = await getSzavazokorCount({ kozigEgyseg: result[0].kozigEgyseg })
       }
 
       result = mapQueryResult(result, query, db, szkSzamIfLengthOne)

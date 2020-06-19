@@ -43,16 +43,21 @@ const ValasztokeruletSchema = new Schema({
 
 model('KozigEgysegModel', KozigEgyseg);
 
+const kozigEgysegWithRefSchema = new Schema(KozigEgyseg)
+
+kozigEgysegWithRefSchema.kozigEgysegRef = {
+  type: Schema.Types.ObjectId,
+  ref: 'KozigEgysegModel'
+}
+
+new Schema(kozigEgysegWithRefSchema)
+
 const SzavazokorSchema = Schema({
   szavazokorSzama: Number,
   szavazokorCime: String,
   kozigEgyseg: {
     type: Object,
-    ref: 'KozigEgyseg'
-  },
-  kozigEgysegRef: {
-    type: Schema.Types.ObjectId,
-    ref: 'KozigEgysegModel'
+    ref: 'kozigEgysegWithRefSchema'
   },
   valasztokerulet: ValasztokeruletSchema,
   kozteruletek: [{
