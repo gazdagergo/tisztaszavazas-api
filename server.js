@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 import path from 'path';
 import szkRoute from './routes/szavazokorok';
-import kozigEgysegRoute from './routes/kozigegysegek-aggr';
+import kozigEgysegRoute from './routes/kozigegysegek';
 import vhuPageRoute from './routes/vhupage';
 import usageRoute from './routes/usage';
 
