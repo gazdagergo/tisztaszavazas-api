@@ -78,6 +78,7 @@ export const mapQueryResult = (result, query, db, szkSzamIfLengthOne) => result.
     _id,
     szavazokorSzama,
     kozigEgyseg: {
+      _id: kozigEgyseg['_id'],
       kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
       megyeNeve: kozigEgyseg.megyeNeve,
       link: `/kozigegysegek/${kozigEgyseg['_id']}`
@@ -117,6 +118,7 @@ export const mapIdResult = ({
   _id,
   szavazokorSzama,
   kozigEgyseg: {
+    _id: kozigEgyseg['_id'],
     kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
     megyeNeve: kozigEgyseg.megyeNeve,
     kozigEgysegSzavazokoreinekSzama,
