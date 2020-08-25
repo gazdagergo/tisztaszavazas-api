@@ -84,19 +84,60 @@ const getPrevNextLinks = require('../functions/getPrevNextLinks')
  * @apiSampleRequest off
  */
 
+
+const getVkDetails = async (Szavazokors, vkId) => {
+  const szkQuery = { "valasztokerulet._id": Types.ObjectId(vkId) }
+      
+  const szavazokorokSzama = [
+    { $match: szkQuery },
+    { $count: 'count' },      
+  ]
+
+  const valasztokSzamaAggr = [
+    { $match: szkQuery },
+    { $group: {
+      _id: null,
+      count: { $sum: '$valasztokSzama' }
+    }}        
+  ]
+
+  let vkResult = await Szavazokors.aggregate([
+    { $facet: {
+      szavazokorokSzama: szavazokorokSzama,
+      valasztokSzama: valasztokSzamaAggr
+    }},
+    { $addFields: {
+      szavazokorokSzama: '$szavazokorokSzama',
+      valasztokSzama: '$valasztokSzama'
+    }}
+  ])
+
+  vkResult = vkResult[0]
+
+  return {
+    szavazokorokSzama: vkResult.szavazokorokSzama[0].count,
+    valasztokSzama: vkResult.valasztokSzama[0].count 
+  }
+}
+
 const router = express.Router();
 
 const DEFAULT_LIMIT = 20;
 
 router.all('*', authorization)
 
-let Valasztokerulets, db;
+let Valasztokerulets, Szavazokors, db;
 
 router.all('*', (req, res, next) => { 
   db = req.headers['x-valasztas-kodja'] || process.env.DEFAULT_DB
   const [valasztasAzonosito, version] = db.split('_')
-  Valasztokerulets = Models.Valasztokerulet[valasztasAzonosito][version] || Models.Valasztokerulet[valasztasAzonosito].latest
-  if (!Valasztokerulets){
+  
+  Valasztokerulets = Models.Valasztokerulet[valasztasAzonosito][version]
+    || Models.Valasztokerulet[valasztasAzonosito].latest
+  Szavazokors = Models.Szavazokor[valasztasAzonosito][version]
+    || Models.Szavazokor[valasztasAzonosito].latest
+
+  if (!Valasztokerulets || !Szavazokors){
     res.status(400)
     res.json({'error': `Hibás választás kód: '${db}'` })
     return
@@ -123,7 +164,14 @@ router.all('/:id?', async (req, res) => {
 
     if (id) {
       result = await Valasztokerulets.findById(id)
-      totalCount = 1
+      totalCount = 1;
+
+      result = {
+        _id: result['_id'],
+        leiras: result.leiras,
+        szam: result.szam,
+        ...(await getVkDetails(Szavazokors, id))
+      }
     } else if (Object.keys(body).length){
       try {
         const aggregations = body
