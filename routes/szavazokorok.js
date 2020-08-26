@@ -358,10 +358,11 @@ router.get('/:szavazokorId?', async (req, res) => {
 
     res.header({...prevNextLinks})
     res.header('X-Total-Count', totalCount)
-    res.status(result && result.length ? 200 : 404)
+    res.status((Object.entries(result) && Object.entries(result).length || result.length) ? 200 : 404)
     res.json(result || 'Szavazokor not found')
   } catch(error) {
     console.log(error)
+    res.status(404)
     res.json({ error: error.message })
   }
 })
