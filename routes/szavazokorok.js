@@ -320,7 +320,7 @@ router.get('/:szavazokorId?', async (req, res) => {
 
         let [results] = await Szavazokors.aggregate([{
           $facet: facet
-        }])
+        }], { allowDiskUse: true })
 
         results = Object.values(results)
         result = results[0]
@@ -358,7 +358,7 @@ router.get('/:szavazokorId?', async (req, res) => {
 
     res.header({...prevNextLinks})
     res.header('X-Total-Count', totalCount)
-    res.status((Object.entries(result) && Object.entries(result).length || result.length) ? 200 : 404)
+    res.status(200)
     res.json(result || 'Szavazokor not found')
   } catch(error) {
     console.log(error)
