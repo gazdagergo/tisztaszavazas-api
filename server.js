@@ -14,7 +14,8 @@ const app =  express();
 
 const corsOptions = {
   origin: '*',
-  credentials: false
+  credentials: false,
+  exposedHeaders: [ 'X-Total-Count', 'X-Prev-Page', 'X-Next-Page' ]
 };
 
 // Middlewares
