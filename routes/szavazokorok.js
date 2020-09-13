@@ -205,7 +205,7 @@ const getSzavazokorCount = async ({ kozigEgyseg }) => {
 }
 
 
-router.get('/:szavazokorId?', async (req, res) => {
+router.all('/:szavazokorId?', async (req, res) => {
   let {
     params: { szavazokorId },
     query,
