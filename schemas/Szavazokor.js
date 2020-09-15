@@ -86,5 +86,6 @@ export const onk2019_v1_szavazokor = model('onk2019_v1_szavazokor', SzavazokorSc
 export const onk2019_v2_szavazokor = model('onk2019_v2_szavazokor', SzavazokorSchema);
 export const ogy2018_v1_szavazokor = model('ogy2018_v1_szavazokor', SzavazokorSchema);
 export const ogy2018_v2_szavazokor = model('ogy2018_v2_szavazokor', SzavazokorSchema);
+export const idbo620_v1_szavazokor = model('idbo620_v1_szavazokor', SzavazokorSchema);
 
 export default SzavazokorSchema
