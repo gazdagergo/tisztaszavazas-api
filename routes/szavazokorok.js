@@ -1,5 +1,4 @@
 import express from 'express';
-import { Types } from 'mongoose';
 import schemas from '../schemas';
 import parseQuery from '../functions/parseQuery';
 import getSortObject from '../functions/getSortObject';
