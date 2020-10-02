@@ -37,6 +37,7 @@ export const getProjection = ({ roles }, context) => {
       'kozigEgyseg.megyeKod': 1,
       'kozigEgyseg.telepulesKod': 1,
       'valasztokerulet': 1,
+      szavazokorCime: 1,
     })
 
     case 'withRegex': return ({
