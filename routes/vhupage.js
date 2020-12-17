@@ -1,5 +1,5 @@
 import express from 'express';
-import models from '../schemas';
+import schemas from '../schemas';
 
 const router = express.Router()
 
@@ -7,7 +7,8 @@ router.get('/:db/:id', async (req, res) => {
   const [valasztasAzonosito, version] = req.params.db.split('_')
 
 	try {
-		const Szavazokors = models.Szavazokor[valasztasAzonosito][version]
+		const Szavazokors = schemas.Szavazokor[valasztasAzonosito][version] || schemas.Szavazokor[valasztasAzonosito].latest
+		
 		const { vhuUrl } = await Szavazokors.findById(req.params.id)
 		res.redirect(vhuUrl)
 	} catch(error){
