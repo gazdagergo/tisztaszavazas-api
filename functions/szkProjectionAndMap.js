@@ -75,7 +75,6 @@ export const mapQueryResult = (result, query, db, szkSzamIfLengthOne) => result.
   __v,
   ...rest
 }) => {
-  console.log({kozigEgyseg})
   const entry = {
     _id,
     szavazokorSzama,

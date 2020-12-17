@@ -9,7 +9,7 @@ export default ({ route, skip, limit, query, totalCount }) => {
 	const prevNextLinks = {}
 
 	if (skip >= limit) {
-		const skipPrev = skip = skip - limit
+		const skipPrev = skip - limit
 		const prevPageLink = `/${route}${getQueryString({ ...query, skip: skipPrev, limit })}`
 		prevNextLinks['X-Prev-Page'] = prevPageLink
 	}
