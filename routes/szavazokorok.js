@@ -1,7 +1,6 @@
 import express from 'express';
 import schemas from '../schemas';
 import parseQuery from '../functions/parseQuery';
-import getSortObject from '../functions/getSortObject';
 import authorization from '../middlewares/authorization';
 import getSzkAggregationFilter from '../functions/getSzkAggregationFilter';
 import { getProjection, mapQueryResult, mapIdResult } from '../functions/szkProjectionAndMap';
@@ -171,7 +170,6 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
 
 
 const DEFAULT_LIMIT = 20;
-const DEFAULT_SORT = 'kozigEgyseg.megyeKod,kozigEgyseg.telepulesKod,szavazokorSzama'
 
 const router = express.Router()
 
@@ -211,13 +209,12 @@ router.all('/:szavazokorId?', async (req, res) => {
     body
   } = req;
 
-  let limit, projection, sort, skip, totalCount;
+  let limit, projection, skip, totalCount;
 
   query = parseQuery(query)
 
-  ;({ limit = DEFAULT_LIMIT, skip = 0, sort = DEFAULT_SORT, ...query } = query)
+  ;({ limit = DEFAULT_LIMIT, skip = 0, ...query } = query)
 
-  sort = getSortObject(sort)
 
   try {
     let result;
@@ -250,7 +247,7 @@ router.all('/:szavazokorId?', async (req, res) => {
     } else if (!Object.keys(query).length) {
       projection = getProjection(req.user, 'noQuery')
       totalCount = await Szavazokors.estimatedDocumentCount()
-      result = await Szavazokors.find({}, projection).sort(sort).skip(skip).limit(limit)
+      result = await Szavazokors.find({}, projection).skip(skip).limit(limit)
 
       result = mapQueryResult(result, query, db)
     } else {
@@ -285,7 +282,6 @@ router.all('/:szavazokorId?', async (req, res) => {
       let aggregations = [
         { $match: query },
         { $project: projection },
-        { $sort: sort },
         { $skip: skip },
         { $limit: limit },
       ];
