@@ -22,7 +22,7 @@
   },
   "homepage": "https://api.tisztaszavazas.hu",
   "dependencies": {
-    "apidoc": "^0.20.1",
+    "apidoc": "^0.25.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
