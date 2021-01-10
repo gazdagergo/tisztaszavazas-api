@@ -1,7 +1,7 @@
 {
-  "name": "Tisztaszavazás",
+  "name": "Tisztaszavazás API dokumentáció",
   "version": "0.1.0",
-  "description": "Dokumentáció az api.tisztaszavazas.hu használatához",
+  "description": "Az api a szavazókörök publikus adatait tartalmazza. API kulcsot a info@tisztaszavazas.hu email címen lehet igényelni.",
   "title": "api.tisztaszavazas.hu",
   "url" : "https://api.tisztaszavazas.hu",
 	"sampleUrl": "https://api.tisztaszavazas.hu",
