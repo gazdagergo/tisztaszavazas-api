@@ -108,11 +108,27 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
  *            "megjegyzes": "Teljes közterület"
  *        }
  *    ],
+ *    "korzethatar": {
+ *      "coordinates": [
+ *        [
+ *          [
+ *            19.025320053100586,
+ *            47.50591278076172
+ *          ],
+ *          [
+ *            19.027719497680664,
+ *            47.505340576171875
+ *          ],
+ *          ...
+ *        ]
+ *      ],
+ *      "type": "Polygon"
+ *    },
  *    "frissitveValasztasHun": "2020-01-09T14:49:48.000Z",
  *    "valasztasHuOldal": "/vhupage/5e77c3f18723e7a7b25c5f72",
  *    "updatedAt": "2020-04-12T07:47:23.094Z",
  *    "__v": 1
- *}
+ *   }
  * 
  * 
  * @apiSampleRequest off
