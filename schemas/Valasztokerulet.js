@@ -3,7 +3,18 @@ import { Schema, model } from 'mongoose';
 const ValasztokeruletSchema = Schema({
 	tipus: String,
 	leiras: String,
-	szam: Number
+	szam: Number,
+	korzethatar:  {
+		type: {
+			type: String,
+			enum: ['Polygon'],
+			required: true
+		},
+		coordinates: {
+			type: [[[Number]]], // Array of arrays of arrays of numbers
+			required: true
+		}
+	}
 })
 
 export const onk2019_v1_valasztokerulet = model('onk2019_v1_valasztokerulet', ValasztokeruletSchema);
