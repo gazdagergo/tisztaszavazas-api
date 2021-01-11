@@ -8,10 +8,11 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
 /**
 * @api {get} /valasztokeruletek/ 1.) Összes választókerület
 * @apiName valasztokeruletek
-* @apiGroup Választókerületek
+* @apiGroup 3. Választókerületek
 *
 * @apiParam (Request Parameters) {Number} [limit] Csak a megadott számú találatot adja vissza (default: `20`)
 * @apiParam (Request Parameters) {Number} [skip] A lapozáshoz használható paraméter. (default: `0`)
+* @apiParam (Request Parameters) {Number|String|Regex|Query} [queryParameters] A rekordok bármely paramétere alapján lehet szűkíteni a listát.
 * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
 * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (default: `onk2019`)
 * @apiHeader (Response Headers) X-Total-Count A szűrési feltételeknek megfelelő, a válaszban lévő összes elem a lapozási beállításoktől függetlenül
@@ -21,66 +22,64 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
 * @apiSuccessExample {json} Success-Response:
 *  HTTP/1.1 200 OK
 *  [
-*    {
-*      "_id": "006f6e6b3230313903f2",
-*      "megyeNeve": "Budapest",
-*      "kozigEgysegNeve": "Budapest X.ker",
-*      "kozigEgysegSzavazokoreinekSzama": 76
-*    },
-*    {
-*      "_id": "006f6e6b3230313903f3",
-*      "megyeNeve": "Budapest",
-*      "kozigEgysegNeve": "Budapest XI.ker",
-*      "kozigEgysegSzavazokoreinekSzama": 115
-*    },
-* 		...
+*    { 
+*      "_id": "5eee424dac32540023500d13",
+*      "leiras": "Budapest 1. számú OEVK",
+*      "szam": 1,
+*      "korzethatar": {
+*        "type": "Polygon",
+*        "coordinates": [
+*           [
+*             [
+*               19.066171646118164,
+*               47.47514343261719
+*             ],
+*             [
+*               19.074604034423828,
+*               47.477970123291016
+*             ],
+* 	  	      ...
+*           ]
+*         ]
+*       }
+*     }
 *   ]
 * @apiSampleRequest off
 */
 
 /**
- * @api {get} /valasztokeruletek/:id? 2.) Egy választókerület összes adata
+ * @api {get} /valasztokeruletek/:id 2.) Egy választókerület összes adata
  * @apiName valasztokeruletek2
- * @apiGroup Választókerületek
+ * @apiGroup 3. Választókerületek
  *
- * @apiParam {String} id A közigazgatási egység azonosítója az adatbázisban
+ * @apiParam {String} id A Választókerület azonosítója az adatbázisban
  * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
  * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (default: `onk2019`)
  *  
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
  *  
- * {
- *   "_id": "006f6e6b3230313903f2",
- *   "megyeNeve": "Budapest",
- *   "kozigEgysegNeve": "Budapest X.ker",
- *   "kozigEgysegSzavazokoreinekSzama": 76,
- *   "szavazokorok": [
- *     {
- *       "szavazokorSzama": 1,
- *       "link": "/szavazokorok/5e77c3f08723e7a7b25c47c6"
- *     },
- *     {
- *       "szavazokorSzama": 2,
- *       "link": "/szavazokorok/5e77c3f08723e7a7b25c47c7"
- *     },
- *   ...
- *     {
- *       "szavazokorSzama": 76,
- *       "link": "/szavazokorok/5e77c3f08723e7a7b25c47c9"
+ *  { 
+ *    "_id": "5eee424dac32540023500d13",
+ *    "leiras": "Budapest 1. számú OEVK",
+ *    "szam": 1,
+ *    "korzethatar": {
+ *      "type": "Polygon",
+ *      "coordinates": [
+ *        [
+ *           [
+ *             19.066171646118164,
+ *             47.47514343261719
+ *           ],
+ *           [
+ *             19.074604034423828,
+ *             47.477970123291016
+ *           ],
+ * 		      ...
+ *         ]
+ *       ]
  *     }
- *   ],
- *   "kozteruletek": [
- *     {
- *       "kozteruletNev": "Agyagfejtő utca",
- *       "kozteruletSzavazokorei": "/szavazokorok?kozigEgyseg.kozigEgysegNeve=Budapest%20X.ker&kozteruletek.kozteruletNev=Agyagfejt%C5%91%20utca"
- *     },
- *     {
- *       "kozteruletNev": "Akna utca",
- *       "kozteruletSzavazokorei": "/szavazokorok?kozigEgyseg.kozigEgysegNeve=Budapest%20X.ker&kozteruletek.kozteruletNev=Akna%20utca"
- *     },
- *  ...
- * }
+ *   }
  * 
  * @apiSampleRequest off
  */
@@ -88,23 +87,6 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
 const router = express.Router();
 
 const DEFAULT_LIMIT = 20;
-
-const getProjection = ({ roles }, context) => {
-  const isAdmin = roles && roles.includes('admin');
-
-  let projection = {
-    telepulesKod: 0,
-    megyeKod: 0,    
-  }
-
-  switch (context) {
-    case 'byId':
-    case 'byQuery':
-    default:
-      return projection
-  }
-}
-
 
 router.all('*', authorization)
 
@@ -122,17 +104,16 @@ router.all('*', (req, res, next) => {
   next()
 })
 
-router.get('/:id?', async (req, res) => {
+router.all('/:id?', async (req, res) => {
   try {
     let {
       params: { id },
-      query
+      query,
+      body,
     } = req;
 
     let limit, skip, result, totalCount
     query = parseQuery(query)
-
-    console.log({query})
 
     ;({
       limit = DEFAULT_LIMIT,
@@ -143,10 +124,14 @@ router.get('/:id?', async (req, res) => {
     if (id) {
       result = await Valasztokerulets.findById(id)
       totalCount = 1
+    } else if (Object.keys(body).length){
+      try {
+        const aggregations = body
+        result = await Valasztokerulets.aggregate(aggregations)
+      } catch(error){
+        result = error.message
+      }
     } else {
-
-      console.log('vk', { query })
-
       let aggregations = [
         { $match: query },
         { $skip: skip },
