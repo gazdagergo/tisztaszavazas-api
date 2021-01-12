@@ -10,7 +10,7 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
 /**
  * @api {get} /szavazokorok/ 1.) Összes szavazókör
  * @apiName szavazokorok2
- * @apiGroup Szavazókörök
+ * @apiGroup 2. Szavazókörök
  *
  * @apiParam (Request Parameters) {Number} [limit] Csak a megadott számú találatot adja vissza (default: `20`)
  * @apiParam (Request Parameters) {Number} [skip] A lapozáshoz használható paraméter. (default: `0`)
@@ -67,7 +67,7 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
 /**
  * @api {get} /szavazokorok/:id? 2.) Egy szavazókör összes adata
  * @apiName szavazokorok
- * @apiGroup Szavazókörök
+ * @apiGroup 2. Szavazókörök
  *
  * @apiParam {String} id A szavazókör azonosítója az adatbázisban
  * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
@@ -137,7 +137,7 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
 /**
  * @api {get} /szavazokorok?param={value|query} 3.) Szavazókörök keresése paraméter alapján
  * @apiName szavazokorok3
- * @apiGroup Szavazókörök
+ * @apiGroup 2. Szavazókörök
  * 
  * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
  * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (default: `onk2019`)
@@ -293,7 +293,7 @@ router.all('/:szavazokorId?', async (req, res) => {
 
       Object.keys(query).forEach(key => {
         if (projection[key] === 0) delete projection[key]
-      })      
+      })
 
       let aggregations = [
         { $match: query },

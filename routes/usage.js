@@ -9,7 +9,7 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
 /**
  * @api {get} /usage/ 1.) A felhasználó szerver-eléréseinek időbélyegei és IP-i.
  * @apiName usage
- * @apiGroup Usage
+ * @apiGroup 4. Usage
  * @apiDescription  Az API más adatot nem tárol a lekérésekről, úgy mint a lekérés vagy a válasz tartalmát stb. Csupán a túlhasználat elkerülése érdekében naplózza az egyes felhasználók által indított kérések időbélyegét és IP címét.
  *
  * @apiParam (Request Parameters) {Number} [limit] Csak a megadott számú találatot adja vissza (default: `20`)
