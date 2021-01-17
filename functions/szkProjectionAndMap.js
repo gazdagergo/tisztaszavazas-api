@@ -64,6 +64,18 @@ const getProjection = ({ roles }, context) => {
 }
 
 const mapQueryResult = (result, query) => result.map(({
+  _doc: {
+    _id,
+    kozigEgyseg,
+    szavazokorSzama,
+    kozteruletek,
+    szavazokorCime,
+    akadalymentes,
+    valasztokerulet,
+    valasztokSzama,
+    __v,
+    ...rest
+  }
 }) => {
   const entry = {
     _id,
@@ -91,29 +103,45 @@ const mapQueryResult = (result, query) => result.map(({
 })
 
 const mapIdResult = (
-}, db, kozigEgysegSzavazokoreinekSzama) => ({
-  _id,
-  szavazokorSzama,
-  kozigEgyseg: {
-    _id: kozigEgyseg['_id'],
-    kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
-    megyeNeve: kozigEgyseg.megyeNeve,
-    kozigEgysegSzavazokoreinekSzama,
-    link: `/kozigegysegek/${kozigEgyseg['_id']}`
-  },
-  szavazokorCime,
-  akadalymentes,
-  valasztokSzama,
-  valasztokerulet,
-  kozteruletek: mapKozteruletek(kozteruletek),
-  helyadatok,
-  korzethatar,
-  szavazohelyisegHelye,
-  frissitveValasztasHun,
-  valasztasHuOldal: `/vhupage/${db}/${_id}`,
-  valasztasKodja: db,
-  updatedAt,
-  __v
+  {
+    _id,
+    szavazokorSzama,
+    valasztokerulet,
+    kozigEgyseg,
+    szavazokorCime,
+    akadalymentes,
+    valasztokSzama,
+    kozteruletek,
+    frissitveValasztasHun,
+    updatedAt,
+    helyadatok,
+    korzethatar,
+    szavazohelyisegHelye,
+    __v
+  }, db, kozigEgysegSzavazokoreinekSzama
+  ) => ({
+    _id,
+    szavazokorSzama,
+    kozigEgyseg: {
+      _id: kozigEgyseg['_id'],
+      kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
+      megyeNeve: kozigEgyseg.megyeNeve,
+      kozigEgysegSzavazokoreinekSzama,
+      link: `/kozigegysegek/${kozigEgyseg['_id']}`
+    },
+    szavazokorCime,
+    akadalymentes,
+    valasztokSzama,
+    valasztokerulet,
+    kozteruletek: mapKozteruletek(kozteruletek),
+    helyadatok,
+    korzethatar,
+    szavazohelyisegHelye,
+    frissitveValasztasHun,
+    valasztasHuOldal: `/vhupage/${db}/${_id}`,
+    valasztasKodja: db,
+    updatedAt,
+    __v
 })
 
 module.exports = {
