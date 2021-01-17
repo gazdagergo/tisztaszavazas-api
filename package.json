@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "nodemon server.js --exec babel-node",
+    "server": "nodemon server.js",
     "heroku-postbuild": "npm install",
-    "start": "yarn doc && babel-node server.js",
-    "start:no-doc": "babel-node server.js",
+    "start": "yarn doc && node server.js",
+    "start:no-doc": "node server.js",
     "doc": "apidoc -i routes/ -o apidoc/"
   },
   "repository": {
@@ -35,11 +35,5 @@
     "requestify": "^0.2.5",
     "showdown": "^1.9.0",
     "url": "^0.11.0"
-  },
-  "devDependencies": {
-    "babel": "6.23.0",
-    "babel-cli": "^6.26.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "1.6.0"
   }
 }

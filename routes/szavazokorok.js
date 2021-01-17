@@ -242,10 +242,10 @@ router.all('/:szavazokorId?', async (req, res) => {
 
       let kozigEgysegSzavazokoreinekSzama = null;
       
-      if (result && result.kozigEgyseg) {
-        const { kozigEgyseg } = result
+      if (result && result['_doc'].kozigEgyseg) {
+        const { kozigEgyseg } = result['_doc']
         kozigEgysegSzavazokoreinekSzama = await getSzavazokorCount({ kozigEgyseg })
-        result = mapIdResult(result, db, kozigEgysegSzavazokoreinekSzama)
+        result = mapIdResult(result['_doc'], db, kozigEgysegSzavazokoreinekSzama)
       }
     } else if (Object.keys(body).length){
       try {
