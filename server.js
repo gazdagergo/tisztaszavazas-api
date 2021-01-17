@@ -1,14 +1,15 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv'
-import path from 'path';
-import szkRoute from './routes/szavazokorok';
-import kozigEgysegRoute from './routes/kozigegysegek';
-import vhuPageRoute from './routes/vhupage';
-import usageRoute from './routes/usage';
-import valasztokeruletRoute from './routes/valasztokeruletek'
-import cors from 'cors';
+const express = require('express')
+const bodyParser = require('body-parser')
+const mongoose = require('mongoose')
+const dotenv = require('dotenv')
+const cors = require('cors')
+const path = require('path')
+const szkRoute = require('./routes/szavazokorok')
+const kozigEgysegRoute = require('./routes/kozigegysegek')
+const vhuPageRoute = require('./routes/vhupage')
+const usageRoute = require('./routes/usage')
+const valasztokeruletRoute = require('./routes/valasztokeruletek')
+const eredmenyekRoute = require('./routes/eredmenyek')
 
 dotenv.config()
 const app =  express();

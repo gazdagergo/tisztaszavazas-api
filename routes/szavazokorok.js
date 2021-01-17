@@ -1,11 +1,11 @@
-import express from 'express';
-import schemas from '../schemas';
-import parseQuery from '../functions/parseQuery';
-import authorization from '../middlewares/authorization';
-import getSzkAggregationFilter from '../functions/getSzkAggregationFilter';
-import { getProjection, mapQueryResult, mapIdResult } from '../functions/szkProjectionAndMap';
-import reduceResultByRegex from '../functions/reduceResultByRegex';
-import getPrevNextLinks from '../functions/getPrevNextLinks';
+const express = require('express')
+const schemas = require('../schemas')
+const parseQuery = require('../functions/parseQuery')
+const authorization = require('../middlewares/authorization')
+const getSzkAggregationFilter = require('../functions/getSzkAggregationFilter')
+const { getProjection, mapQueryResult, mapIdResult } = require('../functions/szkProjectionAndMap')
+const reduceResultByRegex = require('../functions/reduceResultByRegex')
+const getPrevNextLinks = require('../functions/getPrevNextLinks')
 
 /**
  * @api {get} /szavazokorok/ 1.) Összes szavazókör
@@ -378,4 +378,4 @@ router.all('/:szavazokorId?', async (req, res) => {
   }
 })
 
-export default router;
+module.exports = router;

@@ -1,9 +1,9 @@
-import express from 'express';
-import Schema from '../schemas/Usage'
-import authorization from '../middlewares/authorization';
-import getSortObject from '../functions/getSortObject';
-import parseQuery from '../functions/parseQuery';
-import getPrevNextLinks from '../functions/getPrevNextLinks';
+const express = require('express')
+const Schema = require('../schemas/Usage')
+const authorization = require('../middlewares/authorization')
+const getSortObject = require('../functions/getSortObject')
+const parseQuery = require('../functions/parseQuery')
+const getPrevNextLinks = require('../functions/getPrevNextLinks')
 
 
 /**
@@ -92,4 +92,4 @@ router.get('/', async (req, res) => {
 })
 
 
-export default router;
+module.exports = router;
