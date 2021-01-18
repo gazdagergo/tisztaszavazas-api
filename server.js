@@ -10,7 +10,7 @@ const kozigEgysegRoute = require('./routes/kozigegysegek')
 const vhuPageRoute = require('./routes/vhupage')
 const usageRoute = require('./routes/usage')
 const valasztokeruletRoute = require('./routes/valasztokeruletek')
-const eredmenyekRoute = require('./routes/eredmenyek')
+const szavazatokRoute = require('./routes/szavazatok')
 
 
 dotenv.config()
@@ -34,7 +34,7 @@ app.use('/szavazokorok', szkRoute)
 app.use('/usage', usageRoute)
 app.use('/vhupage', vhuPageRoute)
 app.use('/valasztokeruletek', valasztokeruletRoute)
-app.use('/eredmenyek', eredmenyekRoute)
+app.use('/szavazatok', szavazatokRoute)
 
 // Listen
 var port = process.env.PORT || 1338

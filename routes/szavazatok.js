@@ -5,10 +5,10 @@ const Models = require('../schemas')
 const getPrevNextLinks = require('../functions/getPrevNextLinks')
 
 /**
-* @api {get} /eredmenyek/ 1.) Az összes eredmény
-* @apiName eredmenyek
-* @apiGroup 4. Eredmények
-* @apiDescription Az eredmények listája
+* @api {get} /szavazatok/ 1.) Az összes eredmény
+* @apiName szavazatok
+* @apiGroup 4. Szavazatok
+* @apiDescription A jelöltekre leadott szavazatok listája
 *
 * @apiParam (Request Parameters) {Number} [limit] Csak a megadott számú találatot adja vissza (default: `20`)
 * @apiParam (Request Parameters) {Number} [skip] A lapozáshoz használható paraméter. (default: `0`)
@@ -52,13 +52,13 @@ const router = express.Router();
 const DEFAULT_LIMIT = 20;
 
 router.all('*', authorization)
-let Eredmenys, db;
+let Szavazats, db;
 
 router.all('*', (req, res, next) => { 
   db = req.headers['x-valasztas-kodja'] || process.env.DEFAULT_DB
   const [valasztasAzonosito, version = 'latest'] = db.split('_')
-  Eredmenys = Models.Eredmeny[valasztasAzonosito][version]
-  if (!Eredmenys){
+  Szavazats = Models.Szavazat[valasztasAzonosito][version]
+  if (!Szavazats){
     res.status(400)
     res.json({'error': `Hibás választás kód: '${db}'` })
     return
@@ -84,12 +84,12 @@ router.all('/:id?', async (req, res) => {
     } = query)
 
     if (id) {
-      result = await Eredmenys.findById(id)
+      result = await Szavazats.findById(id)
       totalCount = 1
     } else if (Object.keys(body).length){
       try {
         const aggregations = body
-        result = await Eredmenys.aggregate(aggregations)
+        result = await Szavazats.aggregate(aggregations)
       } catch(error){
         result = error.message
       }
@@ -100,7 +100,7 @@ router.all('/:id?', async (req, res) => {
         { $limit: limit },
       ]
 
-      ;([{ result, totalCount }] = await Eredmenys.aggregate([{
+      ;([{ result, totalCount }] = await Szavazats.aggregate([{
         $facet: {
           result: aggregations,
           totalCount: [{ $match: query },{ $count: 'totalCount' }] }
@@ -123,7 +123,7 @@ router.all('/:id?', async (req, res) => {
   } catch (error) {
     console.log(error)
     res.status(404);
-    res.json('Eredmeny not found')
+    res.json('Szavazatok not found')
   }
 });
 
