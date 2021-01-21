@@ -1,10 +1,13 @@
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-import Usage from '../schemas/Usage';
+const jwt = require('jsonwebtoken')
+const dotenv = require('dotenv')
+const { model } = require('mongoose')
+const UsageSchema = require('../schemas/Usage')
 
-dotenv.config();
+dotenv.config()
 
-export default (req, res, next) => {
+const Usage = model('Usage', UsageSchema);
+
+module.exports = (req, res, next) => {
  	if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
 		req.user = { name: 'admin', roles: [ process.env.LOCALHOST_ROLE || 'admin' ] };
 		return next();

@@ -1,9 +1,9 @@
-import { Types } from 'mongoose'
-import express from 'express';
-import parseQuery from '../functions/parseQuery';
-import authorization from '../middlewares/authorization';
-import Models from '../schemas';
-import getPrevNextLinks from '../functions/getPrevNextLinks';
+const { Types } = require('mongoose')
+const express = require('express')
+const parseQuery = require('../functions/parseQuery')
+const authorization = require('../middlewares/authorization')
+const Models = require('../schemas')
+const getPrevNextLinks = require('../functions/getPrevNextLinks')
 
 
 /**
@@ -251,4 +251,4 @@ router.get('/:id?', async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;

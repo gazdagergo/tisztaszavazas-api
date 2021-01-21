@@ -1,4 +1,4 @@
-export default (sortString = '') => sortString.split(',').reduce((acc = {}, field) => {
+module.exports = (sortString = '') => sortString.split(',').reduce((acc = {}, field) => {
 	let order = 1;
 	if (field.startsWith('-')){
 		field = field.slice(1)

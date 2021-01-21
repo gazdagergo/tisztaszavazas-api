@@ -79,4 +79,4 @@ const parseQuery = (query = {}) => (
   }, {})
 )
 
-export default parseQuery
+module.exports = parseQuery

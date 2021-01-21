@@ -1,4 +1,3 @@
-const { Types } = require('mongoose')
 const express = require('express')
 const parseQuery = require('../functions/parseQuery')
 const authorization = require('../middlewares/authorization')
@@ -6,9 +5,10 @@ const Models = require('../schemas')
 const getPrevNextLinks = require('../functions/getPrevNextLinks')
 
 /**
-* @api {get} /valasztokeruletek/ 1.) Összes választókerület
-* @apiName valasztokeruletek
-* @apiGroup 3. Választókerületek
+* @api {get} /szavazatok/ 1.) Az összes eredmény
+* @apiName szavazatok
+* @apiGroup 4. Szavazatok
+* @apiDescription A jelöltekre leadott szavazatok listája
 *
 * @apiParam (Request Parameters) {Number} [limit] Csak a megadott számú találatot adja vissza (default: `20`)
 * @apiParam (Request Parameters) {Number} [skip] A lapozáshoz használható paraméter. (default: `0`)
@@ -47,56 +47,18 @@ const getPrevNextLinks = require('../functions/getPrevNextLinks')
 * @apiSampleRequest off
 */
 
-/**
- * @api {get} /valasztokeruletek/:id 2.) Egy választókerület összes adata
- * @apiName valasztokeruletek2
- * @apiGroup 3. Választókerületek
- *
- * @apiParam {String} id A Választókerület azonosítója az adatbázisban
- * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
- * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (lásd fent)
- *  
- * @apiSuccessExample {json} Success-Response:
- *  HTTP/1.1 200 OK
- *  
- *  { 
- *    "_id": "5eee424dac32540023500d13",
- *    "leiras": "Budapest 1. számú OEVK",
- *    "szam": 1,
- *    "korzethatar": {
- *      "type": "Polygon",
- *      "coordinates": [
- *        [
- *           [
- *             19.066171646118164,
- *             47.47514343261719
- *           ],
- *           [
- *             19.074604034423828,
- *             47.477970123291016
- *           ],
- * 		      ...
- *         ]
- *       ]
- *     }
- *   }
- * 
- * @apiSampleRequest off
- */
-
 const router = express.Router();
 
 const DEFAULT_LIMIT = 20;
 
 router.all('*', authorization)
-
-let Valasztokerulets, db;
+let Szavazats, db;
 
 router.all('*', (req, res, next) => { 
   db = req.headers['x-valasztas-kodja'] || process.env.DEFAULT_DB
-  const [valasztasAzonosito, version] = db.split('_')
-  Valasztokerulets = Models.Valasztokerulet[valasztasAzonosito][version] || Models.Valasztokerulet[valasztasAzonosito].latest
-  if (!Valasztokerulets){
+  const [valasztasAzonosito, version = 'latest'] = db.split('_')
+  Szavazats = Models.Szavazat[valasztasAzonosito][version]
+  if (!Szavazats){
     res.status(400)
     res.json({'error': `Hibás választás kód: '${db}'` })
     return
@@ -122,12 +84,12 @@ router.all('/:id?', async (req, res) => {
     } = query)
 
     if (id) {
-      result = await Valasztokerulets.findById(id)
+      result = await Szavazats.findById(id)
       totalCount = 1
     } else if (Object.keys(body).length){
       try {
         const aggregations = body
-        result = await Valasztokerulets.aggregate(aggregations)
+        result = await Szavazats.aggregate(aggregations)
       } catch(error){
         result = error.message
       }
@@ -138,7 +100,7 @@ router.all('/:id?', async (req, res) => {
         { $limit: limit },
       ]
 
-      ;([{ result, totalCount }] = await Valasztokerulets.aggregate([{
+      ;([{ result, totalCount }] = await Szavazats.aggregate([{
         $facet: {
           result: aggregations,
           totalCount: [{ $match: query },{ $count: 'totalCount' }] }
@@ -148,7 +110,7 @@ router.all('/:id?', async (req, res) => {
     }
 
     const prevNextLinks = getPrevNextLinks({
-      route: 'valasztokeruletek',
+      route: 'eredmenyek',
       skip,
       limit,
       query,
@@ -161,7 +123,7 @@ router.all('/:id?', async (req, res) => {
   } catch (error) {
     console.log(error)
     res.status(404);
-    res.json('Valasztokerulet not found')
+    res.json('Szavazatok not found')
   }
 });
 

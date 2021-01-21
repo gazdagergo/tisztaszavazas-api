@@ -10,7 +10,7 @@ const filterKozteruletekByRegex = (kozteruletek, regexStreetToFilter) => {
 	))	
 }
 
-export default (result, regexStreetToFilter, projection) => {
+module.exports = (result, regexStreetToFilter, projection) => {
 	return result.reduce((acc = [], entry) => {
 		if ((projection.kozteruletek !== 0 || projection.kozteruletek === 1) && (!entry.kozteruletek || !entry.kozteruletek.length)) {
 			return acc
