@@ -64,7 +64,6 @@ const getProjection = ({ roles }, context) => {
 }
 
 const mapQueryResult = (result, query) => result.map(({
-  _doc: {
     _id,
     kozigEgyseg,
     szavazokorSzama,
@@ -75,7 +74,6 @@ const mapQueryResult = (result, query) => result.map(({
     valasztokSzama,
     __v,
     ...rest
-  }
 }) => {
   const entry = {
     _id,
