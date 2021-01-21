@@ -102,6 +102,18 @@ module.exports = {
 		ogy2018: {
       v2: ogy2018_v2_szavazat,
       latest: ogy2018_v2_szavazat
-    },
+		}
+	},
+	Valasztokerulet: {
+		onk2019: {
+			v1: onk2019_v1_valasztokerulet,
+			v1: onk2019_v2_valasztokerulet,
+			latest: onk2019_v2_valasztokerulet,
+		},
+		ogy2018: {
+			v1: ogy2018_v1_valasztokerulet,
+			v2: ogy2018_v2_valasztokerulet,
+			latest: ogy2018_v2_valasztokerulet,
+		}
 	}
 }
