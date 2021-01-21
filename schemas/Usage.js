@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose')
 
 const UsageSchema = mongoose.Schema({
 	name: String,
@@ -8,4 +8,4 @@ const UsageSchema = mongoose.Schema({
   timestamps: true,
 })
 
-export default mongoose.model('Usage', UsageSchema);
+module.exports = UsageSchema
