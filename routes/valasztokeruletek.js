@@ -131,7 +131,7 @@ let Valasztokerulets, Szavazokors, db;
 router.all('*', (req, res, next) => { 
   db = req.headers['x-valasztas-kodja'] || process.env.DEFAULT_DB
   const [valasztasAzonosito, version] = db.split('_')
-  
+
   Valasztokerulets = Models.Valasztokerulet[valasztasAzonosito][version]
     || Models.Valasztokerulet[valasztasAzonosito].latest
   Szavazokors = Models.Szavazokor[valasztasAzonosito][version]
@@ -168,9 +168,10 @@ router.all('/:id?', async (req, res) => {
 
       result = {
         _id: result['_id'],
-        leiras: result.leiras,
-        szam: result.szam,
-        ...(await getVkDetails(Szavazokors, id))
+        leiras: result._doc.leiras,
+        szam: result._doc.szam,
+        ...(await getVkDetails(Szavazokors, id)),
+        korzethatar: result._doc.korzethatar,
       }
     } else if (Object.keys(body).length){
       try {
