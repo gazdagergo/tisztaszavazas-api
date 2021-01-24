@@ -122,6 +122,7 @@ const mapIdResult = (
     helyadatok,
     korzethatar,
     szavazohelyisegHelye,
+    valasztas,
     __v
   }, db, kozigEgysegSzavazokoreinekSzama
   ) => ({
@@ -144,7 +145,7 @@ const mapIdResult = (
     szavazohelyisegHelye,
     frissitveValasztasHun,
     valasztasHuOldal: `/vhupage/${db}/${_id}`,
-    valasztasKodja: db,
+    valasztas,
     updatedAt,
     __v
 })
