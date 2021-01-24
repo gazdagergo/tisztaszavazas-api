@@ -5,6 +5,7 @@ const SzavazokorSchema = new Schema()
 const KozigEgysegSchema = new Schema()
 const ValasztokeruletSchema = new Schema()
 const SzavazatSchema = new Schema()
+const ValasztasSchema = new Schema()
 
 const onk2019_v1_szavazokor_url = model('onk2019_v1_szavazokor_url', SzavazokorUrlSchema)
 const onk2019_v2_szavazokor_url = model('onk2019_v2_szavazokor_url', SzavazokorUrlSchema)
@@ -31,6 +32,7 @@ const ogy2018_v2_szavazokor = model('ogy2018_v2_szavazokor', SzavazokorSchema)
 const idbo620_v1_szavazokor = model('idbo620_v1_szavazokor', SzavazokorSchema)
 
 const ogy2018_v2_szavazat = model('ogy2018_v2_szavazat', SzavazatSchema)
+const valasztasok = model('valasztasok', ValasztasSchema)
 
 
 module.exports = {
@@ -104,16 +106,5 @@ module.exports = {
       latest: ogy2018_v2_szavazat
 		}
 	},
-	Valasztokerulet: {
-		onk2019: {
-			v1: onk2019_v1_valasztokerulet,
-			v1: onk2019_v2_valasztokerulet,
-			latest: onk2019_v2_valasztokerulet,
-		},
-		ogy2018: {
-			v1: ogy2018_v1_valasztokerulet,
-			v2: ogy2018_v2_valasztokerulet,
-			latest: ogy2018_v2_valasztokerulet,
-		}
-	}
+	Valasztas: valasztasok,
 }
