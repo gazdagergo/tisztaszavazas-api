@@ -4,6 +4,7 @@ const parseQuery = require('../functions/parseQuery')
 const authorization = require('../middlewares/authorization')
 const Models = require('../schemas')
 const getPrevNextLinks = require('../functions/getPrevNextLinks')
+const parseStringObject = require('../functions/parseStringObject')
 
 /**
 * @api {get} /valasztokeruletek/ 1.) Összes választókerület
@@ -173,9 +174,9 @@ router.all('/:id?', async (req, res) => {
         ...(await getVkDetails(Szavazokors, id)),
         korzethatar: result._doc.korzethatar,
       }
-    } else if (Object.keys(body).length){
+    } else if (body && body.query){
       try {
-        const aggregations = body
+        const aggregations = parseStringObject(body.query)
         result = await Valasztokerulets.aggregate(aggregations)
       } catch(error){
         result = error.message

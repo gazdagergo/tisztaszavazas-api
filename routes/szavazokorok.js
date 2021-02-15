@@ -6,6 +6,7 @@ const getSzkAggregationFilter = require('../functions/getSzkAggregationFilter')
 const { getProjection, mapQueryResult, mapIdResult } = require('../functions/szkProjectionAndMap')
 const reduceResultByRegex = require('../functions/reduceResultByRegex')
 const getPrevNextLinks = require('../functions/getPrevNextLinks')
+const parseStringObject = require('../functions/parseStringObject')
 
 /**
  * @api {get} /szavazokorok/ 1.) Összes szavazókör
@@ -247,9 +248,9 @@ router.all('/:szavazokorId?', async (req, res) => {
         kozigEgysegSzavazokoreinekSzama = await getSzavazokorCount({ kozigEgyseg })
         result = mapIdResult(result['_doc'], db, kozigEgysegSzavazokoreinekSzama)
       }
-    } else if (Object.keys(body).length){
+    } else if (body && body.query){
       try {
-        const aggregations = body
+        const aggregations = parseStringObject(body.query)
         result = await Szavazokors.aggregate(aggregations)
         try {
           result = mapQueryResult(result, query, db)
