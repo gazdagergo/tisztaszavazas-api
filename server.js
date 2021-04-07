@@ -4,6 +4,7 @@ const dotenv = require('dotenv')
 const cors = require('cors')
 const path = require('path')
 const connectDb = require('./functions/connectDb')
+const enforce = require('express-sslify')
 
 const szavazokorok = require('./routes/szavazokorok')
 const kozigEgyseg = require('./routes/kozigegysegek')
@@ -26,6 +27,9 @@ const corsOptions = {
 };
 
 // Middlewares
+if (app.get("env") === "production") {
+  app.use(enforce.HTTPS())
+}
 app.use(bodyParser.json({limit: '50mb'}))
 app.use(cors(corsOptions))
 
