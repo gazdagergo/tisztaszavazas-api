@@ -4,6 +4,7 @@ const parseQuery = require('../functions/parseQuery')
 const authorization = require('../middlewares/authorization')
 const Models = require('../schemas')
 const getPrevNextLinks = require('../functions/getPrevNextLinks')
+const parseStringObject = require('../functions/parseStringObject')
 
 
 /**
@@ -135,9 +136,10 @@ router.all('*', (req, res, next) => {
   next()
 })
 
-router.get('/:id?', async (req, res) => {
+router.all('/:id?', async (req, res) => {
   try {
     let {
+      body,
       params: { id },
       query
     } = req;
@@ -215,6 +217,14 @@ router.get('/:id?', async (req, res) => {
       }
    
       totalCount = 1;
+    } else if (body && body.query){
+      try {
+        const aggregations = parseStringObject(body.query)
+        console.log({aggregations})
+        result = await KozigEgysegs.aggregate(aggregations)
+      } catch(error){
+        result = error.message
+      }
     } else {
       projection = getProjection(req.user, 'byQuery')
       let aggregations = [
