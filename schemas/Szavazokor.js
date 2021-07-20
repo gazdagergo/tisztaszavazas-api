@@ -24,6 +24,21 @@ const PointSchema = new mongoose.Schema({
   }
 });
 
+const KozigEgysegSchema = new mongoose.Schema({
+  megyeNeve: String,
+  megyeKod: Number,
+  telepulesKod: Number,
+  kozigEgysegNeve: String,
+})
+
+const KozteruletSchema = mongoose.Schema({
+	"leiras": String,
+	"kozteruletNev": String,
+	"kezdoHazszam": Number,
+	"vegsoHazszam": Number,
+	"megjegyzes": String,
+})
+
 const SzavazokorSchema = mongoose.Schema({
   szavazokorSzama: Number,
   szavazokorCime: String,
