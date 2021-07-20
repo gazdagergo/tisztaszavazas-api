@@ -303,6 +303,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
         }])
 
         results = Object.values(results)
+        result = results[0]
 
         for (let r of results) {
           if (r.length) result = r
