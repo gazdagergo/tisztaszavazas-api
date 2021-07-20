@@ -6,7 +6,6 @@ const KozigEgysegSchema = mongoose.Schema({
   telepulesKod: Number,
   kozigEgysegNeve: String,
   kozteruletek: Array,
-  egySzavazokorosTelepules: Boolean,
   tipus: String,
   tipusKod: {
     type: String,

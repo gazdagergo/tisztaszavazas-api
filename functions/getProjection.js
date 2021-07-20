@@ -6,12 +6,9 @@ export default ({ roles }, context) => {
     parsedFromSrcHtml: 0,
     createdAt: 0,
     vhuUrl: 0,
-    'kozigEgyseg.megyeKod': 0,
-    'kozigEgyseg.telepulesKod': 0,
     polygonUrl: 0,
     valasztasAzonosito: 0,
-		helyadatok: 0,
-		egySzavazokorosTelepules: 0,
+		helyadatok: 0
   }
 
   switch (context) {
@@ -25,7 +22,6 @@ export default ({ roles }, context) => {
       polygonUrl: 0,
       createdAt: 0,
       updatedAt: 0,
-      egySzavazokorosTelepules: 0,
       'kozigEgyseg.megyeKod': 0,
       'kozigEgyseg.telepulesKod': 0,
       valasztasAzonosito: 0,
@@ -35,8 +31,7 @@ export default ({ roles }, context) => {
     case 'filterStreet': return ({
       szavazokorSzama: 1,
       'kozigEgyseg.kozigEgysegNeve': 1,
-      'kozigEgyseg.megyeNeve': 1,
-      'kozigEgyseg.egySzavazokorosTelepules': 1,
+      'kozigEgyseg.megyeNeve': 1
     })
 
     case 'withRegex': return ({
@@ -46,8 +41,7 @@ export default ({ roles }, context) => {
       valasztokSzama: 0,
       valasztokerulet: 0,
       akadalymentes: 0,
-      updatedAt: 0,
-      egySzavazokorosTelepules: 0,
+      updatedAt: 0
     })
 
     default:

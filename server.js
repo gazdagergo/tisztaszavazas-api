@@ -8,7 +8,7 @@ import authorization from './middlewares/authorization';
 import szkRoute from './routes/szavazokorok';
 import kozteruletRoute from './routes/kozteruletek';
 import scrapeRoute from './routes/scrape';
-import kozigEgysegRoute from './routes/kozigegysegek';
+import kozigEgysegRoute from './routes/kozigegysegek-aggr';
 import sourceHtmlRoute from './routes/sourcehtmls';
 import urlsRoute from './routes/urls';
 import vhuPageRoute from './routes/vhupage';
