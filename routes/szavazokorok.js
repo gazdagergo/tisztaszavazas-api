@@ -4,8 +4,7 @@ import parseQuery from '../functions/parseQuery';
 import getSortObject from '../functions/getSortObject';
 import authorization from '../middlewares/authorization';
 import getSzkAggregationFilter from '../functions/getSzkAggregationFilter';
-import getProjection from '../functions/getProjection';
-import { generateKozigEgysegId } from './kozigegysegek-aggr'
+import { getProjection, mapQueryResult, mapIdResult } from '../functions/szkProjectionAndMap';
 import reduceResultByRegex from '../functions/reduceResultByRegex';
 
 /**
@@ -163,42 +162,6 @@ import reduceResultByRegex from '../functions/reduceResultByRegex';
  */
 
 
-const mapResult = (result, query, db) => result.map(({
-  _id,
-  kozigEgyseg,
-  szavazokorSzama,
-  kozteruletek,
-  szavazokorCime,
-  akadalymentes,
-  valasztokerulet,
-  valasztokSzama,
-  __v,
-  ...rest
-}) => {
-  const entry = {
-    _id,
-    szavazokorSzama,
-    kozigEgyseg: {
-      megyeNeve: kozigEgyseg.megyeNeve,
-      kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
-      link: `/kozigegysegek/${generateKozigEgysegId(kozigEgyseg, db)}`
-    },
-    szavazokorCime,
-    akadalymentes,
-    valasztokerulet,
-    kozteruletek,
-    valasztokSzama,
-    __v
-  }
-
-  Object.keys(query).forEach(key => {
-    key = key.split('.')[0]
-    if (rest[key]) entry[key] = rest[key]
-  })           
-
-  return entry
-})
-
 const DEFAULT_LIMIT = 20;
 const DEFAULT_SORT = 'kozigEgyseg.megyeKod,kozigEgyseg.telepulesKod,szavazokorSzama'
 
@@ -218,6 +181,18 @@ router.all('*', (req, res, next) => {
   }
   next()
 })
+
+const getSzavazokorCount = async ({ megyeKod, telepulesKod }) => {
+  const count = await Szavazokor.aggregate([
+    { $match: {
+      'kozigEgyseg.megyeKod': megyeKod,
+      'kozigEgyseg.telepulesKod': telepulesKod
+    }},
+    { $count: 'kozigEgysegSzavazokoreinekSzama' }
+  ])
+  return count && count[0] && count[0].kozigEgysegSzavazokoreinekSzama
+}
+
 
 router.get('/:SzavazokorId?', async (req, res) => {
   let {
@@ -243,39 +218,15 @@ router.get('/:SzavazokorId?', async (req, res) => {
 
       const { kozigEgyseg: { megyeKod, telepulesKod } } = result
 
-      const count = await Szavazokor.aggregate([
-        { $match: {
-          'kozigEgyseg.megyeKod': megyeKod,
-          'kozigEgyseg.telepulesKod': telepulesKod
-        }},
-        { $count: 'kozigEgysegSzavazokoreinekSzama' }
-      ])
+      const kozigEgysegSzavazokoreinekSzama = await getSzavazokorCount({ megyeKod, telepulesKod })
 
-      result = {
-        _id: result['_id'],
-        szavazokorSzama: result.szavazokorSzama,
-        kozigEgyseg: {
-          megyeNeve: result.kozigEgyseg.megyeNeve,
-          kozigEgysegNeve: result.kozigEgyseg.kozigEgysegNeve,
-          kozigEgysegSzavazokoreinekSzama: count[0].kozigEgysegSzavazokoreinekSzama,
-          link: `/kozigegysegek/${generateKozigEgysegId(result.kozigEgyseg, db)}`
-        },
-        szavazokorCime: result.szavazokorCime,
-        akadalymentes: result.akadalymentes,
-        valasztokSzama: result.valasztokSzama,
-        valasztokerulet: result.valasztokerulet,
-        kozteruletek: result.kozteruletek,
-        frissitveValasztasHun: result.frissitveValasztasHun,
-        valasztasHuOldal: `/vhupage/${result['_doc']['_id']}`,
-        updatedAt: result.updatedAt,
-        __v: result['__v'],        
-      }      
+      result = mapIdResult(result, db, kozigEgysegSzavazokoreinekSzama)
 
     } else if (!Object.keys(query).length) {
       projection = getProjection(req.user, 'noQuery')
       totalCount = await Szavazokor.estimatedDocumentCount()
       result = await Szavazokor.find({}, projection).sort(sort).skip(skip).limit(limit)
-      result = mapResult(result, query, db)
+      result = mapQueryResult(result, query, db)
     } else {
       
       const [filterCond, regexStreetToFilter] = getSzkAggregationFilter(query);
@@ -330,9 +281,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
         totalCount = undefined
       }
 
-
-
-      result = mapResult(result, query, db)
+      result = mapQueryResult(result, query, db)
     }
 
     res.header('X-Total-Count', totalCount)
