@@ -14,21 +14,25 @@ const router = express.Router()
 let responses = {};
 
 
-export const scraper_GET = async (szavazokorId, query) => {
+export const scraper_GET = async (szavazokorId, query = {}) => {
   let szavkorSorszam,
     telepulesKod,
     megyeKod,
     szavazokor,
     vhuUrl,
     polygonUrl,
-    sourceHtmlEntryId
+    sourceHtmlEntryId,
+    scrapeOnly,
+    parseFromDb;
+
+    query = parseQuery(query)
+    ;({ scrapeOnly, parseFromDb, ...query } = query)
 
   try {
     if (szavazokorId) {
       szavazokor = await Szavazokor.findById(szavazokorId)
       ;({ vhuUrl, polygonUrl, sourceHtmlEntryId } = szavazokor)
-    } else if (query) {
-      query = parseQuery(query)
+    } else if (Object.keys(query).length) {
       const szavazokorok = await Szavazokor.find(query)
       crawl(szavazokorok) 
       return [200, {
@@ -37,7 +41,6 @@ export const scraper_GET = async (szavazokorId, query) => {
       }]      
     }
 
-    const { scrapeOnly, parseFromDb } = parseQuery(query)
 
     let htmlUpdateResponse;
     let szavkorUpdateResponse;
