@@ -1,5 +1,6 @@
 const express = require('express')
-const parseQuery = require('../functions/parseQuery')
+const parseQuery = require('../functions/parseQuery');
+const parseStringObject = require('../functions/parseStringObject');
 const authorization = require('../middlewares/authorization')
 const Models = require('../schemas')
 
@@ -62,9 +63,9 @@ router.all('/:id?', async (req, res) => {
     if (id) {
       result = await Valasztas.findById(id)
       totalCount = 1
-    } else if (Object.keys(body).length){
+    } else if (body && body.query){
       try {
-        const aggregations = body
+        const aggregations = parseStringObject(body.query)
         result = await Valasztas.aggregate(aggregations)
       } catch(error){
         result = error.message

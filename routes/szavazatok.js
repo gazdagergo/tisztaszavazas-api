@@ -3,6 +3,7 @@ const parseQuery = require('../functions/parseQuery')
 const authorization = require('../middlewares/authorization')
 const Models = require('../schemas')
 const getPrevNextLinks = require('../functions/getPrevNextLinks')
+const parseStringObject = require('../functions/parseStringObject')
 
 /**
 * @api {get} /szavazatok/ 1.) Az összes eredmény
@@ -86,9 +87,9 @@ router.all('/:id?', async (req, res) => {
     if (id) {
       result = await Szavazats.findById(id)
       totalCount = 1
-    } else if (Object.keys(body).length){
+    } else if (body && body.query){
       try {
-        const aggregations = body
+        const aggregations = parseStringObject(body.query)
         result = await Szavazats.aggregate(aggregations)
       } catch(error){
         result = error.message
