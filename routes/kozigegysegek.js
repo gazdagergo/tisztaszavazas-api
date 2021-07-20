@@ -1,6 +1,5 @@
 import { Types } from 'mongoose'
 import express from 'express';
-import getSortObject from '../functions/getSortObject';
 import parseQuery from '../functions/parseQuery';
 import authorization from '../middlewares/authorization';
 import Models from '../schemas';
@@ -90,7 +89,6 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
 const router = express.Router();
 
 const DEFAULT_LIMIT = 20;
-const DEFAULT_SORT = 'megyeKod,telepulesKod'
 
 const addKozteruletLinks = (kozteruletek, kozigEgysegNeve) => {
   if (kozteruletek && kozteruletek.map) {
@@ -144,18 +142,15 @@ router.get('/:id?', async (req, res) => {
       query
     } = req;
 
-    let limit, sort, skip, result, totalCount, projection, group;
+    let limit, skip, result, totalCount, projection, group;
     query = parseQuery(query)
     ;(
       {
         limit = DEFAULT_LIMIT,
         skip = 0,
-        sort = DEFAULT_SORT,
         ...query
       } = query
     )
-
-    sort = getSortObject(sort)
 
     if (id) {
       result = await KozigEgysegs.findById(id)
@@ -175,7 +170,6 @@ router.get('/:id?', async (req, res) => {
         { $replaceRoot: { newRoot: "$kozteruletek" } },
         { $group: group },
         { $unwind: "$kozteruletek" },
-        { $sort: { 'kozteruletek.kozteruletNev':  1 } },
         { $group: {
           "_id": null,
           kozteruletek: { $push: '$kozteruletek' } }
@@ -185,7 +179,6 @@ router.get('/:id?', async (req, res) => {
       const szavazokorAggregation = [
         { $match: szkQuery },
         { $project: { szavazokorSzama: 1, szavazokorCime: 1, _id: 1 }},
-        { $sort: { szavazokorSzama: 1 }}
       ]
         
       const szkCountAggregation = [
@@ -227,7 +220,6 @@ router.get('/:id?', async (req, res) => {
       let aggregations = [
         { $match: query },
         { $project: projection },
-        { $sort: sort },
         { $skip: skip },
         { $limit: limit },
       ];
