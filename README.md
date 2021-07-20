@@ -51,13 +51,6 @@ If result length is 1, the whole street belongs to one ballot office
 `GET /kozteruletek?telepulesNev=Budapest&kozteruletNev=Logodi utca&kezdoHazszam={$lte: 78}&vegsoHazszam={$gt: 78}&megjegyzes=/Páros/`
 
 
-### /scrape
-
-Refresh the ballot office data from valasztas.hu and stores the source html.
-
-`GET /scrape/5e405d6a0ff37a310a0840e7`
-
-Parameters: scrapeOnly=true, parseFromDb=true
 
 
 ## Scripts
@@ -77,6 +70,18 @@ You can initialize the ballot office DB with the params parsed from urls:
 `$ yarn initszk:onk2019`
 
 you can reach the ballot office data on `GET /szavazokorok`
+
+### Crawl and scrape
+
+Refresh the ballot office data from valasztas.hu and stores the source html.
+
+`GET /scrape/:id?`
+
+Parameters: all query parameter of `szavazokorok` endpoint can be used.
+
+Parameters: scrapeOnly=false, parseFromDb=false, dontSaveHtml=false
+
+
 
 
 # Development
