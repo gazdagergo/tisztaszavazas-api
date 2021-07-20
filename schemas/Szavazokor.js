@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const SzavazokorSchema = mongoose.Schema({
   valasztasAzonosito: String,
   szavazokorSzama: Number,
-  szavkorCim: String,
+  szavazokorCime: String,
   kozigEgyseg: {
     type: Object,
     ref: 'KozigEgyseg'
