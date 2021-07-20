@@ -180,7 +180,7 @@ router.all('*', authorization)
 let Szavazokor, db;
 
 router.all('*', (req, res, next) => { 
-  db = req.headers['x-valasztas-kodja'] || 'onk2019'
+  db = req.headers['x-valasztas-kodja'] || 'onk2019_v1'
   Szavazokor = SzavazokorSchemas[`Szavazokor_${db}`]
   if (!Szavazokor){
     res.status(400)

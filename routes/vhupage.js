@@ -6,7 +6,7 @@ const router = express.Router()
 let Szavazokor;
 
 router.all('*', (req, _res, next) => { 
-  const db = req.headers['x-valasztas-kodja'] || 'onk2019'
+  const db = req.headers['x-valasztas-kodja'] || 'onk2019_v1'
 	Szavazokor = SzavazokorSchemas[`Szavazokor_${db}`]
   if (!Szavazokor){
     res.status(400)

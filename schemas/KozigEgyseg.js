@@ -5,18 +5,13 @@ const KozigEgysegSchema = mongoose.Schema({
   megyeKod: Number,
   telepulesKod: Number,
   kozigEgysegNeve: String,
-  kozteruletek: Array,
-  tipus: String,
-  tipusKod: {
-    type: String,
-    enum: ['ME', 'FV', 'MV', 'BK', 'TF', 'TA',]
-  },  
+  kozteruletek: Array, 
 })
 
-export const KozigEgyseg = mongoose.model('KozigEgyseg', KozigEgysegSchema);
-
 const KozigEgyseg_onk2019 = mongoose.model('KozigEgyseg_onk2019', KozigEgysegSchema);
+const KozigEgyseg_onk2019_v1 = mongoose.model('KozigEgyseg_onk2019_v1', KozigEgysegSchema);
 
 export default {
-  KozigEgyseg_onk2019
+  KozigEgyseg_onk2019,
+  KozigEgyseg_onk2019_v1
 }

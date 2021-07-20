@@ -54,10 +54,10 @@ const SzavazokorSchema = mongoose.Schema({
   timestamps: true  
 })
 
+const Szavazokor_onk2019_v1 = mongoose.model('Szavazokor_onk2019_v1', SzavazokorSchema);
 const Szavazokor_onk2019 = mongoose.model('Szavazokor_onk2019', SzavazokorSchema);
-const Szavazokor_tests = mongoose.model('Szavazokor_tests', SzavazokorSchema);
 
 export default {
+  Szavazokor_onk2019_v1,
   Szavazokor_onk2019,
-  Szavazokor_tests
 }
