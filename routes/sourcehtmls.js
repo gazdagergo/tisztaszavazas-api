@@ -8,12 +8,13 @@ const DEFAULT_LIMIT = 99999;
 const router = express.Router()
 
 router.all('*', authorization)
-router.all('*', (req, res) => {
+router.all('*', (req, res, next) => {
   if (!req.user.roles || !req.user.roles.includes('admin')) {
     res.status(404)
     res.json('Not found')
     return
   }
+  next()
 })
 
 router.get('/:SourceHtmlId?', async (req, res) => {
