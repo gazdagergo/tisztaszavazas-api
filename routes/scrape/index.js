@@ -20,12 +20,13 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
     szavazokor,
     vhuUrl,
     polygonUrl,
-    sourceHtmlEntryId,
     scrapeOnly,
-    parseFromDb;
+    parseFromDb,
+    dontSaveHtml
+    ;
 
     query = parseQuery(query)
-    ;({ scrapeOnly = false, parseFromDb = false, ...query } = query)
+    ;({ scrapeOnly = false, parseFromDb = false, dontSaveHtml = false, ...query } = query)
 
   try {
     if (szavazokorId) {
@@ -43,7 +44,7 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
 
     } else {
       const szavazokorok = await Szavazokor.find(query)
-      crawl(szavazokorok, { scrapeOnly, parseFromDb }) 
+      crawl(szavazokorok, { scrapeOnly, parseFromDb, dontSaveHtml }) 
       return [200, {
         message: `crawler started on ${szavazokorok.length} szavazokors`,
         query
@@ -70,7 +71,10 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
       ;({ data: html } = await axios.get(vhuUrl));
       const { data: area } = await axios.get(polygonUrl);
 
-      if (sourceHtml) {
+      if (dontSaveHtml) {
+        scrapeMsg = 'Html persistence not requested. '
+        htmlUpdateResponse = null
+      } else if (sourceHtml) {
         sourceHtml = Object.assign(sourceHtml, { url: vhuUrl, html, area })
         htmlUpdateResponse = await sourceHtml.save(sourceHtml)
         scrapeMsg = 'Html updated in db. '
