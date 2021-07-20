@@ -16,7 +16,8 @@
     "updateEgySzkTelepules": "babel-node scripts/updateEgySzkTelepules.js",
     "updateKezdoVegsoHazszam": "babel-node scripts/updateKezdoVegsoHazszam.js",
     "updateKozigEgysEgySzkTelepules": "babel-node scripts/updateEgySzkTelepules.js",
-    "doc": "apidoc -i routes/ -o apidoc/"
+    "doc": "apidoc -i routes/ -o apidoc/",
+    "toPolygon": "babel-node scripts/toPolygon.js onk2019"
   },
   "repository": {
     "type": "git",

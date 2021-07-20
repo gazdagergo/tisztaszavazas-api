@@ -42,7 +42,8 @@ export const getProjection = ({ roles }, context) => {
       valasztokSzama: 0,
       valasztokerulet: 0,
       akadalymentes: 0,
-      updatedAt: 0
+      updatedAt: 0,
+      helyadatok: 0
     })
 
     case 'byId':
@@ -105,6 +106,9 @@ export const mapIdResult = ({
   kozteruletek,
   frissitveValasztasHun,
   updatedAt,
+  helyadatok,
+  korzethatar,
+  szavazohelyisegHelye,
   __v
 }, db, kozigEgysegSzavazokoreinekSzama) => ({
   _id,
@@ -120,9 +124,12 @@ export const mapIdResult = ({
   valasztokSzama,
   valasztokerulet,
   kozteruletek,
+  helyadatok,
+  korzethatar,
+  szavazohelyisegHelye,
   frissitveValasztasHun,
   valasztasHuOldal: `/vhupage/${_id}`,
   valasztasKodja: db,
   updatedAt,
-  __v,        
+  __v
 })
