@@ -9,7 +9,7 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
 /**
 * @api {get} /kozigegysegek/ 1.) Összes közigazgatási egység
 * @apiName kozigegysegek2
-* @apiGroup Közigegységek
+* @apiGroup 1. Közigegységek
 *
 * @apiParam (Request Parameters) {Number} [limit] Csak a megadott számú találatot adja vissza (default: `20`)
 * @apiParam (Request Parameters) {Number} [skip] A lapozáshoz használható paraméter. (default: `0`)
@@ -42,7 +42,7 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
 /**
  * @api {get} /kozigegysegek/:id? 2.) Egy közigazgatási egység összes adata
  * @apiName kozigegysegek3
- * @apiGroup Közigegységek
+ * @apiGroup 1. Közigegységek
  *
  * @apiParam {String} id A közigazgatási egység azonosítója az adatbázisban
  * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
