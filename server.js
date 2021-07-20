@@ -7,7 +7,7 @@ import authorization from './middlewares/authorization';
 import szkRoute from './routes/szavazokorok';
 import kozteruletRoute from './routes/kozteruletek';
 import scrapeRoute from './routes/scrape';
-import kozigEgysegRoute from './routes/kozigegyseg';
+import kozigEgysegRoute from './routes/kozigegysegek';
 import sourceHtmlRoute from './routes/sourcehtmls';
 import urlsRoute from './routes/urls';
 import vhuPageRoute from './routes/vhupage';
@@ -34,7 +34,7 @@ app.use(authorization);
 app.use('/szavazokorok', szkRoute)
 app.use('/kozteruletek', kozteruletRoute)
 app.use('/scrape', scrapeRoute)
-app.use('/kozigegyseg', kozigEgysegRoute)
+app.use('/kozigegysegek', kozigEgysegRoute)
 app.use('/telepules', kozigEgysegRoute)
 app.use('/sourcehtmls', sourceHtmlRoute)
 app.use('/urls', urlsRoute)
