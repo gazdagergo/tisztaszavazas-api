@@ -4,12 +4,13 @@ const schemas = require('../schemas')
 const router = express.Router()
 
 router.get('/:db/:id', async (req, res) => {
-  const [valasztasAzonosito, version] = req.params.db.split('_')
-
+	const [valasztasAzonosito, version] = req.params.db.split('_')
+	
 	try {
-		const Szavazokors = schemas.Szavazokor[valasztasAzonosito][version] || schemas.Szavazokor[valasztasAzonosito].latest
+		const Szavazokors = schemas.Szavazokor[valasztasAzonosito][version || 'latest']
 		
-		const { vhuUrl } = await Szavazokors.findById(req.params.id)
+		const result = await Szavazokors.findById(req.params.id)
+		const { vhuUrl } = (result._doc || result)
 		res.redirect(vhuUrl)
 	} catch(error){
 		console.log(error.message || error)
