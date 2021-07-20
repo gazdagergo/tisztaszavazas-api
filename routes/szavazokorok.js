@@ -3,8 +3,10 @@ import Szavazokor from '../schemas/Szavazokor';
 import generateVhuUrl from '../functions/generateVhuUrl';
 import parseQuery from '../functions/parseQuery';
 import completeQueryParams from '../functions/completeQueryParams';
+import getSortObject from '../functions/getSortObject';
 
 const DEFAULT_LIMIT = 99999;
+const DEFAULT_SORT = 'kozigEgyseg.megyeKod,kozigEgyseg.telepulesKod,szavazokorSzama'
 
 const router = express.Router()
 
@@ -78,11 +80,13 @@ router.get('/:SzavazokorId?', async (req, res) => {
     query
   } = req;
 
-  let limit, projection;
+  let limit, projection, sort;
 
   query = completeQueryParams(query)
   query = parseQuery(query)
-  ;({ limit = DEFAULT_LIMIT, ...query } = query)
+  ;({ limit = DEFAULT_LIMIT, sort = DEFAULT_SORT, ...query } = query)
+
+  sort = getSortObject(sort)
 
   try {
     let result;
@@ -95,7 +99,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
       }
     } else if (!Object.keys(query).length) {
       projection = getProjection(req.user, 'noQuery')
-      result = await Szavazokor.find({}, projection).limit(limit)
+      result = await Szavazokor.find({}, projection).sort(sort).limit(limit)
     } else {
       let [_, filterCond] = Object.entries(query).reduce(
         (acc, [key, value]) => {
