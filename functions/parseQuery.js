@@ -64,9 +64,19 @@ const parseQueryValue = value => {
 }
 
 const parseQuery = (query = {}) => (
-	Object.entries(query).reduce((acc, [key, value]) => ({
-		...acc, [key]: parseQueryValue(value)
-	}), {})
+	Object.entries(query).reduce((acc, [key, value]) => {
+    if (Array.isArray(value)){
+      return {
+        ...acc,
+        $and: value.map(v => ({
+          [key]: parseQueryValue(v)
+        }))
+      }
+    }
+    return {
+      ...acc, [key]: parseQueryValue(value)
+    }
+  }, {})
 )
 
 export default parseQuery
