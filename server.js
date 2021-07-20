@@ -9,6 +9,7 @@ import kozteruletRoute from './routes/kozteruletek';
 import scrapeRoute from './routes/scrape';
 import kozigEgysegRoute from './routes/kozigegyseg';
 import sourceHtmlRoute from './routes/sourcehtmls';
+import urlsRoute from './routes/urls';
 
 dotenv.config()
 const app =  express();
@@ -31,6 +32,7 @@ app.use('/scrape', scrapeRoute)
 app.use('/kozigegyseg', kozigEgysegRoute)
 app.use('/telepules', kozigEgysegRoute)
 app.use('/sourcehtmls', sourceHtmlRoute)
+app.use('/urls', urlsRoute)
 
 
 // Connect to DB
