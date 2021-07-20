@@ -1,5 +1,5 @@
 {
-  "name": "vhu-api",
+  "name": "tisztaszavazas-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,40 +9,29 @@
     "heroku-postbuild": "npm install",
     "start": "yarn doc && babel-node server.js",
     "start:no-doc": "babel-node server.js",
-    "crawl:onk2019": "babel-node crawler/crawlUrls.js onk2019",
-    "initszk:onk2019": "babel-node crawler/initSzks.js onk2019",
-    "saveHtmsToFile": "babel-node utils/saveHtmsToFile.js",
-    "generateKozigEgysegek": "babel-node scripts/generateKozigEgysegek.js",
-    "updateEgySzkTelepules": "babel-node scripts/updateEgySzkTelepules.js",
-    "updateKezdoVegsoHazszam": "babel-node scripts/updateKezdoVegsoHazszam.js",
-    "updateKozigEgysEgySzkTelepules": "babel-node scripts/updateEgySzkTelepules.js",
-    "doc": "apidoc -i routes/ -o apidoc/",
-    "toPolygon": "babel-node scripts/toPolygon.js onk2019"
+    "doc": "apidoc -i routes/ -o apidoc/"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/madhums/node-express-mongoose-demo.git"
+    "url": "git://github.com/gazdagergo/tisztaszavazas-api.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/madhums/node-express-mongoose-demo/issues"
+    "url": "https://github.com/gazdagergo/tisztaszavazas-api/issues"
   },
-  "homepage": "https://github.com/madhums/node-express-mongoose-demo#readme",
+  "homepage": "https://api.tisztaszavazas.hu",
   "dependencies": {
     "apidoc": "^0.20.1",
-    "axios": "^0.19.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "fs": "^0.0.1-security",
     "http": "0.0.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.6.4",
     "nodemon": "^1.19.1",
     "path": "^0.12.7",
-    "python-shell": "^1.0.8",
     "requestify": "^0.2.5",
     "showdown": "^1.9.0",
     "url": "^0.11.0"
