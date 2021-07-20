@@ -6,31 +6,42 @@ import Szavazokor from '../../schemas/Szavazokor';
 import generateVhuUrl from '../../functions/generateVhuUrl';
 import SourceHtml from '../../schemas/SourceHtml';
 import parseQuery from '../../functions/parseQuery';
+import { crawl } from '../../crawler';
 
 dotenv.config();
 
 const router = express.Router()
 let responses = {};
 
-router.get('/:SzavazokorId?', async (req, res) => {
-  const {
-    params: { SzavazokorId },
-    query
-  } = req;
-
-  const { scrapeOnly, parseFromDb } = parseQuery(query)
+export const scraper_GET = async (SzavazokorId, query) => {
+  let szavkorSorszam, telepulesKod, megyeKod, szavkor;
 
   try {
-    const szavkor = await Szavazokor.findById(SzavazokorId)
+    if (SzavazokorId) {
+      szavkor = await Szavazokor.findById(SzavazokorId)
+      ;({
+        szavkorSorszam,
+        kozigEgyseg: {
+          telepulesKod,
+          megyeKod
+        }
+      } = szavkor)
+    } else if (
+      query.szavkorSorszam && 
+      query['kozigEgyseg.telepulesKod'] &&
+      query['kozigEgyseg.megyeKod']
+    ) {
+      szavkorSorszam = query.szavkorSorszam;
+      telepulesKod = query['kozigEgyseg.telepulesKod'];
+      megyeKod = query['kozigEgyseg.megyeKod'];
+      query = parseQuery(query)
+      szavkor = await Szavazokor.findOne(query)
+    } else {
+      crawl()
+      return [200, { message:  'crawler started' }]
+    }
 
-    const {
-      szavkorSorszam,
-      kozigEgyseg: {
-        telepulesKod,
-        megyeKod
-      }
-    } = szavkor;
-
+    const { scrapeOnly, parseFromDb } = parseQuery(query)
     const url = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam)
     const polygonUrl = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam, true)
 
@@ -58,14 +69,12 @@ router.get('/:SzavazokorId?', async (req, res) => {
 
     responses = { ...responses, htmlUpdateResponse }
 
-    const { kozteruletek, ...szkParsedData } = await parse(html)
-      
-    const newSzavkor = Object.assign(szavkor, szkParsedData)
-
     let szavkorUpdateResponse;
     if (scrapeOnly) {
       szavkorUpdateResponse = null
     } else {
+      const { kozteruletek, ...szkParsedData } = await parse(html)
+      const newSzavkor = Object.assign(szavkor, szkParsedData)
       szavkorUpdateResponse = await newSzavkor.save()
     }
 
@@ -83,15 +92,26 @@ router.get('/:SzavazokorId?', async (req, res) => {
       message = 'Both szavazokor and sourceHtml updated from website.'
     }
     
-    res.json({
+    return [200, {
       message,
       responses
-    })
+    }]
   } catch (error) {
     console.log(error)
-    res.status(500)
-    res.json({ error: error.message })    
-  }
+    return [500, {
+      error: error.message
+    }]
+  }  
+}
+
+router.get('/:SzavazokorId?', async (req, res) => {
+  const {
+    params: { SzavazokorId },
+    query
+  } = req;
+  const [code, response] = await scraper_GET(SzavazokorId, query)
+  res.status(code)
+  res.json(response)
 })
 
 router.post('/', async (req, res) => {
