@@ -1,0 +1,22 @@
+export default c => [
+	{ code: 1, name: 'Budapest' },
+	{ code: 2, name: 'Bács-Kiskun' },
+	{ code: 3, name: 'Baranya' },
+	{ code: 4, name: 'Békés' },
+	{ code: 5, name: 'Borsod-Abaúj-Zemplén' },
+	{ code: 6, name: 'Csongrád' },
+	{ code: 7, name: 'Fejér' },
+	{ code: 8, name: 'Győr-Moson-Sopron' },
+	{ code: 9, name: 'Hajdú-Bihar' },
+	{ code: 10, name: 'Heves' },
+	{ code: 11, name: 'Jász-Nagykun-Szolnok' },
+	{ code: 12, name: 'Komárom-Esztergom' },
+	{ code: 13, name: 'Nógrád' },
+	{ code: 14, name: 'Pest' },
+	{ code: 15, name: 'Somogy' },
+	{ code: 16, name: 'Szabolcs-Szatmár-Bereg' },
+	{ code: 17, name: 'Tolna' },
+	{ code: 18, name: 'Vas' },
+	{ code: 19, name: 'Veszprém' },
+	{ code: 20, name: 'Zala' }
+].find(({ code }) => code === c)['name']

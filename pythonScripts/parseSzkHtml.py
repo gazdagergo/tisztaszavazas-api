@@ -8,7 +8,7 @@ import json
 import logging
 
 from getUtcaLista import getUtcaLista
-from getSzavkorCim import getSzavkorCim
+from getSzavkorDetails import getSzavkorDetails
 
 def main(html):
 	# logging.basicConfig(filename='example.log',level=logging.DEBUG)
@@ -17,7 +17,7 @@ def main(html):
 		soup = BeautifulSoup(html, "html.parser")
 		result = {
 			**getUtcaLista(soup),
-			"szavkorCim": getSzavkorCim(soup)
+			**getSzavkorDetails(soup)
 		}
 		print(json.dumps(result))
 	except:

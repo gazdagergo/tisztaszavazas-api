@@ -7,6 +7,7 @@ import generateVhuUrl from '../../functions/generateVhuUrl';
 import SourceHtml from '../../schemas/SourceHtml';
 import parseQuery from '../../functions/parseQuery';
 import { crawl } from '../../crawler';
+import getCountryName from '../../functions/getCountryName';
 
 dotenv.config();
 
@@ -42,9 +43,11 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
     }
 
 
-    let htmlUpdateResponse;
-    let szavkorUpdateResponse;
-    let html;
+    let htmlUpdateResponse,
+    szavkorUpdateResponse,
+    scrapeMsg,
+    parseMsg,
+    html;
 
     let sourceHtml = await SourceHtml.findById(sourceHtmlEntryId)
     let timeStamp = new Date()
@@ -52,7 +55,8 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
 
     if (parseFromDb) {
       htmlUpdateResponse = null;
-      ({ html } = sourceHtml)
+      scrapeMsg = 'Html update not requested. '
+      ;({ html } = sourceHtml)
     } else {
       ;({ data: html } = await axios.get(vhuUrl));
       const { data: area } = await axios.get(polygonUrl);
@@ -60,19 +64,24 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
       if (sourceHtml) {
         sourceHtml = Object.assign(sourceHtml, { url: vhuUrl, html, area })
         htmlUpdateResponse = await sourceHtml.save(sourceHtml)
+        scrapeMsg = 'Html updated in db. '
       } else {
-        htmlUpdateResponse = await SourceHtml.insertMany([{
-          szavkorSorszam,
-          kozigEgyseg: {
-            telepulesKod,
-            megyeKod,
-          },
-          vhuUrl,
-          html,
-          area
-        }])
-
-        htmlUpdateResponse = htmlUpdateResponse[0]
+        try {
+          htmlUpdateResponse = await SourceHtml.insertMany([{
+            szavkorSorszam,
+            kozigEgyseg: {
+              telepulesKod,
+              megyeKod,
+            },
+            vhuUrl,
+            html,
+            area
+          }])
+          scrapeMsg = 'Html added to db. '
+          htmlUpdateResponse = htmlUpdateResponse[0]
+        } catch(error){
+          scrapeMsg = 'DB error while updating html.'
+        }
       }
       const { _id: sourceHtmlEntryId } = htmlUpdateResponse;
       const newSzavkor = Object.assign(szavazokor, {
@@ -86,28 +95,40 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
 
     if (scrapeOnly) {
       szavkorUpdateResponse = null
+      parseMsg = 'Szavkor update not requested. '
     } else {
-      const { kozteruletek, ...szkParsedData } = await parse(html)
-      const newSzavkor = Object.assign(szavazokor, {
-        ...szkParsedData,
-        kozteruletek,
-        parsedFromSrcHtml: timeStamp
-      })
-      szavkorUpdateResponse = await newSzavkor.save()
+      const { error, ...szkParsedData } = await parse(html)
+      if (error && error === 'error') {
+        parseMsg = 'Parsing error, szavkor not updated. '
+      } else {
+        console.log(szkParsedData.kozigEgyseg)
+        const newSzavkor = Object.assign(szavazokor, {
+          ...szkParsedData,
+          kozigEgyseg: {
+            ...szavazokor.kozigEgyseg,
+            megyeNeve: getCountryName(szavazokor.kozigEgyseg.megyeKod),
+            ...szkParsedData.kozigEgyseg,
+          },
+          parsedFromSrcHtml: timeStamp
+        })
+        try {
+          szavkorUpdateResponse = await newSzavkor.save()
+          parseMsg = 'Szavkor parsed and updated successfully.'
+        } catch(error) {
+          console.log(error)
+          parseMsg = 'Szavkor write db error. Szavkor not updated.'
+        }
+      }
     }
 
     responses = {...responses, szavkorUpdateResponse }
 
     let message;
 
-    if (scrapeOnly && parseFromDb) {
+    if (!scrapeMsg && !parseMsg) {
       message = 'Nothing happened'
-    } else if (scrapeOnly) {
-      message = 'Szavazokor not updated. SourceHtml db updated'
-    } else if (parseFromDb) {
-      message = 'Szavazokor updated from stored SourceHtml db.'
     } else {
-      message = 'Both szavazokor and sourceHtml updated from website.'
+      message = scrapeMsg + parseMsg
     }
     
     return [200, {
