@@ -2,7 +2,7 @@ const getQueryString = query => Object.entries(query).reduce((acc, [key, value],
 	`${acc}${i ? '&' : ''}${key}=${encodeURIComponent(value)}`
 ), '?')
 
-export default ({ route, skip, limit, query, totalCount }) => {
+module.exports = ({ route, skip, limit, query, totalCount }) => {
 	if (skip%limit !== 0) return null;
 	if (!totalCount) return null;
 

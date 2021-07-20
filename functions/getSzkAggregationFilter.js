@@ -3,7 +3,7 @@ const instanceOf = (elem, constructorName = 'Object') => (
   Object.getPrototypeOf(elem).constructor.name == constructorName
 )
 
-export default query => {
+module.exports = query => {
 	let [_, filterCond] = Object.entries(query).reduce(
 		(acc, [key, value]) => {
 			if (key.includes('kozteruletek.')){

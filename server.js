@@ -1,17 +1,22 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv'
-import path from 'path';
-import szkRoute from './routes/szavazokorok';
-import kozigEgysegRoute from './routes/kozigegysegek';
-import vhuPageRoute from './routes/vhupage';
-import usageRoute from './routes/usage';
-import valasztokeruletRoute from './routes/valasztokeruletek'
-import cors from 'cors';
+const express = require('express')
+const bodyParser = require('body-parser')
+const dotenv = require('dotenv')
+const cors = require('cors')
+const path = require('path')
+const connectDb = require('./functions/connectDb')
+
+const szkRoute = require('./routes/szavazokorok')
+const kozigEgysegRoute = require('./routes/kozigegysegek')
+const vhuPageRoute = require('./routes/vhupage')
+const usageRoute = require('./routes/usage')
+const valasztokeruletRoute = require('./routes/valasztokeruletek')
+const szavazatokRoute = require('./routes/szavazatok')
+
 
 dotenv.config()
-const app =  express();
+const app =  express()
+
+connectDb()
 
 const corsOptions = {
   origin: '*',
@@ -29,12 +34,7 @@ app.use('/szavazokorok', szkRoute)
 app.use('/usage', usageRoute)
 app.use('/vhupage', vhuPageRoute)
 app.use('/valasztokeruletek', valasztokeruletRoute)
-
-// Connect to DB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true
-},
-() => console.log('connected to DB'))
+app.use('/szavazatok', szavazatokRoute)
 
 // Listen
 var port = process.env.PORT || 1338

@@ -1,5 +1,5 @@
-import express from 'express';
-import schemas from '../schemas';
+const express = require('express')
+const schemas = require('../schemas')
 
 const router = express.Router()
 
@@ -18,4 +18,4 @@ router.get('/:db/:id', async (req, res) => {
 	}
 })
 
-export default router;
+module.exports = router;
