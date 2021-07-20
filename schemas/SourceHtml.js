@@ -6,6 +6,7 @@ const SourceHtmlSchema = mongoose.Schema({
 	szavkorSorszam: Number,
 	url: String,
 	html: String,
+	area: Object
 },
 {
   timestamps: true

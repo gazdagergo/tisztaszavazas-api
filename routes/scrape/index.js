@@ -1,8 +1,8 @@
 import express from 'express';
-import Szavazokor from '../../schemas/Szavazokor';
 import dotenv from 'dotenv';
-import getHtml from './getHtml';
+import axios from 'axios';
 import parse from './parse';
+import Szavazokor from '../../schemas/Szavazokor';
 import generateVhuUrl from '../../functions/generateVhuUrl';
 import SourceHtml from '../../schemas/SourceHtml';
 import parseQuery from '../../functions/parseQuery';
@@ -32,6 +32,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
     } = szavkor;
 
     const url = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam)
+    const polygonUrl = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam, true)
 
     let htmlUpdateResponse;
     let html;
@@ -40,14 +41,16 @@ router.get('/:SzavazokorId?', async (req, res) => {
       htmlUpdateResponse = null;
       ({ html } = await SourceHtml.findOne({ megyeKod, telepulesKod, szavkorSorszam }))
     } else {
-      html = await getHtml(url)
+      ({ data: html } = await axios.get(url));
+      const { data: area } = await axios.get(polygonUrl);
 
       htmlUpdateResponse = await SourceHtml.insertMany([{
         megyeKod,
         telepulesKod,
         szavkorSorszam,
         url,
-        html
+        html,
+        area
       }])
 
       htmlUpdateResponse = htmlUpdateResponse[0]
