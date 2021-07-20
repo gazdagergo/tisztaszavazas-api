@@ -295,7 +295,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
       }
 
       Object.keys(query).forEach(key => {
-        delete projection[key]
+        if (projection[key] === 0) delete projection[key]
       })      
 
       const aggregations = [
@@ -317,7 +317,9 @@ router.get('/:SzavazokorId?', async (req, res) => {
       if (!totalCount) result = []
       
       result = result.reduce((acc = [], entry) => {
-        if (!entry.kozteruletek || !entry.kozteruletek.length) return [...acc, entry]
+        if (!entry.kozteruletek || !entry.kozteruletek.length) {
+          return acc
+        }
         const kozteruletek = entry.kozteruletek.filter(({ kozteruletNev }) => (
           kozteruletNev.match(regexStreetToFilter)  // default: '' -> matches with all
         ))
