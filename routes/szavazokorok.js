@@ -6,6 +6,7 @@ import authorization from '../middlewares/authorization';
 import getSzkAggregationFilter from '../functions/getSzkAggregationFilter';
 import { getProjection, mapQueryResult, mapIdResult } from '../functions/szkProjectionAndMap';
 import reduceResultByRegex from '../functions/reduceResultByRegex';
+import getPrevNextLinks from '../functions/getPrevNextLinks';
 
 /**
  * @api {get} /szavazokorok/ 1.) Összes szavazókör
@@ -289,6 +290,15 @@ router.get('/:SzavazokorId?', async (req, res) => {
       result = mapQueryResult(result, query, db, szkSzamIfLengthOne)
     }
 
+    const prevNextLinks = getPrevNextLinks({
+      route: 'szavazokorok',
+      skip,
+      limit,
+      query,
+      totalCount
+    })
+
+    res.header({...prevNextLinks})
     res.header('X-Total-Count', totalCount)
     res.status(result.length ? 200 : 404)
     res.json(result || 'Szavazokor not found')
