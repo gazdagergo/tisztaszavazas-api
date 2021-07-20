@@ -35,7 +35,8 @@ export default ({ roles }, context) => {
     case 'filterStreet': return ({
       szavazokorSzama: 1,
       'kozigEgyseg.kozigEgysegNeve': 1,
-      'kozigEgyseg.megyeNeve': 1
+      'kozigEgyseg.megyeNeve': 1,
+      'kozigEgyseg.egySzavazokorosTelepules': 1,
     })
 
     case 'withRegex': return ({
