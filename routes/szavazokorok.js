@@ -24,6 +24,37 @@ const instanceOf = (elem, constructorName = 'Object') => (
   Object.getPrototypeOf(elem).constructor.name == constructorName
 )
 
+const getProjection = ({ roles }, context) => {
+  switch (context) {
+    case 'noQuery': return ({
+      kozteruletek: 0,
+      sourceHtmlUpdated: 0,
+      frissitveValasztasHun: 0,
+      parsedFromSrcHtml: 0,
+      vhuUrl: 0,
+      polygonUrl: 0,
+      createdAt: 0,
+      egySzavazokorosTelepules: 0,
+      'kozigEgyseg.megyeKod': 0,
+      'kozigEgyseg.telepulesKod': 0
+    })
+
+    case 'filterStreet': return ({
+      szavazokorSzama: 1,
+      'kozigEgyseg.kozigEgysegNeve': 1,
+      'kozigEgyseg.megyeNeve': 1
+    })
+
+    default: return ({
+      sourceHtmlUpdated: roles.includes('admin') ? 1 : 0,
+      parsedFromSrcHtml: roles.includes('admin') ? 1 : 0,
+      createdAt: roles.includes('admin') ? 1 : 0,
+      'kozigEgyseg.megyeKod': roles.includes('admin') ? 1 : 0,
+      'kozigEgyseg.telepulesKod': roles.includes('admin') ? 1 : 0,
+    })
+  }
+}
+
 router.get('/:SzavazokorId?', async (req, res) => {
   let {
     params: { SzavazokorId },
@@ -38,6 +69,9 @@ router.get('/:SzavazokorId?', async (req, res) => {
         ...result['_doc'],
         scrapeUrl: `${process.env.BASE_URL}/scrape/${result['_doc']['_id']}`
       }
+    } else if (!Object.keys(query).length) {
+      const projection = getProjection(req.user, 'noQuery')
+      result = await Szavazokor.find({}, projection).limit(limit)
     } else {
       query = parseQuery(query)
 
@@ -79,27 +113,22 @@ router.get('/:SzavazokorId?', async (req, res) => {
               }
             }
           },
-          szavazokorSzama: 1,
-          kozigEgyseg: 1
+          ...getProjection(req.user, 'filterStreet')
         }})
       } else {
-        aggregations.push({ $project: {
-          polygonUrl: 0,
-          vhuUrl: 0
-        }})
+        aggregations.push({ $project: getProjection(req.user, 'default') })
       }
 
       result = await Szavazokor.aggregate(aggregations)
-
-      if (regexStreetToFilter) {
-        result = result.reduce((acc = [], entry) => {
-          const kozteruletek = entry.kozteruletek.filter(({ kozteruletNev }) => (
-            kozteruletNev.match(regexStreetToFilter)
-          ))
-          if (kozteruletek.length) return [...acc, { ...entry, kozteruletek }]
-          return acc
-        }, [])
-      }
+      
+      result = result.reduce((acc = [], entry) => {
+        if (entry.egySzavazokorosTelepules) return [...acc, entry]
+        const kozteruletek = entry.kozteruletek.filter(({ kozteruletNev }) => (
+          kozteruletNev.match(regexStreetToFilter)  // default: '' -> matches with all
+        ))
+        if (kozteruletek.length) return [...acc, { ...entry, kozteruletek }]
+        return acc
+      }, [])
     }
     res.header('X-Total-Count', result.length)
     res.status(result.length ? 200 : 404)
@@ -111,6 +140,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
+  if (!req.user.roles.includes('admin')) res.sendStatus(404);
   let { body } = req;
 
   body = Array.isArray(body) ? body : [ body ];
