@@ -18,6 +18,7 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
  * @apiParam (Request Parameters) {Number|String|Regex|Query} [queryParameters] A rekordok bármely paramétere alapján lehet szűkíteni a listát. Használatukról bővebben a [3. pont](#api-Szavazókörök-szavazokorok3) alatt.
  * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
  * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (default: `onk2019`)
+ * @apiHeader (Request Headers) [X-Iterating-Query] Több paraméteres lekérdezéskor használható. `true` értéknél az API a paraméterenket egyenként alkalmazza (az általunk megadott sorrendet tartva), ezáltal fokozatosan szűkítve a keresést. Eredményként az utolsó, nem üres eredményt kapjuk vissza.
  * @apiHeader (Response Headers) X-Total-Count A szűrési feltételeknek megfelelő, a válaszban lévő összes elem a lapozási beállításoktől függetlenül
  * @apiHeader (Response Headers) X-Prev-Page A `limit` és `skip` paraméterekkel meghatározott lapozás következő oldala
  * @apiHeader (Response Headers) X-Next-Page A `limit` és `skip` paraméterekkel meghatározott lapozás előző oldala
@@ -125,6 +126,7 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
  * 
  * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
  * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (default: `onk2019`)
+ * @apiHeader (Request Headers) [X-Iterating-Query] Több paraméteres lekérdezéskor használható. `true` értéknél az API a paraméterenket egyenként alkalmazza (az általunk megadott sorrendet tartva), ezáltal fokozatosan szűkítve a keresést. Eredményként az utolsó, nem üres eredményt kapjuk vissza.
  * @apiHeader (Response Headers) X-Total-Count A szűrési feltételeknek megfelelő, a válaszban lévő összes elem a lapozási beállításoktől függetlenül
  * @apiHeader (Response Headers) X-Prev-Page A `limit` és `skip` paraméterekkel meghatározott lapozás következő oldala
  * @apiHeader (Response Headers) X-Next-Page A `limit` és `skip` paraméterekkel meghatározott lapozás előző oldala
@@ -269,7 +271,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
         { $limit: limit },
       ];
 
-      if (!req.headers['x-sajat-szavazokor-keresese']) {
+      if (!req.headers['x-iterating-query']) {
         ;([{ result, totalCount }] = await Szavazokor.aggregate([{
           $facet: {
             result: aggregations,
