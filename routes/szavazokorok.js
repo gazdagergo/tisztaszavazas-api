@@ -15,7 +15,7 @@ const getGeneratedParams = szavazokor => {
   }
   return {
     vhuUrl: generateVhuUrl(query),
-    polygonUrl: generateVhuUrl({ ...query, polygon: true })
+    polygonUrl: generateVhuUrl({ ...query, context: 'polygon' })
   }
 }
 
