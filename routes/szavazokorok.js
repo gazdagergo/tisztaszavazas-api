@@ -239,7 +239,11 @@ router.get('/:szavazokorId?', async (req, res) => {
       try {
         const aggregations = body
         result = await Szavazokors.aggregate(aggregations)
-        result = mapQueryResult(result, query, db)
+        try {
+          result = mapQueryResult(result, query, db)
+        } catch(error){
+          console.log('mapQueryResult cannot be applied')
+        }
 
       } catch(error){
         result = error.message
