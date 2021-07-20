@@ -205,7 +205,8 @@ const getSzavazokorCount = async ({ megyeKod, telepulesKod }) => {
 router.get('/:SzavazokorId?', async (req, res) => {
   let {
     params: { SzavazokorId },
-    query
+    query,
+    body
   } = req;
 
   let limit, projection, sort, skip, totalCount;
@@ -230,6 +231,15 @@ router.get('/:SzavazokorId?', async (req, res) => {
 
       result = mapIdResult(result, db, kozigEgysegSzavazokoreinekSzama)
 
+    } else if (Object.keys(body).length){
+      try {
+        const aggregations = body
+        result = await Szavazokor.aggregate(aggregations)
+        result = mapQueryResult(result, query, db)
+
+      } catch(error){
+        result = error.message
+      }
     } else if (!Object.keys(query).length) {
       projection = getProjection(req.user, 'noQuery')
       totalCount = await Szavazokor.estimatedDocumentCount()
@@ -277,7 +287,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
             result: aggregations,
             totalCount: [{ $match: query },{ $count: 'totalCount' }] }
         }]))
-  
+
         totalCount = totalCount && totalCount[0] && totalCount[0].totalCount
   
         if (!totalCount) result = []
