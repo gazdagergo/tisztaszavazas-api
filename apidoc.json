@@ -1,0 +1,13 @@
+{
+  "name": "Tisztaszavazás",
+  "version": "0.1.0",
+  "description": "Dokumentáció az api.tisztaszavazas.hu használatához",
+  "title": "api.tisztaszavazas.hu",
+  "url" : "https://api.tisztaszavazas.hu",
+	"sampleUrl": "https://api.tisztaszavazas.hu",
+  "template": {
+    "withCompare": false,
+    "withGenerator": false,
+    "aloneDisplay": false
+  }	
+}

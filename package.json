@@ -7,10 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "nodemon server.js --exec babel-node",
     "heroku-postbuild": "npm install",
-    "start": "babel-node server.js",
+    "start": "yarn doc && babel-node server.js",
     "crawl:onk2019": "babel-node crawler/crawlUrls.js onk2019",
     "initszk:onk2019": "babel-node crawler/initSzks.js onk2019",
-    "saveHtmsToFile": "babel-node utils/saveHtmsToFile.js"
+    "saveHtmsToFile": "babel-node utils/saveHtmsToFile.js",
+    "doc": "apidoc -i routes/ -o apidoc/"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
   },
   "homepage": "https://github.com/madhums/node-express-mongoose-demo#readme",
   "dependencies": {
+    "apidoc": "^0.20.1",
     "axios": "^0.19.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
