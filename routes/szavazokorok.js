@@ -196,6 +196,17 @@ const getProjection = ({ roles }, context) => {
       'kozigEgyseg.megyeNeve': 1
     })
 
+    case 'withRegex': return ({
+      ...projection,
+      frissitveValasztasHun: 0,
+      szavazokorCime: 0,
+      valasztokSzama: 0,
+      valasztokerulet: 0,
+      akadalymentes: 0,
+      updatedAt: 0,
+      egySzavazokorosTelepules: 0,
+    })
+
     default:
       if (isAdmin) {
         delete projection['kozigEgyseg.megyeKod']
@@ -286,8 +297,10 @@ router.get('/:SzavazokorId?', async (req, res) => {
           },
           ...getProjection(req.user, 'filterStreet')
         }})
+      } else if (regexStreetToFilter) {
+        aggregations.push({ $project: getProjection(req.user, 'withRegex') })
       } else {
-        aggregations.push({ $project: getProjection(req.user, 'withQuery') })
+        aggregations.push({ $project: getProjection(req.user, 'noQuery') })
       }
 
       result = await Szavazokor.aggregate(aggregations)
