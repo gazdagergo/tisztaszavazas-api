@@ -15,6 +15,7 @@
     "generateKozigEgysegek": "babel-node scripts/generateKozigEgysegek.js",
     "updateEgySzkTelepules": "babel-node scripts/updateEgySzkTelepules.js onk2019",
     "updateKezdoVegsoHazszam": "babel-node scripts/updateKezdoVegsoHazszam.js",
+    "updateKozigEgysEgySzkTelepules": "babel-node scripts/updateKozigEgysEgySzkTelepules.js",
     "doc": "apidoc -i routes/ -o apidoc/"
   },
   "repository": {
