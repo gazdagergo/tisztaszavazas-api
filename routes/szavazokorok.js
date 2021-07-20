@@ -16,7 +16,7 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
  * @apiParam (Request Parameters) {Number} [skip] A lapozáshoz használható paraméter. (default: `0`)
  * @apiParam (Request Parameters) {Number|String|Regex|Query} [queryParameters] A rekordok bármely paramétere alapján lehet szűkíteni a listát. Használatukról bővebben a [3. pont](#api-Szavazókörök-szavazokorok3) alatt.
  * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
- * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (default: `onk2019`)
+ * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (Lehetsésges értékek: 2019-es önkormányzati: `onk2019`, 2018-as országgyűlési: `ogy2018`, 2020-as borsodi időközi: `idbo620`)
  * @apiHeader (Request Headers) [X-Iterating-Query] Több paraméteres lekérdezéskor használható. `true` értéknél az API a paraméterenket egyenként alkalmazza (az általunk megadott sorrendet tartva), ezáltal fokozatosan szűkítve a keresést. Eredményként az utolsó, nem üres eredményt kapjuk vissza.
  * @apiHeader (Response Headers) X-Total-Count A szűrési feltételeknek megfelelő, a válaszban lévő összes elem a lapozási beállításoktől függetlenül
  * @apiHeader (Response Headers) X-Prev-Page A `limit` és `skip` paraméterekkel meghatározott lapozás következő oldala
@@ -71,7 +71,7 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
  *
  * @apiParam {String} id A szavazókör azonosítója az adatbázisban
  * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
- * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (default: `onk2019`)
+ * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (lásd fent)
  *
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
@@ -140,7 +140,7 @@ import getPrevNextLinks from '../functions/getPrevNextLinks';
  * @apiGroup 2. Szavazókörök
  * 
  * @apiHeader (Request Headers) Authorization A regisztrációkor kapott kulcs
- * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (default: `onk2019`)
+ * @apiHeader (Request Headers) [X-Valasztas-Kodja] A választási adatbázis kiválasztása (lásd fent)
  * @apiHeader (Request Headers) [X-Iterating-Query] Több paraméteres lekérdezéskor használható. `true` értéknél az API a paraméterenket egyenként alkalmazza (az általunk megadott sorrendet tartva), ezáltal fokozatosan szűkítve a keresést. Eredményként az utolsó, nem üres eredményt kapjuk vissza.
  * @apiHeader (Response Headers) X-Total-Count A szűrési feltételeknek megfelelő, a válaszban lévő összes elem a lapozási beállításoktől függetlenül
  * @apiHeader (Response Headers) X-Prev-Page A `limit` és `skip` paraméterekkel meghatározott lapozás következő oldala
