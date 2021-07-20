@@ -28,7 +28,7 @@ const corsOptions = {
 
 // Middlewares
 if (app.get("env") === "production") {
-  app.use(enforce.HTTPS())
+  app.use(enforce.HTTPS({ trustProtoHeader: true }))
 }
 app.use(bodyParser.json({limit: '50mb'}))
 app.use(cors(corsOptions))
