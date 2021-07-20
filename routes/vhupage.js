@@ -1,16 +1,17 @@
 import express from 'express';
-import SzavazokorSchemas from '../schemas/Szavazokor';
+import models from '../schemas';
 
 const router = express.Router()
 
-let Szavazokor;
-
 router.get('/:db/:id', async (req, res) => {
+  const [valasztasAzonosito, version] = req.params.db.split('_')
+
 	try {
-		Szavazokor = SzavazokorSchemas[`Szavazokor_${req.params.db}`]		
-		const { vhuUrl } = await Szavazokor.findById(req.params.id)
+		const Szavazokors = models.Szavazokor[valasztasAzonosito][version]
+		const { vhuUrl } = await Szavazokors.findById(req.params.id)
 		res.redirect(vhuUrl)
-	} catch(error){h
+	} catch(error){
+		console.log(error.message || error)
 		res.status(400)
 		res.json('Not found')
 	}
