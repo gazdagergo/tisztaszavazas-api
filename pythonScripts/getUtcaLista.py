@@ -6,7 +6,7 @@ import logging
 
 
 # https://regex101.com/r/vahPd7/6
-regex = r"(?:\s*)?(?:([^\d]+)(\d+|(?:(\d+)-\d+))(?:\s?)(?:\s?/\s?)?([A-z])?(?:\s-\s)((?:[\d\s]+)|(?:\d+-(\d+)))(?:\s?)(?:\s?/\s?)?([A-z]?)\s?$)|^.+$"
+regex = r"(?:\s*)?(?:([^\d]+)(?:(\d+)|(?:(\d+)-\d+))(?:\s?)(?:\s?/\s?)?([A-z])?(?:\s-\s)((?:[\d\s]+)|(?:\d+-(\d+)))(?:\s?)(?:\s?/\s?)?([A-z]?)\s?$)|^.+$"
 def emptyOrStrip(string):
 	return "" if not string else string.strip()
 
@@ -65,7 +65,7 @@ def getUtcaLista(soup):
 		utcaListItem = {
 			"leiras": matches.group().strip(),
 			"kozteruletNev": kozteruletNev,
-			"kezdoHazszam": nullOrInt(matches.group(2)),
+			"kezdoHazszam": nullOrInt(matches.group(3) or matches.group(2)),
 			"vegsoHazszam": vegsoHazszam,
 			"megjegyzes": szkHazszamok.strip()
 		}
