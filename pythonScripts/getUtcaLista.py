@@ -2,6 +2,9 @@
 #!/usr/bin/env python3
 
 import re
+import logging
+
+
 # https://regex101.com/r/vahPd7/3
 regex = r"(?:\s*)?(?:([^\d]+)(\d+|(?:(\d+)-\d+))(?:\s?)([A-z])?(?:\s-\s)((?:[\d\s]+)|(?:\d+-(\d+)))(?:\s?)(?:\s?/\s?)?([A-z]?)\s?$)|^.+$"
 def emptyOrStrip(string):
@@ -19,6 +22,7 @@ def nullOrInt(string):
 	return 9999 if (result and (result > 9999)) else result
 
 def getUtcaLista(soup):
+	logging.info('---getUtcaLista---')
 	completeSettlement = soup.findAll("div", {"class": "nvi-complete-settlement-wrapper"})
 
 	if completeSettlement:
@@ -31,6 +35,9 @@ def getUtcaLista(soup):
 	.findAll("div", {"class": "nvi-custom-table"})[0] \
 	.findAll("table", {"class": "table"})[0] \
 	.findAll("tr")
+
+	logging.info('utcaList')
+	logging.info(utcaList)
 
 	def getUtcaNev(tRow):
 		utcanev = tRow.findAll("div", {"class": "span6"})[0] \
@@ -55,15 +62,18 @@ def getUtcaLista(soup):
 		kozteruletNev = emptyOrStrip(matches.group(1)) if emptyOrStrip(matches.group(1)) else emptyOrStrip(matches.group(0))
 		vegsoHazszam = nullOrInt(matches.group(6)) if nullOrInt(matches.group(6)) else nullOrInt(matches.group(5))
 
-		utcaListPairs.append({
+		utcaListItem = {
 			"leiras": matches.group().strip(),
 			"kozteruletNev": kozteruletNev,
 			"kezdoHazszam": nullOrInt(matches.group(2)),
 			"vegsoHazszam": vegsoHazszam,
 			"megjegyzes": szkHazszamok.strip()
-		})
-		
+		}
+		logging.info(utcaListItem)
+		utcaListPairs.append(utcaListItem)
 
+	logging.info(utcaListPairs)
+		
 	return {
 		"kozteruletek": utcaListPairs,
 		"egySzavazokorosTelepules": False
