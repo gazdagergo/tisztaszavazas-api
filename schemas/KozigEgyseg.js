@@ -4,7 +4,7 @@ const KozigEgysegSchema = mongoose.Schema({
   megye: String,
   megyeKod: Number,
   telepulesKod: Number,
-  nev: String,
+  kozigEgysegNeve: String,
   tipus: String,
   tipusKod: {
     type: String,
