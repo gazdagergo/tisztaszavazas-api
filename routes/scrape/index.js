@@ -101,7 +101,6 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
       if (error && error === 'error') {
         parseMsg = 'Parsing error, szavkor not updated. '
       } else {
-        console.log(szkParsedData.kozigEgyseg)
         const newSzavkor = Object.assign(szavazokor, {
           ...szkParsedData,
           kozigEgyseg: {
