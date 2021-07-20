@@ -2,6 +2,7 @@ import express from 'express';
 import KozigEgyseg from '../schemas/KozigEgyseg';
 import getSortObject from '../functions/getSortObject';
 import parseQuery from '../functions/parseQuery';
+import authorization from '../middlewares/authorization';
 
 
 /**
@@ -101,6 +102,7 @@ const getProjection = ({ roles }, context) => {
   }
 }
 
+router.all('*', authorization)
 
 router.get('/:id?', async (req, res) => {
   let {
