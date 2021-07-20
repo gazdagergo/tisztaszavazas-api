@@ -1,6 +1,6 @@
 const toNumeric = string => {
   if (isNaN(+string)) {
-    return null
+    return undefined
   } else {
     return +string
   } 
@@ -15,19 +15,20 @@ const toRegex = string => {
 		regex = parts[1];
 		options = parts[2];
 	} else {
-    return null
+		return undefined
   }
 	try {
 		return new RegExp(regex, options);
 	} catch (e) {
-		return null
+		return undefined
 	}
 };
 
 const toBoolean = string => {
   if (string === 'false') return false;
   if (string === 'true') return true;
-  return null;
+  if (string === 'null') return null;
+	return undefined
 }
 
 const toQueryObject = string => {
@@ -36,22 +37,24 @@ const toQueryObject = string => {
 	if (group){
 		return {[group[1]]: parseQueryValue(group[2])}
 	}
-	return null
+	return undefined
 }
 
 const toDate = string => {
 	if (!isNaN(Date.parse(string))) {
 		return new Date(string)
 	}
-	return null 
+	return undefined
 }
 
+const hasParsed = parsed => typeof parsed !== 'undefined';
+
 const parseQueryValue = value => {
-  let parsed = toBoolean(value); if (parsed !== null) return parsed;
-  parsed = toNumeric(value); if (parsed !== null) return parsed;
-  parsed = toRegex(value); if (parsed !== null) return parsed;
-	parsed = toQueryObject(value); if (parsed !== null) return parsed;
-	parsed = toDate(value); if (parsed !== null) return parsed;
+  let parsed = toBoolean(value); if (hasParsed(parsed)) return parsed;
+  parsed = toNumeric(value); if (hasParsed(parsed)) return parsed;
+  parsed = toRegex(value); if (hasParsed(parsed)) return parsed;
+	parsed = toQueryObject(value); if (hasParsed(parsed)) return parsed;
+	parsed = toDate(value); if (hasParsed(parsed)) return parsed;
   return value
 }
 
