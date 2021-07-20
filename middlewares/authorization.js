@@ -1,13 +1,27 @@
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 export default async (req, res, next) => {
-	if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') return next()
-	const authtokens = [
-		process.env.TOKEN1,
-		process.env.TOKEN2
-	]
-  if (!req.headers.authorization || !authtokens.includes(req.headers.authorization) ){
-    res.status(401);
-    return res.json({error: 'Authorization token is missing or incorrect'})
-  } else {
-		next()
+	if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+		req.user = { name: 'admin', roles: [ 'admin' ] };
+		return next();
 	}
-}
+
+	const token = req.headers.authorization;	
+
+	if (token) {
+		jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+			if (err) {
+				res.status(403);
+				return res.json({ error: 'Authorization token is invalid.' });
+			}
+			req.user = user;
+			next();
+		});
+	} else {
+		res.status(401);
+		return res.json({ error: 'Authorization token is missing' });
+	}
+};
