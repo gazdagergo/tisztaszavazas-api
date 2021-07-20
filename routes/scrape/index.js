@@ -10,7 +10,7 @@ import parseQuery from '../../functions/parseQuery';
 dotenv.config();
 
 const router = express.Router()
-const responses = {};
+let responses = {};
 
 router.get('/:SzavazokorId?', async (req, res) => {
   const {
@@ -18,43 +18,46 @@ router.get('/:SzavazokorId?', async (req, res) => {
     query
   } = req;
 
-  const { scrapeOnly } = parseQuery(query)
+  const { scrapeOnly, parseFromDb } = parseQuery(query)
 
   try {
-    Szavazokor.findById(SzavazokorId)
-    .then(async szavkor => {
-      const { szavkorSorszam,
-        kozigEgyseg: {
-          telepulesKod,
-          megyeKod
-        }
-      } = szavkor;
-      const url = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam)
-      const html = await getHtml(url)
-      const htmlUpdateResponse = await SourceHtml.insertMany([{
-        megyeKod,
+    const szavkor = await Szavazokor.findById(SzavazokorId)
+
+    const {
+      szavkorSorszam,
+      kozigEgyseg: {
         telepulesKod,
-        szavkorSorszam,
-        url,
-        html
-      }])
-      responses.htmlUpdateResponse = htmlUpdateResponse[0]
-      const { kozteruletek, ...szkParsedData } = await parse(html)
+        megyeKod
+      }
+    } = szavkor;
+
+    const url = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam)
+    const html = await getHtml(url)
+
+    const htmlUpdateResponse = await SourceHtml.insertMany([{
+      megyeKod,
+      telepulesKod,
+      szavkorSorszam,
+      url,
+      html
+    }])
+
+    responses.htmlUpdateResponse = htmlUpdateResponse[0]
+    const { kozteruletek, ...szkParsedData } = await parse(html)
       
-      const newSzavkor = Object.assign(szavkor, szkParsedData)
-      return newSzavkor
-    })
-    .then(szavkor => {
-      return scrapeOnly ?
-        'Szavkor not updated as scrapeOnly flat was true' :
-        szavkor.save()
-    })
-    .then(szavkorUpdateResponse => {
-      responses.szavkorUpdateResponse = szavkorUpdateResponse;
-      res.json({
-        'message': scrapeOnly ? 'sourceHtml refreshed in db' : 'szavazokor updated',
-        responses
-      })
+    const newSzavkor = Object.assign(szavkor, szkParsedData)
+
+    let szavkorUpdateResponse;
+    if (scrapeOnly) {
+      szavkorUpdateResponse = 'Szavkor not updated as scrapeOnly flat was true'
+    } else {
+      szavkorUpdateResponse = await newSzavkor.save()
+    }
+
+    responses = {...responses, szavkorUpdateResponse }
+    res.json({
+      'message': scrapeOnly ? 'sourceHtml refreshed in db' : 'szavazokor updated',
+      responses
     })
   } catch (error) {
     console.log(error)
