@@ -9,6 +9,7 @@ import { sleep } from ".";
 
 dotenv.config()
 
+const valasztasAzonosito = process.argv[2] || 'onk2019';
 const MAX_MEGYEKOD = 20
 
 ;(async () => {
@@ -23,7 +24,7 @@ const MAX_MEGYEKOD = 20
 				page: i
 			}
 
-			const szkListUrl = generateVhuUrl(query)
+			const szkListUrl = generateVhuUrl(query, valasztasAzonosito)
 			console.log('------', mk, i)
 			try {
 				const { data: html } = await axios.get(szkListUrl);
