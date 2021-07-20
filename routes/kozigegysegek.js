@@ -12,6 +12,7 @@ import authorization from '../middlewares/authorization';
 *
 * @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default `20`)
 * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
+* @apiHeader Authorization A regisztrációkor kapott kulcs
 *
 * @apiSuccessExample {json} Success-Response:
 *  HTTP/1.1 200 OK
@@ -40,6 +41,7 @@ import authorization from '../middlewares/authorization';
  *
  * @apiParam {String} id A közigazgatási egység azonosítója az adatbázisban
  * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
+ * @apiHeader Authorization A regisztrációkor kapott kulcs
  *  
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -87,7 +89,7 @@ const addGeneratedParams = entry => {
 }
 
 const getProjection = ({ roles }, context) => {
-  const isAdmin = roles.includes('admin');
+  const isAdmin = roles && roles.includes('admin');
 
   let projection = {
     megyeKod: 0,
