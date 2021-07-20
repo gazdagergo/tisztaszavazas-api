@@ -134,6 +134,44 @@ import getProjection from '../functions/getProjection';
  */
 
 
+const mapResult = (result, query) => result.map(({
+  _id,
+  kozigEgyseg,
+  szavazokorSzama,
+  kozteruletek,
+  szavazokorCime,
+  akadalymentes,
+  valasztokerulet,
+  valasztokSzama,
+  __v,
+  ...rest
+}) => {
+  const entry = {
+    _id,
+    szavazokorSzama,
+    kozigEgyseg: {
+      megyeNeve: kozigEgyseg.megyeNeve,
+      kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
+      link: generateKozigEgysegLink(kozigEgyseg)
+    },
+    szavazokorCime,
+    akadalymentes,
+    valasztokerulet,
+    kozteruletek,
+    valasztokSzama,
+    __v
+  }
+
+  Object.keys(query).forEach(key => {
+    key = key.split('.')[0]
+    if (rest[key]) entry[key] = rest[key]
+  })           
+
+  return entry
+})
+
+const generateKozigEgysegLink = kozigEgyseg => `/kozigegysegek/${+kozigEgyseg.megyeKod * 1000 + kozigEgyseg.telepulesKod}`
+
 const DEFAULT_LIMIT = 20;
 const DEFAULT_SORT = 'kozigEgyseg.megyeKod,kozigEgyseg.telepulesKod,szavazokorSzama'
 
@@ -167,8 +205,6 @@ router.get('/:SzavazokorId?', async (req, res) => {
   ;({ limit = DEFAULT_LIMIT, skip = 0, sort = DEFAULT_SORT, ...query } = query)
 
   sort = getSortObject(sort)
-
-  const generateKozigEgysegLink = kozigEgyseg => `/kozigegysegek/${+kozigEgyseg.megyeKod * 1000 + kozigEgyseg.telepulesKod}`
 
   try {
     let result;
@@ -212,6 +248,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
       projection = getProjection(req.user, 'noQuery')
       totalCount = await Szavazokor.estimatedDocumentCount()
       result = await Szavazokor.find({}, projection).sort(sort).skip(skip).limit(limit)
+      result = mapResult(result, query)
     } else {
       
       const [filterCond, regexStreetToFilter] = getSzkAggregationFilter(query);
@@ -233,8 +270,12 @@ router.get('/:SzavazokorId?', async (req, res) => {
       } else if (regexStreetToFilter) {
         projection = getProjection(req.user, 'withRegex')
       } else {
-        projection = getProjection(req.user, 'noQuery')
+        projection = getProjection(req.user, 'withQuery')       
       }
+
+      Object.keys(query).forEach(key => {
+        delete projection[key]
+      })      
 
       const aggregations = [
         { $match: query },
@@ -264,17 +305,8 @@ router.get('/:SzavazokorId?', async (req, res) => {
         return acc
       }, [])
 
-      result = result.map(({ _id, kozigEgyseg, szavazokorSzama, kozteruletek, __v }) => ({
-        _id,
-        szavazokorSzama,
-        kozigEgyseg: {
-          megyeNeve: kozigEgyseg.megyeNeve,
-          kozigEgysegNeve: kozigEgyseg.kozigEgysegNeve,
-          link: generateKozigEgysegLink(kozigEgyseg)
-        },
-        kozteruletek,
-        __v
-      }))
+      result = mapResult(result, query)
+
     }
     res.header('X-Total-Count', totalCount)
     res.status(result.length ? 200 : 404)
