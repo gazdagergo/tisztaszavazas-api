@@ -61,9 +61,12 @@ export const scraper_GET = async (SzavazokorId, query) => {
     const polygonUrl = generateVhuUrl(megyeKod, telepulesKod, szavkorSorszam, true)
 
     let htmlUpdateResponse;
+    let szavkorUpdateResponse;
     let html;
 
     let sourceHtml = await SourceHtml.findOne(query)
+    let timeStamp = new Date()
+    timeStamp = timeStamp.toISOString()
 
     if (parseFromDb) {
       htmlUpdateResponse = null;
@@ -71,6 +74,9 @@ export const scraper_GET = async (SzavazokorId, query) => {
     } else {
       ({ data: html } = await axios.get(url));
       const { data: area } = await axios.get(polygonUrl);
+      const newSzavkor = Object.assign(szavazokor, { sourceHtmlUpdated: timeStamp })
+      szavkorUpdateResponse = await newSzavkor.save()
+
       if (sourceHtml) {
         sourceHtml = Object.assign(sourceHtml, { url, html, area })
         htmlUpdateResponse = await sourceHtml.save(sourceHtml)
@@ -92,12 +98,14 @@ export const scraper_GET = async (SzavazokorId, query) => {
 
     responses = { ...responses, htmlUpdateResponse }
 
-    let szavkorUpdateResponse;
     if (scrapeOnly) {
       szavkorUpdateResponse = null
     } else {
       const { kozteruletek, ...szkParsedData } = await parse(html)
-      const newSzavkor = Object.assign(szavazokor, szkParsedData)
+      const newSzavkor = Object.assign(szavazokor, {
+        ...szkParsedData,
+        parsedFromSrcHtml: timeStamp
+      })
       szavkorUpdateResponse = await newSzavkor.save()
     }
 
