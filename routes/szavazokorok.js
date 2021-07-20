@@ -1,5 +1,5 @@
 import express from 'express';
-import Szavazokor from '../schemas/Szavazokor';
+import SzavazokorSchemas from '../schemas/Szavazokor';
 import generateVhuUrl from '../functions/generateVhuUrl';
 import parseQuery from '../functions/parseQuery';
 import completeQueryParams from '../functions/completeQueryParams';
@@ -12,8 +12,9 @@ import authorization from '../middlewares/authorization';
  * @apiName szavazokorok2
  * @apiGroup Szavazókörök
  *
- * @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default: 20)
- * @apiParam {Number} skip A lapozáshoz használható paraméter. (default: 0)
+ * @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default: `20`)
+ * @apiParam {Number} skip A lapozáshoz használható paraméter. (default: `0`)
+ * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -46,6 +47,7 @@ import authorization from '../middlewares/authorization';
  * @apiGroup Szavazókörök
  *
  * @apiParam {String} id A szavazókör azonosítója az adatbázisban
+ * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`)
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -97,8 +99,9 @@ import authorization from '../middlewares/authorization';
  * @apiParam {String|Regex} kozteruletNev A szavazó lakcíme közterületének neve (pl: Bercsényi utca v. /bercs/i)
  * @apiParam {Number|Query} kezdoHazszam A közterület szavazókörhöz tartozó legkisebb házszáma. Lekéréskor relációk használhatók, mint { $lt: 22 }, vagyis 22-nél kisebb
  * @apiParam {Number|Query} vegsoHazszam A közterület szavazókörhöz tartozó legmagasabb házszáma. Lekéréskor relációk használhatók, mint { $gte: 22 }, vagyis 22-nél nagyobb vagy egyenlő
+ * @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default `20`)
  * 
- * @apiParam {Number} limit Csak a megadott számú találatot adja vissza (default 99999)
+ * @apiHeader X-Valasztas-Kodja A választási adatbázis kiválasztása (default: `onk2019`) 
  *
  * @apiExample {curl} Example usage:
  *     curl --location --request GET 'http://api.tisztaszavazas.hu/szavazokorok?kozigEgysegNeve=/Hajd%C3%BAhadh%C3%A1z/&kozteruletNev=/Bercs%C3%A9nyi/&kezdoHazszam={%20$lte:%2022%20}&vegsoHazszam={%20$gt:%2022%20}&megjegyzes=P%C3%A1ros%20h%C3%A1zsz%C3%A1mok' \
@@ -201,6 +204,15 @@ const getProjection = ({ roles }, context) => {
 }
 
 router.all('*', authorization)
+
+let Szavazokor;
+
+router.all('*', (req, _res, next) => { 
+  const db = req.headers['x-valasztas-kodja'] || 'onk2019'
+  Szavazokor = SzavazokorSchemas[`Szavazokor_${db}`]
+  next()
+})
+
 
 router.get('/:SzavazokorId?', async (req, res) => {
   let {
