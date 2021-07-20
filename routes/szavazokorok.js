@@ -305,6 +305,9 @@ router.get('/:SzavazokorId?', async (req, res) => {
         for (let r of results) {
           if (r.length) result = r
         }
+
+        const resultAfterRegex = reduceResultByRegex(result, regexStreetToFilter, projection)
+        result = resultAfterRegex.length ? resultAfterRegex : result
       }
 
       if (regexStreetToFilter && totalCount <= limit){
