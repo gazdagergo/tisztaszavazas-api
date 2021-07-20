@@ -63,7 +63,7 @@ export const scraper_GET = async (SzavazokorId, query) => {
     let htmlUpdateResponse;
     let html;
 
-    let sourceHtml = await SourceHtml.findOne({ megyeKod, telepulesKod, szavkorSorszam })
+    let sourceHtml = await SourceHtml.findOne(query)
 
     if (parseFromDb) {
       htmlUpdateResponse = null;
@@ -76,9 +76,11 @@ export const scraper_GET = async (SzavazokorId, query) => {
         htmlUpdateResponse = await sourceHtml.save(sourceHtml)
       } else {
         htmlUpdateResponse = await SourceHtml.insertMany([{
-          megyeKod,
-          telepulesKod,
           szavkorSorszam,
+          kozigEgyseg: {
+            telepulesKod,
+            megyeKod,
+          },
           url,
           html,
           area
