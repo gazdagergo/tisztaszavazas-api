@@ -39,17 +39,17 @@ const KozteruletSchema = mongoose.Schema({
 	"megjegyzes": String,
 })
 
+const ValasztokeruletSchema = new mongoose.Schema({
+  tipus: String,
+  leiras: String,
+  szam: Number
+})
+
 const SzavazokorSchema = mongoose.Schema({
   szavazokorSzama: Number,
   szavazokorCime: String,
-  kozigEgyseg: {
-    type: Object,
-    ref: 'KozigEgyseg'
-  },
-  valasztokerulet: {
-    type: Object,
-    ref: 'Valasztokerulet'
-  },
+  kozigEgyseg: KozigEgysegSchema,
+  valasztokerulet: ValasztokeruletSchema,
   kozteruletek: [{
     type: Object,
     ref: 'Kozterulet'
@@ -62,8 +62,7 @@ const SzavazokorSchema = mongoose.Schema({
   parsedFromSrcHtml: Date,
   akadalymentes: Boolean,
   frissitveValasztasHun: Date,
-  valasztokSzama: Number,
-  helyadatok: Object
+  valasztokSzama: Number
 },
 {
   timestamps: true  
@@ -71,9 +70,11 @@ const SzavazokorSchema = mongoose.Schema({
 
 const Szavazokor_onk2019_v1 = mongoose.model('Szavazokor_onk2019_v1', SzavazokorSchema);
 const Szavazokor_onk2019_v2 = mongoose.model('Szavazokor_onk2019_v2', SzavazokorSchema);
+const Szavazokor_ogy2018_v1 = mongoose.model('Szavazokor_ogy2018_v1', SzavazokorSchema);
 
 export default {
   Szavazokor_onk2019_v1,
   Szavazokor_onk2019_v2,
-  Szavazokor_onk2019: Szavazokor_onk2019_v1
+  Szavazokor_onk2019: Szavazokor_onk2019_v2,
+  Szavazokor_ogy2018_v1
 }
