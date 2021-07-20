@@ -150,7 +150,7 @@ export const scraper_GET = async (szavazokorId, query = {}) => {
       responses
     }]
   } catch (error) {
-    console.log(error)
+    console.log(error.message)
     return [500, {
       error: error.message
     }]
