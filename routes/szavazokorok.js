@@ -170,20 +170,4 @@ router.get('/:SzavazokorId?', async (req, res) => {
   }
 })
 
-router.post('/', async (req, res) => {
-  if (!req.user.roles.includes('admin')) res.sendStatus(404);
-  let { body } = req;
-
-  body = Array.isArray(body) ? body : [ body ];
-  body = body.map(szavazokor => ({ ...szavazokor, ...getGeneratedParams(szavazokor) }))
-  try {
-    const insertedRecords = await Szavazokor.insertMany(body)
-    res.json(insertedRecords)
-  } catch(error){
-    res.json({ error: error.message })
-  }
-})
-
-
-
 export default router;
