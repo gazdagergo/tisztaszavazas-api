@@ -30,6 +30,7 @@ const getProjection = ({ roles }, context) => {
 
 
   switch (context) {
+    case 'withQuery':
     case 'noQuery': return ({
       kozteruletek: 0,
       sourceHtmlUpdated: 0,
@@ -38,9 +39,11 @@ const getProjection = ({ roles }, context) => {
       vhuUrl: 0,
       polygonUrl: 0,
       createdAt: 0,
+      updatedAt: 0,
       egySzavazokorosTelepules: 0,
       'kozigEgyseg.megyeKod': 0,
-      'kozigEgyseg.telepulesKod': 0
+      'kozigEgyseg.telepulesKod': 0,
+      valasztasAzonosito: 0,
     })
 
     case 'filterStreet': return ({
@@ -53,9 +56,11 @@ const getProjection = ({ roles }, context) => {
       sourceHtmlUpdated: 0,
       parsedFromSrcHtml: 0,
       createdAt: 0,
+      vhuUrl: 0,
       'kozigEgyseg.megyeKod': 0,
       'kozigEgyseg.telepulesKod': 0,
       polygonUrl: 0,
+      valasztasAzonosito: 0
     })
   }
 }
@@ -66,7 +71,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
     query
   } = req;
 
-  let limit;
+  let limit, projection;
 
   query = completeQueryParams(query)
   query = parseQuery(query)
@@ -75,14 +80,14 @@ router.get('/:SzavazokorId?', async (req, res) => {
   try {
     let result;
     if (SzavazokorId) {
-      const projection = getProjection(req.user, 'byId')
+      projection = getProjection(req.user, 'byId')
       result = await Szavazokor.findById(SzavazokorId, projection)
       result = {
         ...result['_doc'],
         valasztasHuOldal: `${process.env.BASE_URL}/vhupage/${result['_doc']['_id']}`
       }
     } else if (!Object.keys(query).length) {
-      const projection = getProjection(req.user, 'noQuery')
+      projection = getProjection(req.user, 'noQuery')
       result = await Szavazokor.find({}, projection).limit(limit)
     } else {
       let [_, filterCond] = Object.entries(query).reduce(
@@ -90,6 +95,8 @@ router.get('/:SzavazokorId?', async (req, res) => {
           if (key.includes('kozteruletek')){
             return [ acc[0], { ...acc[1], [key]: value } ]
           }
+
+          projection = getProjection(req.user, 'withQuery')
           return [ {...acc[0], [key]: value }, acc[1] ]
         },
         [{}, {}] 
@@ -126,7 +133,7 @@ router.get('/:SzavazokorId?', async (req, res) => {
           ...getProjection(req.user, 'filterStreet')
         }})
       } else {
-        aggregations.push({ $project: getProjection(req.user, 'default') })
+        aggregations.push({ $project: getProjection(req.user, 'withQuery') })
       }
 
       result = await Szavazokor.aggregate(aggregations)
