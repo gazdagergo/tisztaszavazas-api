@@ -6,6 +6,7 @@ import authorization from '../middlewares/authorization';
 import getSzkAggregationFilter from '../functions/getSzkAggregationFilter';
 import getProjection from '../functions/getProjection';
 import { generateKozigEgysegId } from './kozigegysegek-aggr'
+import reduceResultByRegex from '../functions/reduceResultByRegex';
 
 /**
  * @api {get} /szavazokorok/ 1.) Összes szavazókör
@@ -129,7 +130,12 @@ import { generateKozigEgysegId } from './kozigegysegek-aggr'
  * @apiHeader Authorization A regisztrációkor kapott kulcs
  *
  * @apiExample {curl} Example usage:
- *     curl --location --request GET 'http://api.tisztaszavazas.hu/szavazokorok?kozigEgyseg.kozigEgysegNeve=/Hajd%C3%BAhadh%C3%A1z/&kozteruletek.kozteruletNev=/Bercs%C3%A9nyi/&kozteruletek.kezdoHazszam={%20$lte:%2022%20}&kozteruletek.vegsoHazszam={%20$gt:%2022%20}&megjegyzes=P%C3%A1ros%20h%C3%A1zsz%C3%A1mok' \
+ *   curl --location --request GET 'http://api.tisztaszavazas.hu/szavazokorok?\
+ *     kozigEgyseg.kozigEgysegNeve=/Hajd%C3%BAhadh%C3%A1z/&\
+ *     kozteruletek.kozteruletNev=/Bercs%C3%A9nyi/&\
+ *     kozteruletek.kezdoHazszam={%20$lte:%2022%20}&\
+ *     kozteruletek.vegsoHazszam={%20$gt:%2022%20}&\
+ *     kozteruletek.megjegyzes=P%C3%A1ros%20h%C3%A1zsz%C3%A1mok' \
  *     --header 'Authorization: {jwt-token} \
  * 
  * @apiSuccessExample {json} Success-Response:
@@ -315,22 +321,20 @@ router.get('/:SzavazokorId?', async (req, res) => {
       totalCount = totalCount && totalCount[0] && totalCount[0].totalCount
 
       if (!totalCount) result = []
-      
-      result = result.reduce((acc = [], entry) => {
-        if (!entry.kozteruletek || !entry.kozteruletek.length) {
-          return acc
-        }
-        const kozteruletek = entry.kozteruletek.filter(({ kozteruletNev }) => (
-          kozteruletNev.match(regexStreetToFilter)  // default: '' -> matches with all
-        ))
-        const { _id, kozteruletek: kt, ...entryRest } = entry;
-        if (kozteruletek.length) return [...acc, { _id, kozteruletek, ...entryRest }]
-        return acc
-      }, [])
+
+      result = reduceResultByRegex(result, regexStreetToFilter, projection)
+
+      if (regexStreetToFilter && totalCount <= limit){
+        totalCount = result.length
+      } else if (regexStreetToFilter){
+        totalCount = undefined
+      }
+
+
 
       result = mapResult(result, query, db)
-
     }
+
     res.header('X-Total-Count', totalCount)
     res.status(result.length ? 200 : 404)
     res.json(result || 'Szavazokor not found')

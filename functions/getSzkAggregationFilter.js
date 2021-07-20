@@ -14,7 +14,7 @@ export default query => {
 		[{}, {}] 
 	)
 
-	let regexStreetToFilter = '';
+	let regexStreetToFilter = null;
 
 	filterCond = Object.entries(filterCond).reduce((acc = [], [key, value]) => {
 		if (instanceOf(value, 'Object')) {
@@ -22,7 +22,7 @@ export default query => {
 			return [...acc, { [operator]: [ `$$${key}`, value2 ]  }]
 		}
 		if (instanceOf(value, 'RegExp')) {
-			regexStreetToFilter = value
+			regexStreetToFilter = { ...regexStreetToFilter, [key.replace('kozteruletek.', '')]: value }
 			return acc
 		}
 		return [...acc, { $eq: [ `$$${key}`, value ]  }]
