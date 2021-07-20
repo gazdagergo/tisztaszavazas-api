@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export default async (req, res, next) => {
+	if (['/', '/vhupage'].includes(req.url)) return next(); //apidoc
+
 	if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
 		req.user = { name: 'admin', roles: [ 'admin' ] };
 		return next();
@@ -22,6 +24,6 @@ export default async (req, res, next) => {
 		});
 	} else {
 		res.status(401);
-		return res.json({ error: 'Authorization token is missing' });
+		return res.json({ error: 'Authorization token is missing.' });
 	}
 };
