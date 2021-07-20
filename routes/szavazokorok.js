@@ -1,7 +1,7 @@
 import express from 'express';
 import Szavazokor from '../schemas/Szavazokor';
 import generateVhuUrl from '../functions/generateVhuUrl';
-import parseQueryValue from '../functions/parseQueryValue';
+import parseQuery from '../functions/parseQuery';
 
 const DEFAULT_LIMIT = 99999;
 
@@ -27,12 +27,8 @@ router.get('/:SzavazokorId?', async (req, res) => {
         )
       }
     } else {
-      query = Object.entries(query).reduce((acc, [key, value]) => ({
-        ...acc, [key]: parseQueryValue(value)
-      }), {})
-
+      query = parseQuery(query)
       console.log(query)
-
       result = await Szavazokor.find(query).limit(+limit)
       result = result.map(szk => ({
         ...szk['_doc'],

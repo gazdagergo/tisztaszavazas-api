@@ -47,4 +47,10 @@ const parseQueryValue = value => {
   return value
 }
 
-export default parseQueryValue
+const parseQuery = queryString => (
+	Object.entries(queryString).reduce((acc, [key, value]) => ({
+		...acc, [key]: parseQueryValue(value)
+	}), {})
+)
+
+export default parseQuery

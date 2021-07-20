@@ -1,6 +1,6 @@
 import express from 'express';
 import Kozterulet from '../schemas/Kozterulet';
-import parseQueryValue from '../functions/parseQueryValue';
+import parseQuery from '../functions/parseQuery';
 
 const DEFAULT_LIMIT = 9999999;
 
@@ -17,12 +17,8 @@ router.get('/:KozteruletId?', async (req, res) => {
     if (KozteruletId) {
       result = await Kozterulet.findById(KozteruletId)
     } else {
-      query = Object.entries(query).reduce((acc, [key, value]) => ({
-        ...acc, [key]: parseQueryValue(value)
-      }), {})
-
+      query = parseQuery(query)
       console.log(query)
-
       result = await Kozterulet.find(query).limit(+limit)
     }
     res.status(result ? 200 : 400)
