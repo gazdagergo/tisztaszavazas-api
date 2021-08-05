@@ -45,7 +45,7 @@ const getProjection = ({ roles }, context) => {
       frissitveValasztasHun: 0,
       szavazokorCime: 0,
       valasztokSzama: 0,
-      valasztokerulet: 0,
+      // valasztokerulet: 0,
       akadalymentes: 0,
       updatedAt: 0,
       helyadatok: 0
