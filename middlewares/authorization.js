@@ -24,7 +24,7 @@ module.exports = (req, res, next) => {
 			req.user = user;
 			const ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
 			next();
-			Usage.insertMany([{ name: user.name, ip }])
+			// Usage.insertMany([{ name: user.name, ip }]) //TODO: as user is readOnly for this cluster. Usage stats can go to different db
 		});
 	} else {
 		res.status(401);
