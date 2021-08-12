@@ -1,5 +1,6 @@
 const express = require('express')
-const Schema = require('../schemas/Usage')
+const { model } = require('mongoose')
+const UsageSchema = require('../schemas/Usage')
 const authorization = require('../middlewares/authorization')
 const getSortObject = require('../functions/getSortObject')
 const parseQuery = require('../functions/parseQuery')
@@ -42,6 +43,7 @@ const getPrevNextLinks = require('../functions/getPrevNextLinks')
 
 const DEFAULT_LIMIT = 20;
 
+const Schema = model('usages', UsageSchema)
 
 const router = express.Router()
 
