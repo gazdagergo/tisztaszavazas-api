@@ -1,3 +1,9 @@
+
+
+We continue maintaining this repository in its fork: [https://github.com/Code-for-Hungary/tisztaszavazas-api](https://github.com/Code-for-Hungary/tisztaszavazas-api)
+
+---
+
 # Szavazokorok
 
 ## Authorization
